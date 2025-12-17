@@ -6,6 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Login - Hanglekiu Dental Clinic</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/responsive.css">
     <style>
         * {
             margin: 0;
@@ -178,6 +179,26 @@
         .login-btn:hover {
             background: linear-gradient(135deg, #4A93D0 0%, #2B72B4 100%);
             box-shadow: 0 4px 15px rgba(59, 130, 196, 0.4);
+        }
+
+        .register-btn {
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 12px 18px;
+            border-radius: 8px;
+            background: transparent;
+            border: 1px solid #3B82C4;
+            color: #3B82C4;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+
+        .register-btn:hover {
+            background: rgba(59,130,196,0.08);
+            color: #1e4f8a;
         }
 
         .forgot-password {
@@ -409,7 +430,11 @@
                     <button type="submit" class="login-btn">Login</button>
                 </form>
 
-                <div class="forgot-password">
+                <div class="register-link" style="text-align:center;margin-top:12px;">
+                    <a href="{{ route('register') }}" class="register-btn">Belum punya akun?</a>
+                </div>
+
+                <div class="forgot-password" style="text-align:center;margin-top:8px;">
                     <a href="{{ route('password.request') }}">Lupa password?</a>
                 </div>
 

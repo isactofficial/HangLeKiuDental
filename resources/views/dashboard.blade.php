@@ -6,6 +6,7 @@
     <title>Dashboard - Hanglekiu Dental</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/responsive.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         * {
@@ -21,75 +22,7 @@
             display: flex;
         }
 
-        /* Sidebar */
-        .sidebar {
-            width: 60px;
-            background: #1a365d;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 15px 0;
-            position: fixed;
-            left: 0;
-            top: 0;
-            z-index: 100;
-        }
-
-        .sidebar-logo {
-            width: 40px;
-            height: 40px;
-            background: #3b82f6;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 30px;
-        }
-
-        .sidebar-logo i {
-            color: white;
-            font-size: 20px;
-        }
-
-        .sidebar-menu {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            width: 100%;
-        }
-
-        .sidebar-item {
-            width: 100%;
-            padding: 12px 0;
-            display: flex;
-            justify-content: center;
-            color: #94a3b8;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            text-decoration: none;
-        }
-
-        .sidebar-item:hover,
-        .sidebar-item.active {
-            color: white;
-            background: rgba(59, 130, 246, 0.2);
-        }
-
-        .sidebar-item.active::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            height: 100%;
-            width: 3px;
-            background: #3b82f6;
-        }
-
-        .sidebar-item i {
-            font-size: 18px;
-        }
+        /* Sidebar styles are centralized in partials/sidebar.blade.php */
 
         /* Main Content */
         .main-content {
@@ -858,44 +791,7 @@
     </style>
 </head>
 <body>
-    <!-- Sidebar -->
-    <aside class="sidebar">
-        <div class="sidebar-logo">
-            <i class="fas fa-tooth"></i>
-        </div>
-        <nav class="sidebar-menu">
-            <a href="{{ route('dashboard') }}" class="sidebar-item active">
-                <i class="fas fa-th-large"></i>
-            </a>
-            <a href="{{ route('registration') }}" class="sidebar-item">
-                <i class="fas fa-calendar-alt"></i>
-            </a>
-            <div class="sidebar-item">
-                <i class="fas fa-user-clock"></i>
-            </div>
-            <div class="sidebar-item">
-                <i class="fas fa-users"></i>
-            </div>
-            <div class="sidebar-item">
-                <i class="fas fa-notes-medical"></i>
-            </div>
-            <div class="sidebar-item">
-                <i class="fas fa-capsules"></i>
-            </div>
-            <div class="sidebar-item">
-                <i class="fas fa-box"></i>
-            </div>
-            <div class="sidebar-item">
-                <i class="fas fa-file-invoice-dollar"></i>
-            </div>
-            <div class="sidebar-item">
-                <i class="fas fa-chart-bar"></i>
-            </div>
-            <div class="sidebar-item">
-                <i class="fas fa-cog"></i>
-            </div>
-        </nav>
-    </aside>
+    @include('partials.sidebar')
 
     <!-- Main Content -->
     <main class="main-content">
@@ -1373,5 +1269,49 @@
             }
         });
     </script>
+<style>
+    /* Global responsive tweaks applied at the end to override inline rules where needed */
+    @media (max-width: 1200px) {
+        .main-content { padding: 12px; }
+        .stats-section { grid-template-columns: 1fr 1fr; }
+        .bottom-section { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 992px) {
+        .header { padding: 10px; }
+        .header-left { flex-direction: column; gap: 8px; }
+        .search-box { min-width: 0; width: 100%; }
+        .promo-slide { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 768px) {
+        .main-content { margin-left: 0; padding: 8px; }
+        .sidebar { transform: translateX(-110%); }
+        .sidebar.open { transform: translateX(0); }
+        .hamburger { left: 8px; top: 8px; }
+        .promo-card, .stat-card, .chart-card { padding: 12px; }
+        .page-title h1 { font-size: 18px; }
+    }
+
+    @media (max-width: 480px) {
+        .header-left h1 { font-size: 16px; }
+        .header-right { gap: 8px; }
+    }
+</style>
+
+<script>
+    // Close off-canvas sidebar when a menu item is clicked (mobile)
+    document.addEventListener('DOMContentLoaded', function(){
+        document.querySelectorAll('.sidebar-item').forEach(el=>{
+            el.addEventListener('click', function(){
+                const sb = document.getElementById('appSidebar');
+                const bp = document.getElementById('sidebarBackdrop');
+                if(sb && sb.classList.contains('open')) sb.classList.remove('open');
+                if(bp && bp.classList.contains('show')) bp.classList.remove('show');
+            });
+        });
+    });
+</script>
+
 </body>
 </html>

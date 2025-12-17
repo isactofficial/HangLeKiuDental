@@ -2,10 +2,12 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registration - Hanglekiu Dental</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/responsive.css">
     <style>
         * {
             margin: 0;
@@ -722,46 +724,7 @@
     </style>
 </head>
 <body>
-    <!-- Sidebar -->
-    <aside class="sidebar">
-        <!-- Sidebar hidden on mobile, visible on desktop -->
-        <div class="sidebar-logo">
-            <i class="fas fa-tooth"></i>
-        </div>
-        <nav class="sidebar-menu">
-            <a href="{{ route('dashboard') }}" class="sidebar-item">
-                <i class="fas fa-th-large"></i>
-            </a>
-            <a href="{{ route('registration') }}" class="sidebar-item active">
-                <i class="fas fa-calendar-alt"></i>
-            </a>
-            <div class="sidebar-item">
-                <i class="fas fa-user-clock"></i>
-            </div>
-            <div class="sidebar-item">
-                <i class="fas fa-users"></i>
-            </div>
-            <div class="sidebar-item">
-                <i class="fas fa-notes-medical"></i>
-            </div>
-            <div class="sidebar-item">
-                <i class="fas fa-capsules"></i>
-            </div>
-            <div class="sidebar-item">
-                <i class="fas fa-box"></i>
-            </div>
-            <div class="sidebar-item">
-                <i class="fas fa-file-invoice-dollar"></i>
-            </div>
-            <div class="sidebar-item">
-                <i class="fas fa-chart-bar"></i>
-            </div>
-            <div class="sidebar-item">
-                <i class="fas fa-cog"></i>
-            </div>
-        </nav>
-        <!-- End Sidebar -->
-    </aside>
+    @include('partials.sidebar')
 
     <!-- Main Content -->
     <main class="main-content">
@@ -789,13 +752,13 @@
                             <i class="fas fa-user-circle"></i>
                             Profile
                         </a>
-                        <form action="{{ route('logout') }}" method="POST" style="margin: 0;">
-                            @csrf
-                            <button type="submit" class="logout-btn">
-                                <i class="fas fa-sign-out-alt"></i>
-                                Logout
-                            </button>
-                        </form>
+                            <form id="logoutForm" action="{{ route('logout') }}" method="POST" style="margin: 0;">
+                                @csrf
+                                <button type="submit" class="logout-btn">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    Logout
+                                </button>
+                            </form>
                     </div>
                 </div>
                 <div class="header-icons">
@@ -1009,6 +972,71 @@
                 this.classList.add('active');
             });
         });
+
+        // Logout form: try AJAX POST then redirect to login as fallback
+        (function() {
+            const logoutForm = document.getElementById('logoutForm');
+            if (!logoutForm) return;
+
+            logoutForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const action = this.action;
+                const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+                fetch(action, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': token,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({})
+                }).then(resp => {
+                    // on success (204 or 200/302), redirect to login
+                    window.location.href = '{{ route('login') }}';
+                }).catch(() => {
+                    // fallback: redirect anyway
+                    window.location.href = '{{ route('login') }}';
+                });
+            });
+        })();
     </script>
-</body>
-</html>
+
+    <style>
+        /* Registration page responsive overrides */
+        @media (max-width: 992px) {
+            .content { padding: 12px; }
+            .left-menu { width: 100%; order: 1; }
+            .main-panel { order: 2; }
+            .filters { flex-direction: column; align-items: stretch; }
+        }
+
+        @media (max-width: 768px) {
+            .main-content { margin-left: 0; padding: 8px; }
+            .hamburger { left: 8px; top: 8px; }
+            .left-menu { width: 100%; }
+            .menu-item { padding: 12px 16px; }
+        }
+
+        @media (max-width: 480px) {
+            .panel-title h2 { font-size: 16px; }
+            .filter-label { font-size: 11px; }
+        }
+    </style>
+
+    <script>
+        // Ensure clicking sidebar items hides off-canvas sidebar (mobile)
+        document.addEventListener('DOMContentLoaded', function(){
+            document.querySelectorAll('.sidebar-item').forEach(el=>{
+                el.addEventListener('click', function(){
+                    const sb = document.getElementById('appSidebar');
+                    const bp = document.getElementById('sidebarBackdrop');
+                    if(sb && sb.classList.contains('open')) sb.classList.remove('open');
+                    if(bp && bp.classList.contains('show')) bp.classList.remove('show');
+                });
+            });
+        });
+    </script>
+
+    </body>
+    </html>
