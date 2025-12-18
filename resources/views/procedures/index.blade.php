@@ -27,7 +27,35 @@
         .main{margin-left:60px;flex:1;padding:20px;padding-top:96px}
         .card{background:#fff;border-radius:12px;padding:22px 24px;box-shadow:0 6px 18px rgba(0,0,0,0.06);margin:6px 18px}
         @media (max-width: 992px){.search-input{width:160px}.page-header{flex-direction:column;align-items:flex-start;gap:12px}}
-        @media (max-width: 480px){.search-input{width:120px}.page-title{font-size:18px;padding-right:6px}}
+        @media (max-width: 480px){
+            .search-input{width:100%}
+            .page-title{font-size:16px;padding-right:4px}
+            .main{padding:8px;}
+            .card{margin:2px;padding:10px;}
+            .table, .table thead, .table tbody, .table tr, .table th, .table td {
+                display: block;
+                width: 100%;
+            }
+            .table thead { display: none; }
+            .table tr { margin-bottom: 18px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); background: #fff; }
+            .table td {
+                padding: 10px 12px;
+                text-align: left;
+                position: relative;
+                border: none;
+                border-bottom: 1px solid #f3f4f6;
+                font-size: 14px;
+            }
+            .table td.price { font-size: 15px; font-weight: 700; color: #1e293b; }
+            .table td:before {
+                content: attr(data-label);
+                font-weight: 600;
+                color: #64748b;
+                display: block;
+                margin-bottom: 2px;
+                font-size: 12px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -58,10 +86,10 @@
                     <tbody>
                         @forelse($procedures as $p)
                         <tr>
-                            <td><input type="checkbox"></td>
-                            <td>{{ $p['name'] }}</td>
-                            <td>{{ $p['note'] }}</td>
-                            <td class="price">Rp{{ number_format($p['price'],0,',','.') }}</td>
+                            <td data-label="Pilih"><input type="checkbox"></td>
+                            <td data-label="Nama Prosedur">{{ $p['name'] }}</td>
+                            <td data-label="Catatan">{{ $p['note'] }}</td>
+                            <td data-label="Total Harga" class="price">Rp{{ number_format($p['price'],0,',','.') }}</td>
                         </tr>
                         @empty
                         <tr>

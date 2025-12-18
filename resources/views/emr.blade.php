@@ -1,6 +1,191 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+        <style>
+            /* Hamburger Menu */
+            .hamburger {
+                display: none;
+                background: #223a5f;
+                border: none;
+                padding: 8px;
+                cursor: pointer;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                height: 40px;
+                width: 40px;
+                border-radius: 10px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+                position: absolute;
+                top: 16px;
+                left: 16px;
+                z-index: 1001;
+            }
+            .hamburger-bar {
+                display: block;
+                width: 24px;
+                height: 3px;
+                background: #fff;
+                margin: 4px 0;
+                border-radius: 2px;
+                transition: all 0.3s;
+            }
+            @media (max-width: 900px) {
+                .hamburger {
+                    display: flex;
+                }
+                .emr-header {
+                    position: relative;
+                    padding-left: 56px;
+                    min-height: 72px;
+                }
+            }
+            /* Header EMR baru */
+            .emr-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                background: #fff;
+                border-bottom: 1px solid #eef2f6;
+                padding: 18px 28px 12px 28px;
+                position: relative;
+                gap: 0;
+            }
+            .emr-header-left {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                flex: 1;
+            }
+            .emr-header-search {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            .emr-header-search input {
+                width: 320px;
+                max-width: 100vw;
+                padding: 10px 14px;
+                border-radius: 24px;
+                border: 1px solid #e6eef6;
+                box-shadow: none;
+            }
+            .advance-btn {
+                background: #2563eb;
+                color: #fff;
+                padding: 10px 18px;
+                border-radius: 8px;
+                border: none;
+                font-weight: 600;
+                font-size: 16px;
+                margin-left: 8px;
+            }
+            .emr-header-right {
+                display: flex;
+                align-items: center;
+                gap: 16px;
+            }
+            .emr-header-logo {
+                width: 44px;
+                height: 44px;
+                border-radius: 22px;
+                background: #e6eef6;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .emr-header-user {
+                position: relative;
+            }
+            .user-btn {
+                background: #2563eb;
+                color: #fff;
+                padding: 8px 14px;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                cursor: pointer;
+                border: none;
+                font-weight: 500;
+            }
+            .dropdown-menu {
+                position: absolute;
+                top: 100%;
+                right: 0;
+                background: #fff;
+                border: 1px solid #e6eef6;
+                border-radius: 8px;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                display: none;
+                width: 160px;
+                z-index: 1002;
+            }
+            .dropdown-item {
+                display: flex;
+                align-items: center;
+                padding: 8px 12px;
+                color: #374151;
+                text-decoration: none;
+                font-size: 15px;
+            }
+            .dropdown-item:hover {
+                background: #f3f4f6;
+            }
+            .dropdown-item:last-child {
+                color: #e11d48;
+            }
+            /* Floating actions */
+            .floating-actions {
+                position: absolute;
+                right: 28px;
+                top: 18px;
+                display: flex;
+                flex-direction: row;
+                gap: 10px;
+                z-index: 1003;
+            }
+            .floating-actions button {
+                background: #fff;
+                border: 1px solid #e6eef6;
+                padding: 10px;
+                border-radius: 12px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+                cursor: pointer;
+                position: relative;
+                overflow: hidden;
+                transition: box-shadow 0.2s;
+            }
+            .floating-actions button:active {
+                box-shadow: 0 1px 4px rgba(0,0,0,0.10);
+            }
+            .floating-actions button::before {
+                display: none !important;
+            }
+            @media (max-width: 900px) {
+                .emr-header-search input {
+                    width: 100%;
+                    max-width: none;
+                }
+                .emr-header {
+                    flex-direction: column;
+                    align-items: flex-start;
+                    gap: 8px;
+                    padding: 16px 10px 10px 10px;
+                }
+                .emr-header-left {
+                    width: 100%;
+                    gap: 8px;
+                }
+                .floating-actions {
+                    position: fixed;
+                    right: 12px;
+                    top: auto;
+                    bottom: 20px;
+                    flex-direction: column;
+                }
+            }
+        </style>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Electronic Medical Record - Hanglekiu</title>
@@ -99,41 +284,50 @@
     @include('partials.sidebar')
 
     <main class="main">
-        <header class="emr-header">
-            <div class="search-compact">
-                <input type="text" placeholder="Cari Pasien / No MR / No Ktp / No Asuransi..">
-                <button class="advance-btn">Advance Search</button>
+        <div class="sidebar-backdrop" id="sidebarBackdrop" style="display:none;"></div>
+        <div class="emr-header">
+            <button class="hamburger" onclick="toggleSidebar()" aria-label="Menu">
+                <span class="hamburger-bar"></span>
+                <span class="hamburger-bar"></span>
+                <span class="hamburger-bar"></span>
+            </button>
+            <div class="emr-header-left">
+                <div class="emr-header-search">
+                    <input type="text" placeholder="Cari Pasien / No MR / No Ktp / No Asuransi..">
+                    <button class="advance-btn">Advance Search</button>
+                </div>
             </div>
-
-            <div style="flex:1"></div>
-
-            <div style="display:flex;gap:12px;align-items:center">
-                <div style="width:44px;height:44px;border-radius:22px;background:#e6eef6;display:flex;align-items:center;justify-content:center">
+            <div class="emr-header-right">
+                <div class="emr-header-logo">
                     <img src="/css/responsive.css" alt="logo" style="width:26px;height:26px;opacity:0.8">
                 </div>
-                <div class="user-dropdown" style="position:relative;">
-                    <button class="user-btn" style="background:#2b8cf2;color:#fff;padding:8px 14px;border-radius:8px;display:flex;align-items:center;gap:8px;cursor:pointer;">
+                <div class="emr-header-user">
+                    <button class="user-btn">
                         <i class="fas fa-user"></i>
                         <span>Admin</span>
                         <i class="fas fa-chevron-down"></i>
                     </button>
-                    <div class="dropdown-menu" style="position:absolute;top:100%;right:0;background:#fff;border:1px solid #e6eef6;border-radius:8px;box-shadow:0 4px 6px rgba(0,0,0,0.1);display:none;width:160px;">
-                        <a href="/profile" class="dropdown-item" style="display:flex;align-items:center;padding:8px 12px;color:#374151;text-decoration:none;">
+                    <div class="dropdown-menu">
+                        <a href="/profile" class="dropdown-item">
                             <i class="fas fa-user" style="margin-right:8px;color:#6b7280;"></i> Profile
                         </a>
-                        <a href="/settings" class="dropdown-item" style="display:flex;align-items:center;padding:8px 12px;color:#374151;text-decoration:none;">
+                        <a href="/settings" class="dropdown-item">
                             <i class="fas fa-cog" style="margin-right:8px;color:#6b7280;"></i> Settings
                         </a>
                         <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display:none;">
                             @csrf
                         </form>
-                        <a href="#" onclick="document.getElementById('logout-form').submit();" class="dropdown-item" style="display:flex;align-items:center;padding:8px 12px;color:#e11d48;text-decoration:none;">
+                        <a href="#" onclick="document.getElementById('logout-form').submit();" class="dropdown-item" style="color:#e11d48;">
                             <i class="fas fa-sign-out-alt" style="margin-right:8px;color:#e11d48;"></i> Logout
                         </a>
                     </div>
                 </div>
             </div>
-        </header>
+            <div class="floating-actions">
+                <button title="Print"><i class="fas fa-print" style="color:#2563eb"></i></button>
+                <button title="Refresh"><i class="fas fa-sync" style="color:#2563eb"></i></button>
+            </div>
+        </div>
 
         <section class="emr-title">
             <h1>Electronic Medical Record</h1>
@@ -176,6 +370,17 @@
         </div>
 
         <script>
+                function toggleSidebar() {
+                    document.getElementById('appSidebar').classList.toggle('open');
+                    var backdrop = document.getElementById('sidebarBackdrop');
+                    if (backdrop) backdrop.style.display = backdrop.style.display === 'block' ? 'none' : 'block';
+                }
+                document.addEventListener('DOMContentLoaded', function(){
+                    var backdrop = document.getElementById('sidebarBackdrop');
+                    if (backdrop) {
+                        backdrop.addEventListener('click', toggleSidebar);
+                    }
+                });
             const userBtn = document.querySelector('.user-btn');
             const dropdownMenu = document.querySelector('.dropdown-menu');
 
@@ -190,10 +395,7 @@
             });
         </script>
 
-        <div class="floating-actions">
-            <button title="Print"><i class="fas fa-print" style="color:#2b6cb0"></i></button>
-            <button title="Refresh"><i class="fas fa-sync" style="color:#2b6cb0"></i></button>
-        </div>
+        <!-- floating-actions hanya di header, hapus duplikasi di bawah -->
     </main>
 
 </body>

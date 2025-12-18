@@ -710,6 +710,36 @@
             display: none;
         }
 
+        /* Hamburger Menu */
+        .hamburger {
+              display: none;
+              background: #223a5f;
+              border: none;
+              padding: 8px;
+              cursor: pointer;
+              flex-direction: column;
+              justify-content: center;
+              align-items: center;
+              height: 40px;
+              width: 40px;
+              border-radius: 10px;
+              box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+              position: absolute;
+              top: 16px;
+              left: 16px;
+              z-index: 1001;
+        }
+
+        .hamburger-bar {
+            display: block;
+            width: 24px;
+            height: 3px;
+            background: #fff;
+            margin: 4px 0;
+            border-radius: 2px;
+            transition: all 0.3s;
+        }
+
         /* Responsive */
         @media (max-width: 1200px) {
             .stats-section {
@@ -717,6 +747,19 @@
             }
             .bottom-section {
                 grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .hamburger {
+                display: flex;
+            }
+            .header-left {
+                position: relative;
+                padding-left: 56px;
+            }
+            .header {
+                min-height: 72px;
             }
         }
 
@@ -1268,6 +1311,18 @@
                 menu.classList.remove('show');
             }
         });
+
+        // Close off-canvas sidebar when a menu item is clicked (mobile)
+        document.addEventListener('DOMContentLoaded', function(){
+            document.querySelectorAll('.sidebar-item').forEach(el=>{
+                el.addEventListener('click', function(){
+                    const sb = document.getElementById('appSidebar');
+                    const bp = document.getElementById('sidebarBackdrop');
+                    if(sb && sb.classList.contains('open')) sb.classList.remove('open');
+                    if(bp && bp.classList.contains('show')) bp.classList.remove('show');
+                });
+            });
+        });
     </script>
 <style>
     /* Global responsive tweaks applied at the end to override inline rules where needed */
@@ -1298,20 +1353,6 @@
         .header-right { gap: 8px; }
     }
 </style>
-
-<script>
-    // Close off-canvas sidebar when a menu item is clicked (mobile)
-    document.addEventListener('DOMContentLoaded', function(){
-        document.querySelectorAll('.sidebar-item').forEach(el=>{
-            el.addEventListener('click', function(){
-                const sb = document.getElementById('appSidebar');
-                const bp = document.getElementById('sidebarBackdrop');
-                if(sb && sb.classList.contains('open')) sb.classList.remove('open');
-                if(bp && bp.classList.contains('show')) bp.classList.remove('show');
-            });
-        });
-    });
-</script>
 
 </body>
 </html>

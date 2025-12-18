@@ -9,6 +9,88 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/css/responsive.css">
     <style>
+                        /* Header horizontal di mobile */
+                        @media (max-width: 768px) {
+                            .header {
+                                flex-wrap: nowrap;
+                                flex-direction: row;
+                                overflow-x: auto;
+                                gap: 8px;
+                                justify-content: flex-start;
+                                align-items: center;
+                                padding: 8px 4px;
+                            }
+                            .header-left, .header-right {
+                                flex-direction: row !important;
+                                gap: 8px;
+                                align-items: center;
+                            }
+                            .search-box {
+                                min-width: 180px;
+                                max-width: 220px;
+                                flex: 1 0 180px;
+                            }
+                            .btn-pendaftaran {
+                                padding: 8px 12px;
+                                font-size: 13px;
+                            }
+                            .header-logo, .user-dropdown {
+                                min-width: 36px;
+                                min-height: 36px;
+                                font-size: 12px;
+                                padding: 6px 8px;
+                            }
+                            .header-icons {
+                                gap: 8px;
+                            }
+                        }
+                /* --- Tambahan Responsive untuk Mobile Registration --- */
+                @media (max-width: 768px) {
+                    .content { flex-direction: column; gap: 10px; padding: 8px; }
+                    .left-menu { width: 100%; margin-bottom: 10px; border-radius: 8px; }
+                    .main-panel { width: 100%; border-radius: 8px; }
+                    .filters { flex-wrap: wrap; gap: 8px; }
+                    .filter-group, .search-patient { width: 100%; margin-bottom: 8px; }
+                    .panel-header { flex-direction: column; align-items: flex-start; gap: 8px; padding: 12px; }
+                    .panel-title h2 { font-size: 16px; }
+                    .panel-actions { gap: 8px; }
+                }
+                @media (max-width: 480px) {
+                    .main-content { margin-left: 0; padding: 4px; }
+                    .header, .page-title { padding: 10px 8px; }
+                    .page-title h1 { font-size: 18px; }
+                    .content { padding: 4px; }
+                    .left-menu { border-radius: 6px; }
+                    .menu-item { padding: 10px 10px; font-size: 13px; }
+                    .main-panel { border-radius: 6px; }
+                    .filters { gap: 6px; }
+                    .filter-group, .search-patient { margin-bottom: 6px; }
+                    .filter-label { font-size: 11px; }
+                    .filter-select, .search-patient input { font-size: 13px; }
+                    .table-container { overflow-x: auto; }
+                    .data-table, .data-table thead, .data-table tbody, .data-table tr, .data-table th, .data-table td {
+                        display: block;
+                        width: 100%;
+                    }
+                    .data-table thead { display: none; }
+                    .data-table tr { margin-bottom: 16px; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); background: #fff; }
+                    .data-table td {
+                        padding: 8px 10px;
+                        text-align: left;
+                        position: relative;
+                        border: none;
+                        border-bottom: 1px solid #f3f4f6;
+                        font-size: 13px;
+                    }
+                    .data-table td:before {
+                        content: attr(data-label);
+                        font-weight: 600;
+                        color: #64748b;
+                        display: block;
+                        margin-bottom: 2px;
+                        font-size: 11px;
+                    }
+                }
         * {
             margin: 0;
             padding: 0;

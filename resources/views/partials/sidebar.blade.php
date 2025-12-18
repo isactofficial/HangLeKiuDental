@@ -2,7 +2,7 @@
     <i class="fas fa-bars"></i>
 </button>
 
-<aside class="sidebar" id="appSidebar">
+<aside class="sidebar" id="appSidebar" style="overflow-y:auto;max-height:100vh;">
     <div class="sidebar-logo">
         <i class="fas fa-tooth"></i>
     </div>
@@ -28,6 +28,9 @@
         <div class="sidebar-item" title="Inventory">
             <i class="fas fa-box"></i>
         </div>
+        <a href="{{ route('cashier') }}" class="sidebar-item" title="Kasir">
+            <i class="fas fa-cash-register"></i>
+        </a>
         <a href="{{ route('emr') }}" class="sidebar-item" title="EMR">
             <i class="fas fa-plus-square"></i>
         </a>
@@ -53,9 +56,10 @@
 
 <style>
     /* Desktop sidebar base styles (centralized) */
-    .sidebar{width:60px;background:#1a365d;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:15px 0;position:fixed;left:0;top:0;z-index:100}
-    .sidebar-logo{width:40px;height:40px;background:#3b82f6;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:30px}
-    .sidebar-logo i{color:#fff}
+    .sidebar{width:60px;background:#1a365d;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:15px 0;position:fixed;left:0;top:0;z-index:100;overflow-y:auto;max-height:100vh;}
+    .sidebar-logo{width:48px;height:48px;background:#3b82f6;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:30px}
+    .sidebar-logo i { font-size: 32px; color: #fff; }
+    .sidebar-menu .sidebar-item i { font-size: 24px; }
     .sidebar-menu{display:flex;flex-direction:column;gap:8px;width:100%}
     .sidebar-item{width:100%;padding:12px 0;display:flex;justify-content:center;color:#94a3b8;cursor:pointer;text-decoration:none;position:relative}
     .sidebar-item.active{color:#fff;background:rgba(59,130,246,0.2)}

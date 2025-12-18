@@ -40,7 +40,7 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
-    Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+    Route::post('/logout', [LoginController::class, 'logout'])->name('logout')->middleware('auth');
     
     Route::get('/dashboard', function () {
         return view('dashboard');
@@ -84,5 +84,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/emr', function () {
         return view('emr');
     })->name('emr');
+
+    // Halaman Kasir
+    Route::get('/cashier', function() {
+        return view('cashier');
+    })->name('cashier');
 });
 
