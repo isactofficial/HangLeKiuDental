@@ -4,7 +4,7 @@
         <style>
             /* Hamburger Menu */
             .hamburger {
-                display: none;
+                display: flex;
                 background: #223a5f;
                 border: none;
                 padding: 8px;
@@ -16,9 +16,8 @@
                 width: 40px;
                 border-radius: 10px;
                 box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-                position: absolute;
-                top: 16px;
-                left: 16px;
+                position: relative;
+                margin-right: 12px;
                 z-index: 1001;
             }
             .hamburger-bar {
@@ -32,43 +31,48 @@
             }
             @media (max-width: 900px) {
                 .hamburger {
-                    display: flex;
+                    position: static;
+                    margin-right: 8px;
                 }
                 .emr-header {
                     position: relative;
-                    padding-left: 56px;
-                    min-height: 72px;
+                    padding-left: 12px;
+                    min-height: 56px;
                 }
             }
             /* Header EMR baru */
             .emr-header {
                 display: flex;
                 align-items: center;
-                justify-content: space-between;
                 background: #fff;
                 border-bottom: 1px solid #eef2f6;
-                padding: 18px 28px 12px 28px;
+                padding: 14px 20px;
                 position: relative;
-                gap: 0;
+                gap: 12px;
             }
             .emr-header-left {
                 display: flex;
                 align-items: center;
                 gap: 12px;
                 flex: 1;
+                min-width: 0;
             }
             .emr-header-search {
                 display: flex;
                 align-items: center;
                 gap: 10px;
+                flex: 1;
+                min-width: 0;
             }
             .emr-header-search input {
-                width: 320px;
-                max-width: 100vw;
+                flex: 1;
+                width: auto;
+                max-width: 520px;
                 padding: 10px 14px;
                 border-radius: 24px;
                 border: 1px solid #e6eef6;
                 box-shadow: none;
+                min-width: 0;
             }
             .advance-btn {
                 background: #2563eb;
@@ -84,6 +88,7 @@
                 display: flex;
                 align-items: center;
                 gap: 16px;
+                margin-left: auto;
             }
             .emr-header-logo {
                 width: 44px;
@@ -119,7 +124,7 @@
                 box-shadow: 0 4px 6px rgba(0,0,0,0.1);
                 display: none;
                 width: 160px;
-                z-index: 1002;
+                z-index: 10050;
             }
             .dropdown-item {
                 display: flex;
@@ -139,11 +144,11 @@
             .floating-actions {
                 position: absolute;
                 right: 28px;
-                top: 18px;
+                top: 72px;
                 display: flex;
                 flex-direction: row;
                 gap: 10px;
-                z-index: 1003;
+                z-index: 1000;
             }
             .floating-actions button {
                 background: #fff;

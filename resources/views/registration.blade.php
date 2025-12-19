@@ -14,7 +14,7 @@
                             .header {
                                 flex-wrap: nowrap;
                                 flex-direction: row;
-                                overflow-x: auto;
+                                overflow: visible; /* allow dropdown to overflow */
                                 gap: 8px;
                                 justify-content: flex-start;
                                 align-items: center;
@@ -187,16 +187,19 @@
         /* Header */
         .header {
             background: #1e3a5f;
-            padding: 12px 25px;
+            padding: 12px 20px;
             display: flex;
-            justify-content: space-between;
+            flex-wrap: wrap;
             align-items: center;
+            gap: 12px;
         }
 
         .header-left {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
+            flex: 1 1 auto;
+            min-width: 0; /* allow children to shrink */
         }
 
         .search-box {
@@ -204,9 +207,11 @@
             align-items: center;
             background: white;
             border-radius: 25px;
-            padding: 8px 20px;
+            padding: 8px 16px;
             gap: 10px;
-            min-width: 320px;
+            min-width: 0;
+            flex: 1 1 320px; /* allow it to grow/shrink */
+            max-width: 720px;
         }
 
         .search-box input {
@@ -225,14 +230,16 @@
             background: #3b82f6;
             color: white;
             border: none;
-            padding: 10px 25px;
+            padding: 8px 16px;
             border-radius: 8px;
             font-size: 14px;
             font-weight: 500;
             cursor: pointer;
-            display: flex;
+            display: inline-flex;
             align-items: center;
             gap: 8px;
+            white-space: nowrap;
+            flex: 0 0 auto;
         }
 
         .btn-pendaftaran:hover {
@@ -242,12 +249,17 @@
         .header-right {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 12px;
+            flex: 0 0 auto;
+            min-width: 0;
+            margin-left: auto; /* push to far right */
+            order: 2;
+            justify-content: flex-end;
         }
 
         .header-logo {
-            width: 45px;
-            height: 45px;
+            width: 40px;
+            height: 40px;
             background: #6b7280;
             border-radius: 50%;
             display: flex;
@@ -256,16 +268,18 @@
             color: white;
             font-size: 12px;
             font-weight: 600;
+            flex: 0 0 auto;
         }
 
         .user-dropdown {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             background: #3b82f6;
-            padding: 8px 15px;
+            padding: 6px 10px;
             border-radius: 8px;
             cursor: pointer;
+            flex: 0 0 auto;
         }
 
         .user-dropdown span {
@@ -275,7 +289,7 @@
 
         .header-icons {
             display: flex;
-            gap: 15px;
+            gap: 10px;
             align-items: center;
         }
 
@@ -579,6 +593,7 @@
         /* User Dropdown Menu */
         .user-dropdown-container {
             position: relative;
+            overflow: visible; /* ensure menu can overflow container */
         }
 
         .user-dropdown-menu {
@@ -591,7 +606,7 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.15);
             min-width: 180px;
             display: none;
-            z-index: 1000;
+            z-index: 99999; /* bring above other stacking contexts */
             overflow: hidden;
         }
 
@@ -802,6 +817,17 @@
                 padding: 6px 2px;
                 font-size: 10px;
             }
+        }
+
+        /* Medium screen improvements */
+        @media (max-width: 992px) {
+            .header { align-items: flex-start; }
+            .header-left { flex-wrap: wrap; }
+            .header-right { margin-top: 6px; width: 100%; display:flex; justify-content:space-between; }
+            .hamburger { display: flex !important; }
+            .left-menu { width: 100%; }
+            .main-panel { width: 100%; }
+            .content { gap: 12px; }
         }
     </style>
 </head>
@@ -1095,9 +1121,16 @@
 
         @media (max-width: 768px) {
             .main-content { margin-left: 0; padding: 8px; }
-            .hamburger { left: 8px; top: 8px; }
+            .hamburger { left: 8px; top: 8px; display:flex; }
             .left-menu { width: 100%; }
             .menu-item { padding: 12px 16px; }
+
+            /* Keep header items on a single responsive row when possible */
+            .header { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 8px; padding: 8px 10px; }
+            .header-left { flex-direction: row; align-items: center; gap: 8px; flex: 1 1 auto; min-width: 0; }
+            .search-box { flex: 1 1 180px; min-width: 0; max-width: calc(100% - 140px); }
+            .btn-pendaftaran { flex: 0 0 auto; padding: 8px 12px; }
+            .header-right { width: auto; margin-left: auto; order: 2; justify-content: flex-end; }
         }
 
         @media (max-width: 480px) {

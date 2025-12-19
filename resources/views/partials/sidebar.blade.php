@@ -56,7 +56,7 @@
 
 <style>
     /* Desktop sidebar base styles (centralized) */
-    .sidebar{width:60px;background:#1a365d;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:15px 0;position:fixed;left:0;top:0;z-index:100;overflow-y:auto;max-height:100vh;}
+    .sidebar{width:60px;background:#1a365d;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:15px 0;position:fixed;left:0;top:0;z-index:100;overflow-y:auto;max-height:100vh;box-shadow: 1px 0 0 #1a365d;}
     .sidebar-logo{width:48px;height:48px;background:#3b82f6;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:30px}
     .sidebar-logo i { font-size: 32px; color: #fff; }
     .sidebar-menu .sidebar-item i { font-size: 24px; }

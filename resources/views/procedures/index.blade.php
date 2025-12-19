@@ -10,51 +10,54 @@
     <style>
         *{box-sizing:border-box;margin:0;padding:0}
         body{font-family:'Poppins',sans-serif;background:#f6f7fb;display:flex;min-height:100vh}
-        .main{margin-left:60px;flex:1;padding:20px}
-        .card{background:#fff;border-radius:12px;padding:18px;box-shadow:0 6px 18px rgba(0,0,0,0.06)}
+
+        /* Layout containers */
+        .main{margin-left:60px;flex:1;padding:20px;padding-top:96px}
+        .card{background:#fff;border-radius:12px;padding:22px 24px;box-shadow:0 6px 18px rgba(0,0,0,0.06);margin:6px 18px}
+
+        /* Header and controls */
         .page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
         .page-title{font-size:20px;font-weight:700;color:#0f172a}
         .actions{display:flex;gap:10px;align-items:center}
         .btn{padding:10px 14px;border-radius:8px;background:linear-gradient(135deg,#5BA3E0 0%,#3B82C4 100%);color:#fff;border:none;cursor:pointer}
         .btn.ghost{background:#fff;border:1px solid #e5e7eb;color:#374151}
         .search-form{display:flex;gap:10px;align-items:center}
-        .search-input{padding:10px;border:1px solid #e5e7eb;border-radius:8px;width:260px}
+        .search-input{padding:10px;border:1px solid #e5e7eb;border-radius:8px;width:260px;min-width:0}
+
+        /* Table */
         .table{width:100%;border-collapse:collapse;margin-top:12px}
         .table th{text-align:left;padding:12px;border-bottom:1px solid #f1f5f9;color:#6b7280;font-size:13px}
-        .table td{padding:14px;border-bottom:1px solid #f8fafc;color:#374151}
+        .table td{padding:14px;border-bottom:1px solid #f8fafc;color:#374151;vertical-align:middle}
         .price{color:#6b7280;font-weight:600}
-        /* page-specific layout adjustments */
-        .main{margin-left:60px;flex:1;padding:20px;padding-top:96px}
-        .card{background:#fff;border-radius:12px;padding:22px 24px;box-shadow:0 6px 18px rgba(0,0,0,0.06);margin:6px 18px}
-        @media (max-width: 992px){.search-input{width:160px}.page-header{flex-direction:column;align-items:flex-start;gap:12px}}
-        @media (max-width: 480px){
+
+        /* Small/stacked card style for narrow viewports */
+        @media (max-width: 768px){
+            .main{margin-left:0;padding:12px;padding-top:84px}
+            .card{margin:6px;padding:12px}
+            .page-header{flex-direction:column;align-items:flex-start;gap:12px}
             .search-input{width:100%}
-            .page-title{font-size:16px;padding-right:4px}
-            .main{padding:8px;}
-            .card{margin:2px;padding:10px;}
-            .table, .table thead, .table tbody, .table tr, .table th, .table td {
-                display: block;
-                width: 100%;
-            }
-            .table thead { display: none; }
-            .table tr { margin-bottom: 18px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); background: #fff; }
-            .table td {
-                padding: 10px 12px;
-                text-align: left;
-                position: relative;
-                border: none;
-                border-bottom: 1px solid #f3f4f6;
-                font-size: 14px;
-            }
-            .table td.price { font-size: 15px; font-weight: 700; color: #1e293b; }
-            .table td:before {
-                content: attr(data-label);
-                font-weight: 600;
-                color: #64748b;
-                display: block;
-                margin-bottom: 2px;
-                font-size: 12px;
-            }
+
+            /* convert table into stacked list for readability */
+            .table thead{display:none}
+            .table tr{display:block;margin-bottom:12px;border-radius:10px;background:#fff;padding:12px;box-shadow:0 2px 10px rgba(0,0,0,0.04)}
+
+            /* hide the checkbox column visually but keep accessible markup */
+            .table td:first-child{display:none}
+
+            /* each cell becomes a horizontal row: label + value */
+            .table td{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f3f4f6}
+            .table td:last-child{border-bottom:none}
+            .table td:before{content:attr(data-label);font-weight:600;color:#64748b;margin-right:8px;display:inline-block;width:45%;font-size:12px}
+            .table td > *:not(:before){width:55%}
+
+            .table td.price{font-size:15px;font-weight:700;color:#1e293b;text-align:right}
+        }
+
+        /* Medium screens tweak */
+        @media (min-width:769px) and (max-width:992px){
+            .search-input{width:160px}
+            .page-header{gap:8px}
+            .table th, .table td{padding:10px}
         }
     </style>
 </head>
@@ -64,10 +67,8 @@
 
     <main class="main">
         <div class="card">
-            <div class="page-top" aria-hidden="true">
-                <button id="pageHamburger" class="page-hamburger" aria-label="Toggle sidebar" type="button" title="Menu" aria-expanded="false">
-                    <i class="fas fa-bars" aria-hidden="true"></i>
-                </button>
+            <!-- page-top (hidden on mobile because sidebar hamburger is provided by partials/sidebar) -->
+            <div class="page-top" aria-hidden="true" style="display:none">
                 <hr class="page-sep">
             </div>
 
@@ -114,13 +115,12 @@
         }
 
         @media (max-width: 992px) {
-            .main { margin-left: 0; padding: 12px; }
-            .page-hamburger { display:inline-flex; background:#1a365d;color:#fff;border-radius:999px;width:44px;height:44px;align-items:center;justify-content:center;border:none;box-shadow:0 8px 20px rgba(10,25,50,0.28);flex-shrink:0;margin-right:8px }
-            .page-hamburger i{font-size:16px}
+            .main { margin-left: 0; padding: 12px; padding-top: 84px; }
+            /* hide page-level hamburger to avoid duplicate with the sidebar hamburger */
+            .page-hamburger { display:none }
             .page-header .page-title{margin-top:0}
             .table th, .table td { padding: 10px; }
-            .page-top{display:flex;flex-direction:column;gap:8px;margin-bottom:8px}
-            .page-top .page-hamburger{align-self:flex-start}
+            .page-top{display:none}
         }
 
         /* hidden by default on larger screens */

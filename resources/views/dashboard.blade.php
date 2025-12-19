@@ -248,6 +248,29 @@
             top: 50%;
         }
 
+        /* Make promo cards stack on smaller screens and images responsive */
+        @media (max-width: 992px) {
+            .promo-card {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .promo-image {
+                width: 100%;
+                height: auto;
+                margin-top: 12px;
+                border-radius: 8px;
+            }
+            .promo-image img {
+                width: 100%;
+                height: auto;
+                object-fit: cover;
+            }
+            .promo-emoji { display: none; }
+            .slider-nav { width: 32px; height: 32px; }
+            .slider-nav.prev { left: 8px; }
+            .slider-nav.next { right: 8px; }
+        }
         /* Slider Navigation */
         .slider-nav {
             position: absolute;

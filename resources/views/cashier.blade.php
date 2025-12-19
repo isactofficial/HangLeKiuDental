@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cashier - hanglekiu dental specialist</title>
         <style>
-            /* Hamburger Menu */
+            /* Hamburger Menu (matching Dashboard) */
             .hamburger {
                 display: none;
                 background: #223a5f;
@@ -19,9 +19,7 @@
                 width: 40px;
                 border-radius: 10px;
                 box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-                position: absolute;
-                top: 16px;
-                left: 16px;
+                position: relative;
                 z-index: 1001;
             }
             .hamburger-bar {
@@ -33,14 +31,17 @@
                 border-radius: 2px;
                 transition: all 0.3s;
             }
+            .hamburger i { color: #fff; font-size: 18px; }
             @media (max-width: 900px) {
                 .hamburger {
                     display: flex;
+                    position: static;
+                    margin-right: 8px;
                 }
                 .cashier-header {
-                    position: relative;
-                    padding-left: 56px;
-                    min-height: 72px;
+                    position: static;
+                    padding-left: 0;
+                    min-height: auto;
                 }
             }
         </style>
@@ -50,15 +51,15 @@
     <style>
         body{font-family:'Poppins',sans-serif;background:#f5f7fa;min-height:100vh;display:flex}
         .main{margin-left:60px;flex:1;padding:0 12px}
-        .cashier-header{padding:18px 28px;display:flex;align-items:center;gap:18px;border-bottom:1px solid #eef2f6;background:#fff}
-        .cashier-header .kasir-title{font-size:20px;font-weight:600;color:#1e3a8a;}
-        .header-actions{display:flex;align-items:center;gap:16px;margin-left:auto;}
-        .header-hd{display:flex;align-items:center;gap:10px;position:relative;}
-        .header-logo{width:44px;height:44px;border-radius:22px;background:#e6eef6;display:flex;align-items:center;justify-content:center;}
+        .cashier-header{padding:14px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #eef2f6;background:#fff;flex-wrap:wrap;}
+        .cashier-header .kasir-title{font-size:18px;font-weight:600;color:#1e3a8a;flex:0 0 auto;white-space:nowrap;flex-shrink:0;margin-left:70px}
+        .header-actions{display:flex;align-items:center;gap:12px;margin-left:auto;flex:0 0 auto;min-width:0}
+        .header-hd{display:flex;align-items:center;gap:10px;position:relative;min-width:0}
+        .header-logo{width:44px;height:44px;border-radius:22px;background:#e6eef6;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
         .header-logo img{width:32px;height:32px;object-fit:contain;}
-        .header-dropdown-btn{background:#2196f3;color:#fff;padding:10px 24px 10px 16px;border-radius:8px;border:none;font-weight:500;display:flex;align-items:center;gap:8px;min-width:120px;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative;cursor:pointer;}
+        .header-dropdown-btn{background:#2196f3;color:#fff;padding:8px 16px;border-radius:8px;border:none;font-weight:500;display:flex;align-items:center;gap:8px;min-width:0;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative;cursor:pointer;}
         .header-dropdown-btn i{margin-left:6px;}
-        .header-dropdown-menu{display:none;position:absolute;top:110%;right:0;background:#fff;border:1px solid #e6eef6;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.08);min-width:160px;z-index:10;}
+        .header-dropdown-menu{display:none;position:absolute;top:110%;right:0;background:#fff;border:1px solid #e6eef6;border-radius:8px;box-shadow:0 6px 20px rgba(0,0,0,0.12);min-width:160px;z-index:99999;overflow:visible}
         .header-dropdown-menu a, .header-dropdown-menu form button{display:flex;align-items:center;padding:10px 16px;color:#374151;text-decoration:none;background:none;border:none;width:100%;text-align:left;font-size:15px;cursor:pointer;transition:background 0.2s}
         .header-dropdown-menu a:hover, .header-dropdown-menu form button:hover{background:#f1f5f9}
         .header-dropdown-menu .logout{color:#e11d48;}
@@ -94,23 +95,29 @@
         }
         @media (max-width: 900px){
             .main{margin-left:0;padding:0 6px}
-            .cashier-header{flex-direction:column;align-items:flex-start;gap:8px;padding:12px;}
-            .header-actions{margin-left:0;gap:8px;}
+            /* keep header items in a responsive row where possible */
+            .cashier-header{flex-direction:row;align-items:center;gap:8px;padding:10px;}
+            .hamburger{display:flex;position:static;order:1;margin-right:8px}
+            .kasir-title{order:2;margin-left:70px}
+            .header-actions{order:3;margin-left:auto;gap:8px;}
             .cashier-content{padding:16px 0 0 0;}
         }
         @media (max-width: 600px){
-            .cashier-header{flex-direction:column;align-items:flex-start;gap:6px;padding:8px;}
-            .header-actions{gap:6px;}
-            .header-logo{width:32px;height:32px;}
-            .header-logo img{width:22px;height:22px;}
-            .header-dropdown-btn{padding:8px 12px;font-size:14px;min-width:80px;max-width:100px;}
-            .cashier-sidebar .tab{padding:10px 6px;font-size:13px;}
-            .filter-box{padding:8px 6px;}
-            .filter-row input[type="text"]{padding:8px 8px;}
-            .filter-row input[type="date"]{padding:6px;}
-            .filter-row button{padding:8px 10px;font-size:13px;}
-            .action-btns button{padding:8px 10px;font-size:13px;}
-            th,td{padding:8px 6px;font-size:13px;}
+            .cashier-header{flex-direction:row;align-items:center;gap:8px;padding:8px;}
+            .hamburger{order:1;margin-right:8px}
+            .kasir-title{order:2;font-size:16px;display:inline-block;margin-left:70px;color:#1e3a8a}
+            .header-actions{order:3}
+            .header-actions{gap:6px}
+            .header-logo{width:32px;height:32px}
+            .header-logo img{width:22px;height:22px}
+            .header-dropdown-btn{padding:8px 10px;font-size:14px;min-width:0;max-width:120px}
+            .cashier-sidebar .tab{padding:10px 6px;font-size:13px}
+            .filter-box{padding:8px 6px}
+            .filter-row input[type="text"]{padding:8px 8px}
+            .filter-row input[type="date"]{padding:6px}
+            .filter-row button{padding:8px 10px;font-size:13px}
+            .action-btns button{padding:8px 10px;font-size:13px}
+            th,td{padding:8px 6px;font-size:13px}
         }
     </style>
 </head>
@@ -119,10 +126,8 @@
         <div class="sidebar-backdrop" id="sidebarBackdrop" style="display:none;"></div>
         <div class="main">
             <div class="cashier-header">
-                <button class="hamburger" onclick="toggleSidebar()" aria-label="Menu">
-                    <span class="hamburger-bar"></span>
-                    <span class="hamburger-bar"></span>
-                    <span class="hamburger-bar"></span>
+                <button id="sidebarToggle" class="hamburger" onclick="toggleSidebar()" aria-label="Menu">
+                    <i class="fas fa-bars"></i>
                 </button>
                 <span class="kasir-title">Kasir</span>
                 <div class="header-actions">
