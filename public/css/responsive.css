@@ -1,0 +1,51 @@
+/* Shared responsive overrides for HangLeKiuDental */
+:root{--sidebar-width:60px;--sidebar-collapsed:72px;--gutter:16px}
+html,body{height:100%}
+body{font-family:Inter, Poppins, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial}
+
+/* Layout adjustments */
+.main{transition:margin-left .22s ease,padding .2s ease}
+.card{padding:16px;border-radius:10px}
+
+/* Sidebar mobile behavior */
+@media (max-width: 992px){
+  .sidebar{position:fixed;left:0;top:0;height:100vh;width:var(--sidebar-collapsed);z-index:1200}
+  .main{margin-left:0;padding:12px}
+  body{padding-left:0}
+}
+
+/* Page header and actions */
+.page-header{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.page-title{font-size:20px}
+.actions{display:flex;gap:8px}
+
+@media (max-width: 992px){
+  .page-header{flex-direction:column;align-items:flex-start}
+  .actions{width:100%;justify-content:flex-start;flex-wrap:wrap}
+  .actions .btn{flex:0 0 auto}
+}
+
+/* Table responsiveness */
+.table{width:100%;border-collapse:collapse}
+.table thead th{font-size:13px}
+@media (max-width: 768px){
+  .table thead{display:none}
+  .table tbody tr{display:block;margin-bottom:8px;border-radius:8px;background:#fff;padding:10px}
+  .table tbody td{display:flex;justify-content:space-between;padding:6px 0;border-bottom:none}
+  .table tbody td:first-child{display:none}
+}
+
+/* Forms and inputs */
+input[type=text], .search-input{width:100%;max-width:100%;box-sizing:border-box}
+
+/* Page hamburger */
+.page-top{display:none}
+@media (max-width:992px){.page-top{display:flex;flex-direction:column;gap:8px;margin-bottom:8px}}
+
+/* Utility */
+.visually-hidden{position:absolute!important;height:1px;width:1px;overflow:hidden;clip:rect(1px,1px,1px,1px);white-space:nowrap}
+
+/* small tweaks to avoid overlap with fixed sidebar */
+@media (min-width:993px){
+  .page-hamburger{display:none}
+}
