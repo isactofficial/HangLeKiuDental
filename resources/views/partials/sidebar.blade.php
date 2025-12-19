@@ -1,16 +1,12 @@
-<button id="sidebarToggle" class="hamburger" aria-label="Toggle menu" title="Menu" type="button">
-    <i class="fas fa-bars"></i>
-</button>
-
 <aside class="sidebar" id="appSidebar" style="overflow-y:auto;max-height:100vh;">
     <div class="sidebar-logo">
         <i class="fas fa-tooth"></i>
     </div>
     <nav class="sidebar-menu">
-        <a href="{{ route('dashboard') }}" class="sidebar-item" title="Dashboard">
+        <a href="" class="sidebar-item" title="Dashboard">
             <i class="fas fa-th-large"></i>
         </a>
-        <a href="{{ route('registration') }}" class="sidebar-item" title="Registration">
+        <a href="" class="sidebar-item" title="Registration">
             <i class="fas fa-calendar-alt"></i>
         </a>
         <div class="sidebar-item" title="Waktu">
@@ -22,41 +18,49 @@
         <div class="sidebar-item" title="Medical">
             <i class="fas fa-notes-medical"></i>
         </div>
-        <div class="sidebar-item" title="Pharmacy">
+
+        <a href="{{ route('apotek.index') }}" class="sidebar-item {{ request()->routeIs('apotek.*') ? 'active' : '' }}" title="Pharmacy">
             <i class="fas fa-capsules"></i>
-        </div>
+        </a>
+
         <div class="sidebar-item" title="Inventory">
             <i class="fas fa-box"></i>
         </div>
-        <a href="{{ route('cashier') }}" class="sidebar-item" title="Kasir">
+
+        <a href="" class="sidebar-item" title="Kasir">
             <i class="fas fa-cash-register"></i>
         </a>
-        <a href="{{ route('emr') }}" class="sidebar-item" title="EMR">
+
+        <a href="{{ route('profile.index') }}" class="sidebar-item {{ request()->routeIs('profile.*') ? 'active' : '' }}" title="Profile">
+            <i class="fas fa-user-circle"></i>
+        </a>
+
+        <a href="" class="sidebar-item" title="EMR">
             <i class="fas fa-plus-square"></i>
         </a>
-        <a href="{{ route('procedures.index') }}" class="sidebar-item" title="Katalog Harga Prosedur">
+        <a href="" class="sidebar-item" title="Katalog Harga Prosedur">
             <i class="fas fa-tags"></i>
         </a>
         <div class="sidebar-item" title="Reports">
             <i class="fas fa-chart-bar"></i>
         </div>
-        <div class="sidebar-item" title="Settings">
+        <a href="{{ route('settings.index') }}" class="sidebar-item {{ request()->routeIs('settings.*') ? 'active' : '' }}" title="Settings">
             <i class="fas fa-cog"></i>
-        </div>
+        </a>
     </nav>
-    <form action="{{ route('logout') }}" method="POST" style="margin-top:auto;width:100%">
+
+    <form action="" method="POST" style="margin-top:auto;width:100%">
         @csrf
         <button type="submit" class="sidebar-item logout-sidebar" title="Logout" style="border:none;background:transparent;width:100%;cursor:pointer">
             <i class="fas fa-sign-out-alt"></i>
         </button>
     </form>
 </aside>
-
 <div id="sidebarBackdrop" class="sidebar-backdrop" aria-hidden="true"></div>
 
 <style>
     /* Desktop sidebar base styles (centralized) */
-    .sidebar{width:60px;background:#1a365d;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:15px 0;position:fixed;left:0;top:0;z-index:100;overflow-y:auto;max-height:100vh;box-shadow: 1px 0 0 #1a365d;}
+    .sidebar{width:60px;background:#1a365d;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:15px 0;position:fixed;left:0;top:0;z-index:100;overflow-y:auto;max-height:100vh;}
     .sidebar-logo{width:48px;height:48px;background:#3b82f6;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:30px}
     .sidebar-logo i { font-size: 32px; color: #fff; }
     .sidebar-menu .sidebar-item i { font-size: 24px; }

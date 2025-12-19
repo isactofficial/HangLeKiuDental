@@ -65,18 +65,18 @@
             z-index:140;
             pointer-events:none;
         }
-        .topbar-inner{pointer-events:auto;background:#fff;border-radius:12px;padding:12px 18px;display:flex;align-items:center;gap:18px;box-shadow:0 10px 30px rgba(2,6,23,0.06);flex-wrap:wrap}
-        .topbar-left{flex:0 0 auto;min-width:0}
+        .topbar-inner{pointer-events:auto;background:#fff;border-radius:12px;padding:12px 18px;display:flex;align-items:center;gap:18px;box-shadow:0 10px 30px rgba(2,6,23,0.06)}
+        .topbar-left{flex:0 0 auto}
         .page-title{font-weight:700;font-size:18px;color:#0f172a}
         .last-update{font-size:12px;color:#6b7280;margin-top:4px}
-        .topbar-center{flex:1;min-width:160px}
+        .topbar-center{flex:1}
         .btn{padding:8px 14px;border-radius:8px;border:none;cursor:pointer;font-weight:600}
         .btn-primary{background:linear-gradient(135deg,#5BA3E0 0%,#3B82C4 100%);color:#fff}
         .btn-ghost{background:#fff;border:1px solid #e5e7eb;color:#374151}
         .top-search{display:flex;gap:10px;align-items:center}
         .top-search input{flex:1;padding:10px 14px;border:1px solid #e5e7eb;border-radius:8px}
         .top-search button{padding:8px 12px;border-radius:8px;border:1px solid #e5e7eb;background:#fff;cursor:pointer}
-        .topbar-right{display:flex;align-items:center;gap:12px;flex:0 0 auto;min-width:0}
+        .topbar-right{display:flex;align-items:center;gap:12px}
         .header-icons{display:flex;gap:12px;align-items:center}
         .header-icon{color:#64748b;font-size:16px;cursor:pointer}
         .user-dropdown{display:flex;align-items:center;gap:10px;background:#3b82f6;padding:8px 14px;border-radius:10px;cursor:pointer;color:#fff;box-shadow:0 6px 18px rgba(59,130,246,0.12)}
@@ -88,36 +88,6 @@
         .user-dropdown-menu a,.user-dropdown-menu button{display:flex;align-items:center;gap:10px;width:100%;padding:12px 14px;color:#374151;text-decoration:none;background:none;border:none;cursor:pointer}
         .user-dropdown-menu a:hover,.user-dropdown-menu button:hover{background:#f3f4f6}
         .logout-btn{color:#dc2626;border-top:1px solid #f3f4f6;width:100%;text-align:left}
-    </style>
-
-    <style>
-        /* Responsive topbar when sidebar collapses on small screens */
-        @media (max-width: 768px) {
-            .topbar{ left:12px; right:12px; }
-            /* leave space for the mobile hamburger on the left */
-            .topbar-inner{padding:10px 12px 10px 64px}
-            .topbar{pointer-events:auto}
-
-            /* Stack and reflow topbar sections */
-            .topbar-left{width:100%;order:1;display:flex;align-items:center;justify-content:space-between}
-            .topbar-left .page-title{font-size:16px}
-            .last-update{display:none}
-
-            .topbar-center{width:100%;order:2;margin-top:8px}
-            .top-search{width:100%;display:flex}
-            .top-search input{width:100%;max-width:100%}
-
-            .topbar-right{width:100%;order:3;margin-top:8px;justify-content:space-between}
-            .actions{display:flex;gap:8px;align-items:center}
-
-            /* hide less important ghost actions on mobile to prevent overflow */
-            .actions .btn.btn-ghost{display:none}
-            .actions .btn.btn-primary{padding:8px 10px}
-
-            /* simplify user box on mobile: show avatar only */
-            .user-dropdown span{display:none}
-            .user-dropdown i.fas.fa-chevron-down{display:none}
-        }
     </style>
 
     <script>
