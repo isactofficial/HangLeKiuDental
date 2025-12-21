@@ -37,6 +37,9 @@
         <a href="{{ route('procedures.index') }}" class="sidebar-item" title="Katalog Harga Prosedur">
             <i class="fas fa-tags"></i>
         </a>
+        <a href="{{ route('layanan.tambahan') }}" class="sidebar-item" title="Layanan Tambahan">
+            <i class="fas fa-puzzle-piece"></i>
+        </a>
         <div class="sidebar-item" title="Reports">
             <i class="fas fa-chart-bar"></i>
         </div>

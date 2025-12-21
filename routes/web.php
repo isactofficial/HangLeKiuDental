@@ -89,5 +89,20 @@ Route::middleware('auth')->group(function () {
     Route::get('/cashier', function() {
         return view('cashier');
     })->name('cashier');
+    
+        // Layanan Tambahan - AntriCepat (now as layanan.tambahan)
+        Route::get('/layanan-tambahan', function () {
+            return view('layanan.tambahan');
+        })->name('layanan.tambahan');
+
+        // Layanan Telekonsultasi
+        Route::get('/layanan/telekonsultasi', function () {
+            return view('layanan.telekonsultasi');
+        })->name('layanan.telekonsultasi');
+    
+        // Layanan Add Ons
+        Route::get('/layanan/add-ons', function () {
+            return view('layanan.addons');
+        })->name('layanan.addons');
 });
 
