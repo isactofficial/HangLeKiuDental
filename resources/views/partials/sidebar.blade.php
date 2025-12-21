@@ -44,6 +44,9 @@
         <div class="sidebar-item" title="Reports">
             <i class="fas fa-chart-bar"></i>
         </div>
+        <a href="{{ route('office.index') }}" class="sidebar-item {{ request()->routeIs('office.*') ? 'active' : '' }}" title="Office Management">
+            <i class="fas fa-building"></i>
+        </a>
         <a href="{{ route('settings.index') }}" class="sidebar-item {{ request()->routeIs('settings.*') ? 'active' : '' }}" title="Settings">
             <i class="fas fa-cog"></i>
         </a>

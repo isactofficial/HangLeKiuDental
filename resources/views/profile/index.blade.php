@@ -42,16 +42,13 @@
         .form-label {
             display: block;
             color: #2196f3;
-            /* Biru sesuai screenshot */
             font-size: 12px;
             font-weight: 500;
-            /* Sedikit tebal */
             margin-bottom: 4px;
         }
 
         .form-label span {
             color: #f44336;
-            /* Merah untuk asterisk */
         }
 
         .input-underline {
@@ -88,7 +85,7 @@
             border-bottom: 2px solid #2196f3;
         }
 
-        /* Sidebar Menu Styling */
+        /* Sidebar Menu Styling (Edit Profile) - Desktop Default */
         .edit-menu-container {
             background-color: #fff;
             border-radius: 4px;
@@ -103,6 +100,46 @@
         @media (min-width: 768px) {
             .edit-menu-container {
                 width: 280px;
+                display: flex !important;
+                position: static !important;
+                transform: none !important;
+                box-shadow: none !important;
+            }
+        }
+
+        /* Mobile Settings Menu Styles (Bottom Sheet) */
+        @media (max-width: 767px) {
+            #settingsMenu {
+                display: block;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                z-index: 60;
+                background-color: white;
+                border-top-left-radius: 16px;
+                border-top-right-radius: 16px;
+                box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1);
+                transform: translateY(100%);
+                transition: transform 0.3s ease-in-out;
+                max-height: 80vh;
+                overflow-y: auto;
+            }
+
+            #settingsMenu.active {
+                transform: translateY(0);
+            }
+
+            #settingsOverlay {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background-color: rgba(0, 0, 0, 0.5);
+                z-index: 50;
+            }
+
+            #settingsOverlay.active {
+                display: block;
             }
         }
 
@@ -160,18 +197,42 @@
             width: 100%;
             z-index: 1;
         }
+
+        /* Pastikan CSS Backdrop Sidebar ada jika tidak ter-load dari partial */
+        .sidebar-backdrop {
+            display: block;
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.35);
+            z-index: 40;
+            opacity: 0;
+            transition: opacity .18s ease;
+            pointer-events: none;
+        }
+        .sidebar-backdrop.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
     </style>
 </head>
 
 <body class="flex h-screen overflow-hidden bg-[#f5f7fa]">
+
     @include('partials.sidebar')
 
-
+    <div id="sidebarBackdrop" class="sidebar-backdrop"></div>
 
     <div class="flex-1 flex flex-col h-screen overflow-hidden bg-[#f5f7fa]">
 
         <header class="bg-white h-16 flex items-center justify-between px-8 z-10 flex-shrink-0 shadow-sm">
-            <div></div>
+            <div class="flex items-center gap-4">
+                <button id="sidebarToggle" class="md:hidden text-gray-500 hover:text-[#2196f3] focus:outline-none transition-colors">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
             <div class="flex items-center gap-5 text-gray-500">
                 <div class="flex items-center gap-3">
                     <div
@@ -193,21 +254,21 @@
             </div>
         </header>
 
-        <main class="flex-1 overflow-y-auto px-10 pb-10 relative">
+        <main class="flex-1 overflow-y-auto px-4 md:px-10 pb-10 relative">
 
             <div id="view-dashboard" class="max-w-[1400px] mx-auto transition-all duration-300">
 
                 <div class="mb-4 mt-6 border-b border-gray-200 pb-2">
-                    <h1 class="text-[28px] font-bold text-[#1976d2] tracking-tight">Profile Klinik</h1>
-                    <p class="text-[#1976d2] font-normal text-[15px] mt-1">hanglekiu dental specialist</p>
+                    <h1 class="text-[24px] md:text-[28px] font-bold text-[#1976d2] tracking-tight">Profile Klinik</h1>
+                    <p class="text-[#1976d2] font-normal text-[14px] md:text-[15px] mt-1">hanglekiu dental specialist</p>
                 </div>
 
-                <div class="flex flex-col lg:flex-row items-center gap-12 min-h-[450px]">
+                <div class="flex flex-col lg:flex-row items-center gap-8 lg:gap-12 min-h-[450px]">
                     <div class="w-full lg:w-[55%] flex justify-center lg:justify-start items-center pl-0 lg:pl-4">
                         <img src="assets/Profil.png" alt="Faskes Illustration" class="w-full max-w-2xl object-contain">
                     </div>
                     <div class="w-full lg:w-[45%] flex flex-col justify-center h-full pt-6 pr-0 lg:pr-10">
-                        <h2 class="text-[26px] lg:text-[28px] font-bold text-[#2c5ea8] leading-[1.3] mb-6">Pastikan
+                        <h2 class="text-[22px] md:text-[26px] lg:text-[28px] font-bold text-[#2c5ea8] leading-[1.3] mb-6">Pastikan
                             Faskes Anda Ditemukan Masyarakat Indonesia</h2>
                         <div class="mb-8">
                             <h3 class="text-[#9ca3af] text-[13px] font-medium mb-1">Informasi Fasilitas Kesehatan</h3>
@@ -232,25 +293,25 @@
                 <div class="h-10"></div>
 
                 <div class="mb-4 mt-6 border-b border-gray-200 pb-2">
-                    <h1 class="text-[28px] font-bold text-[#1976d2] tracking-tight">Profile Pengguna</h1>
-                    <p class="text-[#1976d2] font-normal text-[15px] mt-1">Nama Pengguna</p>
+                    <h1 class="text-[24px] md:text-[28px] font-bold text-[#1976d2] tracking-tight">Profile Admin</h1>
+                    <p class="text-[#1976d2] font-normal text-[15px] mt-1">Nama Admin</p>
                 </div>
 
-                <div class="flex flex-col lg:flex-row items-center gap-12 min-h-[350px]">
+                <div class="flex flex-col lg:flex-row items-center gap-8 lg:gap-12 min-h-[350px]">
                     <div
                         class="w-full lg:w-[55%] flex justify-center lg:justify-start items-center pl-0 lg:pl-4 order-2 lg:order-1">
                         <div
                             class="w-full max-w-lg h-64 bg-blue-50 rounded-lg flex items-center justify-center border-2 border-dashed border-blue-200">
-                            <i class="fas fa-user-md text-[#2c5ea8] text-[8rem] opacity-50"></i>
+                            <i class="fas fa-user-md text-[#2c5ea8] text-[6rem] md:text-[8rem] opacity-50"></i>
                         </div>
                     </div>
 
                     <div
                         class="w-full lg:w-[45%] flex flex-col justify-center h-full pt-6 pr-0 lg:pr-10 order-1 lg:order-2">
-                        <h2 class="text-[26px] lg:text-[28px] font-bold text-[#2c5ea8] leading-[1.3] mb-6">Lengkapi Data
+                        <h2 class="text-[22px] md:text-[26px] lg:text-[28px] font-bold text-[#2c5ea8] leading-[1.3] mb-6">Lengkapi Data
                             Diri Anda</h2>
                         <div class="mb-8">
-                            <h3 class="text-[#9ca3af] text-[13px] font-medium mb-1">Informasi Pengguna</h3>
+                            <h3 class="text-[#9ca3af] text-[13px] font-medium mb-1">Informasi Admin</h3>
                             <p class="text-gray-500 text-[14px] leading-relaxed max-w-lg">Pastikan data diri anda
                                 terupdate untuk keperluan administrasi dan rekam medis.</p>
                         </div>
@@ -265,7 +326,7 @@
                         <div class="flex justify-end max-w-2xl">
                             <button onclick="switchView('edit-user')"
                                 class="bg-[#f97316] hover:bg-[#ea580c] text-white font-medium py-1.5 px-6 rounded shadow-sm text-[13px] transition transform active:scale-95">Edit
-                                User</button>
+                                </button>
                         </div>
                     </div>
                 </div>
@@ -275,7 +336,7 @@
             <div id="view-edit" class="max-w-7xl mx-auto hidden opacity-0 transition-all duration-300">
 
                 <div class="mb-6 mt-6">
-                    <h1 class="text-[28px] font-bold text-[#1976d2]">Profile Klinik</h1>
+                    <h1 class="text-[24px] md:text-[28px] font-bold text-[#1976d2]">Profile Klinik</h1>
                     <p class="text-[#1976d2] font-normal text-[15px] mt-1">hanglekiu dental specialist</p>
                     <div class="flex items-center text-[12px] gap-2 mt-3 font-normal">
                         <span class="text-gray-600 hover:text-[#2196f3] cursor-pointer"
@@ -285,33 +346,46 @@
                     </div>
                 </div>
 
-                <div class="flex flex-col md:flex-row gap-6 items-start">
-                    <div class="edit-menu-container">
+                <div class="flex flex-col md:flex-row gap-6 items-start relative">
+
+                    <button onclick="toggleSettingsMenu()" class="md:hidden w-full bg-white p-3 rounded shadow mb-2 flex justify-between items-center text-[#1976d2] font-medium">
+                        <span>Menu Opsi</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+
+                    <div id="settingsOverlay" onclick="closeSettingsMenu()"></div>
+
+                    <div id="settingsMenu" class="edit-menu-container">
+                        <div class="md:hidden flex justify-between items-center p-4 border-b sticky top-0 bg-white z-10">
+                            <span class="font-bold text-gray-700">Pilih Opsi</span>
+                            <button onclick="closeSettingsMenu()" class="text-gray-500"><i class="fas fa-times"></i></button>
+                        </div>
+
                         <div id="menu-informasi-dasar" class="edit-menu-item active"
-                            onclick="switchEditTab('informasi-dasar')"><span>Informasi Dasar</span></div>
-                        <div id="menu-visi-misi" class="edit-menu-item" onclick="switchEditTab('visi-misi')"><span>Visi
+                            onclick="switchEditTab('informasi-dasar'); closeSettingsMenu()"><span>Informasi Dasar</span></div>
+                        <div id="menu-visi-misi" class="edit-menu-item" onclick="switchEditTab('visi-misi'); closeSettingsMenu()"><span>Visi
                                 Misi</span></div>
-                        <div id="menu-alamat" class="edit-menu-item" onclick="switchEditTab('alamat')">
+                        <div id="menu-alamat" class="edit-menu-item" onclick="switchEditTab('alamat'); closeSettingsMenu()">
                             <span>Alamat</span>
                         </div>
                         <div id="menu-metode-pembayaran" class="edit-menu-item"
-                            onclick="switchEditTab('metode-pembayaran')"><span>Metode Pembayaran</span></div>
-                        <div id="menu-photo" class="edit-menu-item" onclick="switchEditTab('photo')"><span>Photo</span>
+                            onclick="switchEditTab('metode-pembayaran'); closeSettingsMenu()"><span>Metode Pembayaran</span></div>
+                        <div id="menu-photo" class="edit-menu-item" onclick="switchEditTab('photo'); closeSettingsMenu()"><span>Photo</span>
                         </div>
-                        <div id="menu-fasilitas" class="edit-menu-item" onclick="switchEditTab('fasilitas')">
+                        <div id="menu-fasilitas" class="edit-menu-item" onclick="switchEditTab('fasilitas'); closeSettingsMenu()">
                             <span>Fasilitas</span>
                         </div>
                         <div id="menu-jam-operasional" class="edit-menu-item"
-                            onclick="switchEditTab('jam-operasional')"><span>Jam Operasional</span></div>
-                        <div id="menu-organisasi" class="edit-menu-item" onclick="switchEditTab('organisasi')">
+                            onclick="switchEditTab('jam-operasional'); closeSettingsMenu()"><span>Jam Operasional</span></div>
+                        <div id="menu-organisasi" class="edit-menu-item" onclick="switchEditTab('organisasi'); closeSettingsMenu()">
                             <span>Organisasi</span>
                         </div>
-                        <div id="menu-sertifikat" class="edit-menu-item" onclick="switchEditTab('sertifikat')">
+                        <div id="menu-sertifikat" class="edit-menu-item" onclick="switchEditTab('sertifikat'); closeSettingsMenu()">
                             <span>Sertifikat Training</span>
                         </div>
                     </div>
 
-                    <div class="flex-1 bg-white shadow-md rounded mb-6"
+                    <div class="flex-1 bg-white shadow-md rounded mb-6 w-full"
                         style="box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 3px 1px -2px rgba(0, 0, 0, 0.12); min-height: 500px;">
 
                         <div id="tab-informasi-dasar" class="edit-tab-content">
@@ -323,10 +397,10 @@
                                 <div
                                     style="flex-basis: 100%; max-width: 100%; display: flex; flex-wrap: wrap; box-sizing: border-box; margin: 12px;">
                                     <div
-                                        style="flex-basis: 33.333333%; max-width: 33.333333%; padding: 12px; box-sizing: border-box;">
+                                        style="flex-basis: 100%; md:flex-basis: 33.333333%; max-width: 100%; md:max-width: 33.333333%; padding: 12px; box-sizing: border-box;" class="w-full md:w-1/3">
                                         <p class="text-[#2196f3] text-[12px] font-medium mb-2">Logo Faskes</p>
                                         <div
-                                            style="position: relative; max-width: 365px; max-height: 365px; margin-top: 8px;">
+                                            style="position: relative; max-width: 365px; max-height: 365px; margin-top: 8px;" class="mx-auto md:mx-0">
                                             <img src="assets/logo2.jpeg" alt="Logo"
                                                 style="width: 100%; height: 100%; object-fit: contain; max-height: 200px; border-radius: 50%;">
                                         </div>
@@ -337,7 +411,7 @@
                                             Ganti Logo</p>
                                     </div>
                                     <div
-                                        style="flex-basis: 66.666667%; max-width: 66.666667%; padding: 12px; box-sizing: border-box;">
+                                        style="flex-basis: 100%; md:flex-basis: 66.666667%; max-width: 100%; md:max-width: 66.666667%; padding: 12px; box-sizing: border-box;" class="w-full md:w-2/3">
                                         <div style="width: 100%; display: flex; flex-wrap: wrap; margin: 12px 0;">
                                             <div style="flex-basis: 100%; max-width: 100%;">
                                                 <div style="margin-top: 18px;">
@@ -379,11 +453,11 @@
                                             <div style="width: 100%; margin-top: 18px;">
                                                 <p class="text-[11px] text-gray-600 font-medium mb-1">Link Teleconsult:
                                                 </p>
-                                                <p class="text-[#2196f3] text-[13px] font-medium"
+                                                <p class="text-[#2196f3] text-[13px] font-medium break-all"
                                                     style="display: flex; align-items: center;">
                                                     https://assist.id/hanglekiu-dental-specialist-kota-jakarta-selatan-dki-jakarta/teleconsult
                                                     <i
-                                                        class="far fa-copy ml-2 cursor-pointer hover:text-[#1976d2]"></i>
+                                                        class="far fa-copy ml-2 cursor-pointer hover:text-[#1976d2] flex-shrink-0"></i>
                                                 </p>
                                             </div>
                                             <div
@@ -653,33 +727,28 @@
                                         class="fas fa-info-circle text-gray-500 text-sm cursor-pointer hover:text-[#1976d2]"></i>
                                 </div>
                             </div>
-
                             <div style="padding: 0 24px 24px 24px;">
                                 <div class="mb-8 text-center px-4">
                                     <p class="text-gray-500 text-[13px] leading-relaxed">
                                         <span class="font-bold text-gray-600">Tips :</span> Menambah banyak photo
-                                        fasilitas kesehatan dapat menambah daya tarik terhadap keputusan pasien.
-                                        Tambahkan beberapa photo dasar seperti photo depan bangunan, fasilitas
-                                        kesehatan, ruang tunggu dan admisi.
+                                        fasilitas kesehatan dapat menambah daya tarik terhadap keputusan pasien. Tambahkan
+                                        beberapa photo dasar seperti photo depan bangunan, fasilitas kesehatan, ruang
+                                        tunggu dan admisi.
                                     </p>
                                 </div>
-
                                 <div
                                     class="border-2 border-dashed border-gray-500 rounded-lg min-h-[300px] flex flex-col justify-center items-center cursor-pointer hover:bg-gray-50 transition group mb-10 relative">
                                     <div class="flex flex-col items-center justify-center p-10">
                                         <i
                                             class="fas fa-cloud-upload-alt text-6xl text-gray-500 mb-6 group-hover:text-[#1976d2] transition"></i>
-
                                         <h3 class="text-gray-600 font-bold text-[15px] mb-2">Drag here or click to
                                             upload</h3>
-                                        <p class="text-gray-600 text-[13px] font-bold mb-2">Resolusi minimum lebar
-                                            800px dan tinggi 800px</p>
+                                        <p class="text-gray-600 text-[13px] font-bold mb-2">Resolusi minimum lebar 800px
+                                            dan tinggi 800px</p>
                                         <p class="text-gray-400 text-[12px]">Max Photo Size 5MB</p>
                                     </div>
-                                    <input type="file"
-                                        class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                                    <input type="file" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
                                 </div>
-
                                 <div style="width: 100%; display: flex; justify-content: flex-end;">
                                     <button
                                         class="bg-[#e0e0e0] text-[#a0a0a0] font-medium py-2 px-6 rounded shadow-sm text-[13px] cursor-not-allowed">
@@ -688,6 +757,7 @@
                                 </div>
                             </div>
                         </div>
+
                         <div id="tab-fasilitas" class="edit-tab-content" style="display: none;">
                             <div style="padding: 16px 24px;">
                                 <div class="flex justify-between items-center mb-8">
@@ -696,10 +766,8 @@
                                         class="fas fa-info-circle text-gray-500 text-sm cursor-pointer hover:text-[#1976d2]"></i>
                                 </div>
                             </div>
-
                             <div style="padding: 0 24px 24px 24px;">
                                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-y-10 gap-x-4 mb-16">
-
                                     <label class="flex items-center cursor-pointer group">
                                         <div class="relative flex items-center">
                                             <input type="checkbox"
@@ -707,10 +775,8 @@
                                             <i
                                                 class="fas fa-check text-white text-[10px] absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 peer-checked:opacity-100 pointer-events-none"></i>
                                         </div>
-                                        <span
-                                            class="ml-3 text-gray-700 text-[13px] group-hover:text-[#2196f3]">Ambulans</span>
+                                        <span class="ml-3 text-gray-700 text-[13px] group-hover:text-[#2196f3]">Ambulans</span>
                                     </label>
-
                                     <label class="flex items-center cursor-pointer group">
                                         <div class="relative flex items-center">
                                             <input type="checkbox"
@@ -718,10 +784,8 @@
                                             <i
                                                 class="fas fa-check text-white text-[10px] absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 peer-checked:opacity-100 pointer-events-none"></i>
                                         </div>
-                                        <span
-                                            class="ml-3 text-gray-700 text-[13px] group-hover:text-[#2196f3]">Mushala</span>
+                                        <span class="ml-3 text-gray-700 text-[13px] group-hover:text-[#2196f3]">Mushala</span>
                                     </label>
-
                                     <label class="flex items-center cursor-pointer group">
                                         <div class="relative flex items-center">
                                             <input type="checkbox"
@@ -729,10 +793,8 @@
                                             <i
                                                 class="fas fa-check text-white text-[10px] absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 peer-checked:opacity-100 pointer-events-none"></i>
                                         </div>
-                                        <span
-                                            class="ml-3 text-gray-700 text-[13px] group-hover:text-[#2196f3]">Kantin</span>
+                                        <span class="ml-3 text-gray-700 text-[13px] group-hover:text-[#2196f3]">Laboratorium</span>
                                     </label>
-
                                     <label class="flex items-center cursor-pointer group">
                                         <div class="relative flex items-center">
                                             <input type="checkbox"
@@ -740,10 +802,9 @@
                                             <i
                                                 class="fas fa-check text-white text-[10px] absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 peer-checked:opacity-100 pointer-events-none"></i>
                                         </div>
-                                        <span class="ml-3 text-gray-700 text-[13px] group-hover:text-[#2196f3]">Tempat
-                                            Bermain Anak</span>
+                                        <span class="ml-3 text-gray-700 text-[13px] group-hover:text-[#2196f3]">Rawat
+                                            Inap</span>
                                     </label>
-
                                     <label class="flex items-center cursor-pointer group">
                                         <div class="relative flex items-center">
                                             <input type="checkbox"
@@ -751,10 +812,9 @@
                                             <i
                                                 class="fas fa-check text-white text-[10px] absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 peer-checked:opacity-100 pointer-events-none"></i>
                                         </div>
-                                        <span class="ml-3 text-gray-700 text-[13px] group-hover:text-[#2196f3]">Tempat
-                                            Parkir</span>
+                                        <span class="ml-3 text-gray-700 text-[13px] group-hover:text-[#2196f3]">IGD
+                                            24 Jam</span>
                                     </label>
-
                                     <label class="flex items-center cursor-pointer group">
                                         <div class="relative flex items-center">
                                             <input type="checkbox"
@@ -903,12 +963,13 @@
 
                                 <div style="width: 100%; display: flex; justify-content: flex-end;">
                                     <button
-                                        class="bg-[#ff8a65] hover:bg-[#ff7043] text-white font-medium py-2 px-6 rounded shadow-sm text-[13px] transition transform active:scale-95">
+                                        class="bg-[#f97316] hover:bg-[#ea580c] text-white font-medium py-2.5 px-8 rounded shadow text-[13px] transition transform active:scale-95 uppercase tracking-wide">
                                         Simpan
                                     </button>
                                 </div>
                             </div>
                         </div>
+
                         <div id="tab-jam-operasional" class="edit-tab-content" style="display: none;">
 
                             <div class="flex items-center px-4 pt-4 mb-2">
@@ -1299,7 +1360,7 @@
                         <span class="text-gray-600 hover:text-[#2196f3] cursor-pointer"
                             onclick="switchView('dashboard')">Profile</span>
                         <i class="fas fa-chevron-right text-[9px] text-gray-400"></i>
-                        <span class="text-gray-800">Informasi Dasar Pengguna</span>
+                        <span class="text-gray-800">Informasi Dasar</span>
                     </div>
                 </div>
 
@@ -1308,7 +1369,7 @@
                     <div class="flex-1 bg-white shadow-md rounded mb-6"
                         style="box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 3px 1px -2px rgba(0, 0, 0, 0.12);">
                         <div style="padding: 16px 16px 16px 24px;">
-                            <h2 class="text-xl font-bold text-[#1976d2]">Informasi Dasar Pengguna</h2>
+                            <h2 class="text-xl font-bold text-[#1976d2]">Informasi Dasar</h2>
                         </div>
 
                         <div
@@ -1409,62 +1470,46 @@
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
     <script>
-        // Global Map Variable
-        let map;
-        let mapInitialized = false;
+        var map;
 
         function initMap() {
-            if (mapInitialized) return;
+            if (map) return;
+            const mapContainer = document.getElementById('map');
+            if (!mapContainer) return;
 
-            // Koordinat default Jakarta
             map = L.map('map').setView([-6.2088, 106.8456], 13);
-
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                attribution: '&copy; OpenStreetMap contributors'
             }).addTo(map);
 
-            L.marker([-6.2088, 106.8456], {
-                    draggable: true
-                }).addTo(map)
-                .bindPopup('Pindahkan marker untuk update lokasi')
+            L.marker([-6.2088, 106.8456]).addTo(map)
+                .bindPopup('Lokasi Klinik')
                 .openPopup();
-
-            mapInitialized = true;
         }
 
-        function switchView(target) {
-            const dashboard = document.getElementById('view-dashboard');
-            const editClinic = document.getElementById('view-edit');
-            const editUser = document.getElementById('view-edit-user');
+        function switchView(viewName) {
+            const views = ['dashboard', 'edit', 'edit-user'];
 
-            const hide = (el) => {
-                el.style.opacity = '0';
-                setTimeout(() => {
+            views.forEach(v => {
+                const el = document.getElementById('view-' + v);
+                if (el) {
                     el.classList.add('hidden');
-                }, 200);
-            };
+                    el.classList.remove('opacity-100');
+                    el.classList.add('opacity-0');
+                }
+            });
 
-            const show = (el) => {
-                el.classList.remove('hidden');
-                requestAnimationFrame(() => {
-                    requestAnimationFrame(() => {
-                        el.style.opacity = '1';
-                    });
-                });
-            };
+            const selected = document.getElementById('view-' + viewName);
+            if (selected) {
+                selected.classList.remove('hidden');
+                setTimeout(() => {
+                    selected.classList.remove('opacity-0');
+                    selected.classList.add('opacity-100');
+                }, 50);
 
-            if (target === 'edit') {
-                hide(dashboard);
-                hide(editUser);
-                setTimeout(() => show(editClinic), 200);
-            } else if (target === 'edit-user') {
-                hide(dashboard);
-                hide(editClinic);
-                setTimeout(() => show(editUser), 200);
-            } else {
-                hide(editClinic);
-                hide(editUser);
-                setTimeout(() => show(dashboard), 200);
+                if (viewName === 'edit') {
+                    switchEditTab('informasi-dasar');
+                }
             }
         }
 
@@ -1508,6 +1553,55 @@
                 }, 500);
             }
         });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const mainSidebar = document.getElementById('appSidebar');
+            const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+
+            if (sidebarToggle && mainSidebar) {
+                sidebarToggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    mainSidebar.classList.toggle('open');
+
+                    if (sidebarBackdrop) {
+                        sidebarBackdrop.classList.toggle('show');
+                    }
+                });
+
+                if (sidebarBackdrop) {
+                    sidebarBackdrop.addEventListener('click', function() {
+                        mainSidebar.classList.remove('open');
+                        sidebarBackdrop.classList.remove('show');
+                    });
+                }
+
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape' && mainSidebar.classList.contains('open')) {
+                        mainSidebar.classList.remove('open');
+                        if (sidebarBackdrop) sidebarBackdrop.classList.remove('show');
+                    }
+                });
+            }
+        });
+
+        function toggleSettingsMenu() {
+            const menu = document.getElementById('settingsMenu');
+            const overlay = document.getElementById('settingsOverlay');
+            if (menu.classList.contains('active')) {
+                closeSettingsMenu();
+            } else {
+                menu.classList.add('active');
+                overlay.classList.add('active');
+            }
+        }
+
+        function closeSettingsMenu() {
+            const menu = document.getElementById('settingsMenu');
+            const overlay = document.getElementById('settingsOverlay');
+            if (menu) menu.classList.remove('active');
+            if (overlay) overlay.classList.remove('active');
+        }
     </script>
 </body>
 
