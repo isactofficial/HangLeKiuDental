@@ -6,44 +6,49 @@
     <title>Cashier - hanglekiu dental specialist</title>
         <style>
             /* Hamburger Menu (matching Dashboard) */
-            .hamburger {
-                display: none;
-                background: #223a5f;
-                border: none;
-                padding: 8px;
-                cursor: pointer;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                height: 40px;
-                width: 40px;
-                border-radius: 10px;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-                position: relative;
-                z-index: 1001;
-            }
-            .hamburger-bar {
-                display: block;
-                width: 24px;
-                height: 3px;
-                background: #fff;
-                margin: 4px 0;
-                border-radius: 2px;
-                transition: all 0.3s;
-            }
-            .hamburger i { color: #fff; font-size: 18px; }
-            @media (max-width: 900px) {
                 .hamburger {
-                    display: flex;
-                    position: static;
-                    margin-right: 8px;
+                    display: none;
+                    background: #223a5f;
+                    border: none;
+                    padding: 8px;
+                    cursor: pointer;
+                    justify-content: center;
+                    align-items: center;
+                    height: 40px;
+                    width: 40px;
+                    border-radius: 10px;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+                    position: relative;
+                    z-index: 1001;
                 }
-                .cashier-header {
-                    position: static;
-                    padding-left: 0;
-                    min-height: auto;
+                .hamburger-bar {
+                    display: block;
+                    width: 24px;
+                    height: 3px;
+                    background: #fff;
+                    margin: 4px 0;
+                    border-radius: 2px;
+                    transition: all 0.3s;
                 }
-            }
+                .hamburger i { color: #fff; font-size: 18px; }
+                @media (max-width: 900px) {
+                    .hamburger {
+                        display: flex;
+                        position: static;
+                        margin-right: 8px;
+                        flex: 0 0 auto;
+                        align-self: center;
+                    }
+                    .cashier-header {
+                        position: static;
+                        padding-left: 12px;
+                        padding-right: 12px;
+                        min-height: auto;
+                        align-items: center;
+                    }
+                    .kasir-title{ margin-left:0; flex:1 1 auto; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+                    .header-actions{ margin-left:0; min-width:0; }
+                }
         </style>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -98,19 +103,20 @@
             /* keep header items in a responsive row where possible */
             .cashier-header{flex-direction:row;align-items:center;gap:8px;padding:10px;}
             .hamburger{display:flex;position:static;order:1;margin-right:8px}
-            .kasir-title{order:2;margin-left:70px}
-            .header-actions{order:3;margin-left:auto;gap:8px;}
+            .kasir-title{order:2;margin-left:8px;flex:0 0 auto;white-space:nowrap}
+            .header-actions{order:3;margin-left:auto;gap:8px;min-width:0}
+            .header-actions .header-hd{display:flex;align-items:center;gap:8px;min-width:0}
             .cashier-content{padding:16px 0 0 0;}
         }
         @media (max-width: 600px){
             .cashier-header{flex-direction:row;align-items:center;gap:8px;padding:8px;}
             .hamburger{order:1;margin-right:8px}
-            .kasir-title{order:2;font-size:16px;display:inline-block;margin-left:70px;color:#1e3a8a}
+            .kasir-title{order:2;font-size:16px;display:inline-block;margin-left:0;color:#1e3a8a;flex:1 1 auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
             .header-actions{order:3}
             .header-actions{gap:6px}
             .header-logo{width:32px;height:32px}
             .header-logo img{width:22px;height:22px}
-            .header-dropdown-btn{padding:8px 10px;font-size:14px;min-width:0;max-width:120px}
+            .header-dropdown-btn{padding:8px 10px;font-size:14px;min-width:0;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
             .cashier-sidebar .tab{padding:10px 6px;font-size:13px}
             .filter-box{padding:8px 6px}
             .filter-row input[type="text"]{padding:8px 8px}

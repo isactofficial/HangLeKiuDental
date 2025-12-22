@@ -2,32 +2,28 @@
 <html lang="id">
 <head>
         <style>
-            /* Hamburger Menu */
+            /* Hamburger Menu (icon button style) */
             .hamburger {
-                display: flex;
+                display: inline-flex;
                 background: #223a5f;
                 border: none;
-                padding: 8px;
+                padding: 0;
                 cursor: pointer;
-                flex-direction: column;
                 justify-content: center;
                 align-items: center;
-                height: 40px;
-                width: 40px;
-                border-radius: 10px;
+                height: 36px;
+                width: 36px;
+                border-radius: 8px;
                 box-shadow: 0 2px 8px rgba(0,0,0,0.08);
                 position: relative;
                 margin-right: 12px;
                 z-index: 1001;
             }
-            .hamburger-bar {
+            .hamburger i {
+                color: #fff;
+                font-size: 18px;
+                line-height: 1;
                 display: block;
-                width: 24px;
-                height: 3px;
-                background: #fff;
-                margin: 4px 0;
-                border-radius: 2px;
-                transition: all 0.3s;
             }
             @media (max-width: 900px) {
                 .hamburger {
@@ -289,12 +285,10 @@
     @include('partials.sidebar')
 
     <main class="main">
-        <div class="sidebar-backdrop" id="sidebarBackdrop" style="display:none;"></div>
+        <!-- sidebar backdrop is provided by partials/sidebar; duplicate removed -->
         <div class="emr-header">
             <button class="hamburger" onclick="toggleSidebar()" aria-label="Menu">
-                <span class="hamburger-bar"></span>
-                <span class="hamburger-bar"></span>
-                <span class="hamburger-bar"></span>
+                <i class="fas fa-bars" aria-hidden="true"></i>
             </button>
             <div class="emr-header-left">
                 <div class="emr-header-search">
@@ -386,18 +380,22 @@
                         backdrop.addEventListener('click', toggleSidebar);
                     }
                 });
-            const userBtn = document.querySelector('.user-btn');
-            const dropdownMenu = document.querySelector('.dropdown-menu');
+            (function(){
+                const userBtn = document.querySelector('.user-btn');
+                const dropdownMenu = document.querySelector('.dropdown-menu');
+                if(!userBtn || !dropdownMenu) return;
 
-            userBtn.addEventListener('click', () => {
-                dropdownMenu.style.display = dropdownMenu.style.display === 'none' || dropdownMenu.style.display === '' ? 'block' : 'none';
-            });
+                userBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    dropdownMenu.style.display = dropdownMenu.style.display === 'none' || dropdownMenu.style.display === '' ? 'block' : 'none';
+                });
 
-            document.addEventListener('click', (event) => {
-                if (!userBtn.contains(event.target) && !dropdownMenu.contains(event.target)) {
-                    dropdownMenu.style.display = 'none';
-                }
-            });
+                document.addEventListener('click', (event) => {
+                    if (!userBtn.contains(event.target) && !dropdownMenu.contains(event.target)) {
+                        dropdownMenu.style.display = 'none';
+                    }
+                });
+            })();
         </script>
 
         <!-- floating-actions hanya di header, hapus duplikasi di bawah -->

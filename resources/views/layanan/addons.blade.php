@@ -19,6 +19,16 @@
         .card{background:#fff;border-radius:10px;padding:18px;box-shadow:0 6px 20px rgba(11,22,39,0.04)}
         .left-nav .nav-item{display:block;padding:12px;border-radius:8px;margin-bottom:10px;color:#0f172a;background:transparent;cursor:pointer;text-decoration:none;width:100%;}
         .left-nav .nav-item:hover,.left-nav .nav-item.active{background:#eef2ff;color:#0f172a}
+        /* User dropdown (copied from partials/topbar for consistent behaviour) */
+        .user-dropdown{display:flex;align-items:center;gap:10px;background:#3b82f6;padding:8px 14px;border-radius:10px;cursor:pointer;color:#fff;box-shadow:0 6px 18px rgba(59,130,246,0.12)}
+        .user-avatar{width:34px;height:34px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center}
+        .user-dropdown span{color:#fff;font-size:15px;font-weight:600}
+        .user-dropdown-container{position:relative}
+        .user-dropdown-menu{position:absolute;top:100%;right:0;margin-top:8px;background:#fff;border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,0.12);min-width:220px;display:none;overflow:hidden;z-index:160}
+        .user-dropdown-menu.show{display:block}
+        .user-dropdown-menu a,.user-dropdown-menu button{display:flex;align-items:center;gap:10px;width:100%;padding:12px 14px;color:#374151;text-decoration:none;background:none;border:none;cursor:pointer}
+        .user-dropdown-menu a:hover,.user-dropdown-menu button:hover{background:#f3f4f6}
+        .logout-btn{color:#dc2626;border-top:1px solid #f3f4f6;width:100%;text-align:left}
         .left-nav .nav-item .meta{display:block;color:#6b7280;font-size:12px;margin-top:6px}
         .left-nav.card{align-self:start;overflow:hidden;padding:12px}
         .title-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
@@ -48,11 +58,36 @@
                 <h1>Layanan Tambahan</h1>
                 <p>hanglekiu dental specialist</p>
             </div>
-            <div class="header-right">
+            <div class="header-right" style="display:flex;align-items:center;gap:12px">
                 <div style="display:flex;gap:12px;align-items:center">
                     <i class="fas fa-search" style="color:#6b7280"></i>
                     <i class="fas fa-bell" style="color:#6b7280"></i>
-                    <div style="background:#3b82f6;color:#fff;padding:8px 12px;border-radius:8px">{{ Auth::user()->name ?? 'Admin' }}</div>
+                </div>
+
+                <div class="user-dropdown-container">
+                    <div class="user-dropdown" onclick="toggleUserMenu()">
+                        <div class="user-avatar"><i class="fas fa-user" style="color:#3b82f6;font-size:14px"></i></div>
+                        <span>{{ Auth::user()->name ?? 'Admin' }}</span>
+                        <i class="fas fa-chevron-down" style="color:white;font-size:12px"></i>
+                    </div>
+
+                    <div class="user-dropdown-menu" id="topbarUserMenu">
+                        <a href="#">
+                            <i class="fas fa-user-circle"></i>
+                            Profile
+                        </a>
+                        <a href="#">
+                            <i class="fas fa-cog"></i>
+                            Pengaturan
+                        </a>
+                        <form action="{{ route('logout') }}" method="POST" style="margin:0">
+                            @csrf
+                            <button type="submit" class="logout-btn">
+                                <i class="fas fa-sign-out-alt"></i>
+                                Logout
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </header>
@@ -182,3 +217,17 @@
 
 </body>
 </html>
+
+<script>
+    function toggleUserMenu(){
+        const m = document.getElementById('topbarUserMenu');
+        if(!m) return;
+        m.classList.toggle('show');
+    }
+    document.addEventListener('click', function(e){
+        const menu = document.getElementById('topbarUserMenu');
+        const container = document.querySelector('.user-dropdown-container');
+        if(!menu || !container) return;
+        if(!container.contains(e.target)) menu.classList.remove('show');
+    });
+</script>

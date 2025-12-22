@@ -94,8 +94,8 @@
         /* Responsive topbar when sidebar collapses on small screens */
         @media (max-width: 768px) {
             .topbar{ left:12px; right:12px; }
-            /* leave space for the mobile hamburger on the left */
-            .topbar-inner{padding:10px 12px 10px 64px}
+            /* leave space for the mobile hamburger on the left (match hamburger left + width + gap) */
+            .topbar-inner{padding:10px 12px 10px 72px}
             .topbar{pointer-events:auto}
 
             /* Stack and reflow topbar sections */
