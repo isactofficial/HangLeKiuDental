@@ -9,43 +9,43 @@
     <link rel="stylesheet" href="/css/responsive.css">
     <style>
         /* reuse same styles as layanan pages (kept local for simplicity) */
-        body{font-family:'Poppins',sans-serif;background:#f3f6fa;min-height:100vh;display:flex}
-        .main-content{flex:1;margin-left:60px}
-        .header{background:#f8fafc;padding:18px 24px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #eef2f7}
-        .header-left h1{font-size:18px;color:#0f172a;margin:0}
-        .header-left p{margin:0;color:#6b7280;font-size:12px}
+        body{font-family:'Poppins',sans-serif;background:var(--main-bg);color:var(--text);min-height:100vh;display:flex}
+        .main-content{flex:1;margin-left:var(--sidebar-width)}
+        .header{background:var(--surface);padding:18px 24px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(0,0,0,0.04);box-shadow:0 2px 6px rgba(0,0,0,0.03)}
+        .header-left h1{font-size:18px;color:var(--text);margin:0}
+        .header-left p{margin:0;color:var(--muted);font-size:12px}
         .content{padding:20px}
         .layout{display:grid;grid-template-columns:220px 1fr;gap:20px;align-items:start}
-        .card{background:#fff;border-radius:10px;padding:18px;box-shadow:0 6px 20px rgba(11,22,39,0.04)}
-        .left-nav .nav-item{display:block;padding:12px;border-radius:8px;margin-bottom:10px;color:#0f172a;background:transparent;cursor:pointer;text-decoration:none;width:100%;}
-        .left-nav .nav-item:hover,.left-nav .nav-item.active{background:#eef2ff;color:#0f172a}
+        .card{background:var(--surface);border-radius:10px;padding:18px;box-shadow:0 6px 20px rgba(0,0,0,0.04)}
+        .left-nav .nav-item{display:block;padding:12px;border-radius:8px;margin-bottom:10px;color:var(--text);background:transparent;cursor:pointer;text-decoration:none;width:100%;}
+        .left-nav .nav-item:hover,.left-nav .nav-item.active{background:var(--main-bg);color:var(--text)}
         /* User dropdown (copied from partials/topbar for consistent behaviour) */
-        .user-dropdown{display:flex;align-items:center;gap:10px;background:#3b82f6;padding:8px 14px;border-radius:10px;cursor:pointer;color:#fff;box-shadow:0 6px 18px rgba(59,130,246,0.12)}
-        .user-avatar{width:34px;height:34px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center}
+        .user-dropdown{display:flex;align-items:center;gap:10px;background:var(--action);padding:8px 14px;border-radius:10px;cursor:pointer;color:#fff;box-shadow:0 6px 18px rgba(0,0,0,0.06)}
+        .user-avatar{width:34px;height:34px;border-radius:50%;background:var(--surface);display:flex;align-items:center;justify-content:center}
         .user-dropdown span{color:#fff;font-size:15px;font-weight:600}
         .user-dropdown-container{position:relative}
-        .user-dropdown-menu{position:absolute;top:100%;right:0;margin-top:8px;background:#fff;border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,0.12);min-width:220px;display:none;overflow:hidden;z-index:160}
+        .user-dropdown-menu{position:absolute;top:100%;right:0;margin-top:8px;background:var(--surface);border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,0.08);min-width:220px;display:none;overflow:hidden;z-index:160}
         .user-dropdown-menu.show{display:block}
-        .user-dropdown-menu a,.user-dropdown-menu button{display:flex;align-items:center;gap:10px;width:100%;padding:12px 14px;color:#374151;text-decoration:none;background:none;border:none;cursor:pointer}
-        .user-dropdown-menu a:hover,.user-dropdown-menu button:hover{background:#f3f4f6}
-        .logout-btn{color:#dc2626;border-top:1px solid #f3f4f6;width:100%;text-align:left}
-        .left-nav .nav-item .meta{display:block;color:#6b7280;font-size:12px;margin-top:6px}
+        .user-dropdown-menu a,.user-dropdown-menu button{display:flex;align-items:center;gap:10px;width:100%;padding:12px 14px;color:var(--text);text-decoration:none;background:none;border:none;cursor:pointer}
+        .user-dropdown-menu a:hover,.user-dropdown-menu button:hover{background:var(--main-bg)}
+        .logout-btn{color:#dc2626;border-top:1px solid rgba(0,0,0,0.04);width:100%;text-align:left}
+        .left-nav .nav-item .meta{display:block;color:var(--muted);font-size:12px;margin-top:6px}
         .left-nav.card{align-self:start;overflow:hidden;padding:12px}
         .title-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
-        .big-title{font-size:22px;font-weight:600;color:#0f172a}
-        .meta{color:#6b7280;font-size:13px}
-        .feature-list{font-size:14px;color:#374151;line-height:1.6}
-        .image-wrap .hero{width:100%;height:220px;background:#eef2f7;border-radius:12px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+        .big-title{font-size:22px;font-weight:600;color:var(--text)}
+        .meta{color:var(--muted);font-size:13px}
+        .feature-list{font-size:14px;color:var(--text);line-height:1.6}
+        .image-wrap .hero{width:100%;height:220px;background:var(--main-bg);border-radius:12px;display:flex;align-items:center;justify-content:center;overflow:hidden}
         .thumbs{display:flex;gap:8px}
-        .thumb{width:56px;height:56px;border-radius:8px;background:#fff;border:1px solid #eef2f7;display:flex;align-items:center;justify-content:center;overflow:hidden}
+        .thumb{width:56px;height:56px;border-radius:8px;background:var(--surface);border:1px solid rgba(0,0,0,0.04);display:flex;align-items:center;justify-content:center;overflow:hidden}
         .image-row{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
         .action-buttons{display:flex;gap:8px}
-        .icon-btn{width:44px;height:44px;border-radius:10px;background:#fff;border:1px solid #eef2f7;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;color:#374151}
+        .icon-btn{width:44px;height:44px;border-radius:10px;background:var(--surface);border:1px solid rgba(0,0,0,0.04);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;color:var(--muted)}
         .price-row{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
         .terms-checkbox{display:flex;gap:8px;align-items:flex-start;margin-top:10px}
         .activate{margin-top:12px}
-        .price-box{background:#fff;border-radius:10px;padding:14px;width:100%;box-shadow:0 6px 20px rgba(11,22,39,0.04)}
-        .activate{background:#2563eb;color:#fff;padding:10px 14px;border-radius:8px;border:none;cursor:pointer;width:100%}
+        .price-box{background:var(--surface);border-radius:10px;padding:14px;width:100%;box-shadow:0 6px 20px rgba(0,0,0,0.04)}
+        .activate{background:var(--action);color:#fff;padding:10px 14px;border-radius:8px;border:none;cursor:pointer;width:100%}
         @media (max-width:767px){.layout{grid-template-columns:1fr;gap:12px}.main-content{margin-left:0}.left-nav.card{order:0;display:block;padding:8px;border-radius:10px;text-align:center}.left-nav .nav-item{display:inline-block;padding:8px 12px;border-radius:8px;margin:8px 0;min-width:0;white-space:nowrap}.left-nav .nav-item .meta{display:none}}
     </style>
 </head>
@@ -60,13 +60,13 @@
             </div>
             <div class="header-right" style="display:flex;align-items:center;gap:12px">
                 <div style="display:flex;gap:12px;align-items:center">
-                    <i class="fas fa-search" style="color:#6b7280"></i>
-                    <i class="fas fa-bell" style="color:#6b7280"></i>
+                    <i class="fas fa-search" style="color:var(--muted)"></i>
+                    <i class="fas fa-bell" style="color:var(--muted)"></i>
                 </div>
 
                 <div class="user-dropdown-container">
                     <div class="user-dropdown" onclick="toggleUserMenu()">
-                        <div class="user-avatar"><i class="fas fa-user" style="color:#3b82f6;font-size:14px"></i></div>
+                        <div class="user-avatar"><i class="fas fa-user" style="color:var(--accent);font-size:14px"></i></div>
                         <span>{{ Auth::user()->name ?? 'Admin' }}</span>
                         <i class="fas fa-chevron-down" style="color:white;font-size:12px"></i>
                     </div>
@@ -126,45 +126,45 @@
                         <div style="width:100%">
                             <div style="margin-bottom:12px">
                                 <div style="position:relative">
-                                        <input type="search" placeholder="Cari nama add on" class="addons-search" style="width:100%;padding:10px 14px;border-radius:8px;border:1px solid #e6edf5;background:#fff;box-shadow:none;outline:none" />
+                                        <input type="search" placeholder="Cari nama add on" class="addons-search" style="width:100%;padding:10px 14px;border-radius:8px;border:1px solid rgba(0,0,0,0.04);background:var(--surface);box-shadow:none;outline:none" />
                                     </div>
                                     <div class="no-results" style="display:none">Tidak ada add-on yang cocok.</div>
                             </div>
 
                             <div class="addons-grid">
                                 <div class="addon-card">
-                                    <button class="activate-small"><i class="fas fa-plug"></i> Aktifkan</button>
+                                    <button class="activate-small" style="position:absolute;right:12px;top:12px;background:var(--surface);border:1px solid rgba(0,0,0,0.04);padding:6px 10px;border-radius:8px;font-size:13px;color:var(--text);cursor:pointer;display:flex;align-items:center;gap:8px"><i class="fas fa-plug" style="color:var(--accent)"></i> Aktifkan</button>
                                     <h3>Discount Pack</h3>
                                     <p class="muted">Fitur yang memberikan potongan harga kepada pasien pada layanan tertentu, paket perawatan, atau pembelian produk.</p>
-                                    <a href="#" class="addon-benefit">Benefit yang didapatkan</a>
+                                    <a href="#" class="addon-benefit" style="color:var(--accent);font-weight:600">Benefit yang didapatkan</a>
                                 </div>
 
                                 <div class="addon-card">
-                                    <button class="activate-small"><i class="fas fa-plug"></i> Aktifkan</button>
+                                    <button class="activate-small" style="position:absolute;right:12px;top:12px;background:var(--surface);border:1px solid rgba(0,0,0,0.04);padding:6px 10px;border-radius:8px;font-size:13px;color:var(--text);cursor:pointer;display:flex;align-items:center;gap:8px"><i class="fas fa-plug" style="color:var(--accent)"></i> Aktifkan</button>
                                     <h3>Voucher Pack</h3>
                                     <p class="muted">Fitur yang memungkinkan klinik untuk menyediakan voucher khusus kepada pasien yang dapat digunakan sebagai potongan harga.</p>
-                                    <a href="#" class="addon-benefit">Benefit yang didapatkan</a>
+                                    <a href="#" class="addon-benefit" style="color:var(--accent);font-weight:600">Benefit yang didapatkan</a>
                                 </div>
 
                                 <div class="addon-card">
-                                    <button class="activate-small"><i class="fas fa-plug"></i> Aktifkan</button>
+                                    <button class="activate-small" style="position:absolute;right:12px;top:12px;background:var(--surface);border:1px solid rgba(0,0,0,0.04);padding:6px 10px;border-radius:8px;font-size:13px;color:var(--text);cursor:pointer;display:flex;align-items:center;gap:8px"><i class="fas fa-plug" style="color:var(--accent)"></i> Aktifkan</button>
                                     <h3>Booking Fee Pack</h3>
                                     <p class="muted">Fitur untuk menerima pembayaran awal saat pasien melakukan reservasi layanan di klinik.</p>
-                                    <a href="#" class="addon-benefit">Benefit yang didapatkan</a>
+                                    <a href="#" class="addon-benefit" style="color:var(--accent);font-weight:600">Benefit yang didapatkan</a>
                                 </div>
 
                                 <div class="addon-card">
-                                    <button class="activate-small"><i class="fas fa-plug"></i> Aktifkan</button>
+                                    <button class="activate-small" style="position:absolute;right:12px;top:12px;background:var(--surface);border:1px solid rgba(0,0,0,0.04);padding:6px 10px;border-radius:8px;font-size:13px;color:var(--text);cursor:pointer;display:flex;align-items:center;gap:8px"><i class="fas fa-plug" style="color:var(--accent)"></i> Aktifkan</button>
                                     <h3>Deposit Pack</h3>
                                     <p class="muted">Fitur untuk menerima pembayaran di muka yang dapat digunakan oleh pasien untuk layanan di masa mendatang.</p>
-                                    <a href="#" class="addon-benefit">Benefit yang didapatkan</a>
+                                    <a href="#" class="addon-benefit" style="color:var(--accent);font-weight:600">Benefit yang didapatkan</a>
                                 </div>
 
                                 <div class="addon-card">
-                                    <button class="activate-small"><i class="fas fa-plug"></i> Aktifkan</button>
+                                    <button class="activate-small" style="position:absolute;right:12px;top:12px;background:var(--surface);border:1px solid rgba(0,0,0,0.04);padding:6px 10px;border-radius:8px;font-size:13px;color:var(--text);cursor:pointer;display:flex;align-items:center;gap:8px"><i class="fas fa-plug" style="color:var(--accent)"></i> Aktifkan</button>
                                     <h3>AI Pack</h3>
                                     <p class="muted">Fitur AI yang mempercepat proses diagnosis, dokumentasi medis, dan rekomendasi perawatan.</p>
-                                    <a href="#" class="addon-benefit">Benefit yang didapatkan</a>
+                                    <a href="#" class="addon-benefit" style="color:var(--accent);font-weight:600">Benefit yang didapatkan</a>
                                 </div>
                             </div>
                         </div>

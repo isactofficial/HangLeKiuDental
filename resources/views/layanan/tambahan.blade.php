@@ -8,49 +8,49 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/css/responsive.css">
     <style>
-        body{font-family:'Poppins',sans-serif;background:#f3f6fa;min-height:100vh;display:flex}
-        .main-content{flex:1;margin-left:60px}
-        .header{background:#f8fafc;padding:18px 24px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #eef2f7}
-        .header-left h1{font-size:18px;color:#0f172a;margin:0}
-        .header-left p{margin:0;color:#6b7280;font-size:12px}
+        body{font-family:'Poppins',sans-serif;background:var(--main-bg);color:var(--text);min-height:100vh;display:flex}
+        .main-content{flex:1;margin-left:var(--sidebar-width)}
+        .header{background:var(--surface);padding:18px 24px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(0,0,0,0.04);box-shadow:0 2px 6px rgba(0,0,0,0.03)}
+        .header-left h1{font-size:18px;color:var(--text);margin:0}
+        .header-left p{margin:0;color:var(--muted);font-size:12px}
         .content{padding:20px}
         .layout{display:grid;grid-template-columns:220px 1fr 360px;gap:20px;align-items:start}
-        .card{background:#fff;border-radius:10px;padding:18px;box-shadow:0 6px 20px rgba(11,22,39,0.04)}
-        .left-nav .nav-item{display:block;padding:12px;border-radius:8px;margin-bottom:10px;color:#0f172a;background:transparent;cursor:pointer;text-decoration:none;width:100%;}
+        .card{background:var(--surface);border-radius:10px;padding:18px;box-shadow:0 6px 20px rgba(0,0,0,0.04)}
+        .left-nav .nav-item{display:block;padding:12px;border-radius:8px;margin-bottom:10px;color:var(--text);background:transparent;cursor:pointer;text-decoration:none;width:100%;}
         .left-nav .nav-item:hover,
         .left-nav .nav-item:active,
         .left-nav .nav-item.active{
-            background:#eef2ff;
-            color:#0f172a;
+            background:var(--main-bg);
+            color:var(--text);
             box-shadow:none;
         }
-        .left-nav .nav-item .meta{display:block;color:#6b7280;font-size:12px;margin-top:6px}
+        .left-nav .nav-item .meta{display:block;color:var(--muted);font-size:12px;margin-top:6px}
         .left-nav.card{align-self:start;overflow:hidden;padding:12px}
         .title-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
-        .big-title{font-size:22px;font-weight:600;color:#0f172a}
-        .meta{color:#6b7280;font-size:13px}
-        .feature-list{font-size:14px;color:#374151;line-height:1.6}
+        .big-title{font-size:22px;font-weight:600;color:var(--text)}
+        .meta{color:var(--muted);font-size:13px}
+        .feature-list{font-size:14px;color:var(--text);line-height:1.6}
         .right-side .image-wrap{display:flex;flex-direction:column;gap:12px}
-        .image-wrap .hero{width:100%;height:220px;background:#eef2f7;border-radius:12px;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:6px}
+        .image-wrap .hero{width:100%;height:220px;background:var(--main-bg);border-radius:12px;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:6px}
         .thumbs{display:flex;gap:10px;align-items:center}
-        .thumb{width:60px;height:48px;border-radius:8px;background:#fff;border:1px solid #eef2f7;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:4px}
+        .thumb{width:60px;height:48px;border-radius:8px;background:var(--surface);border:1px solid rgba(0,0,0,0.04);display:flex;align-items:center;justify-content:center;overflow:hidden;padding:4px}
         .image-row{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
         .action-buttons{display:flex;gap:8px}
-        .icon-btn{width:44px;height:44px;border-radius:10px;background:#fff;border:1px solid #eef2f7;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;color:#374151}
+        .icon-btn{width:44px;height:44px;border-radius:10px;background:var(--surface);border:1px solid rgba(0,0,0,0.04);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;color:var(--muted)}
         .price-row{display:flex;justify-content:space-between;align-items:center;margin-top:14px}
         .price-row .muted{margin:0}
         .price-row .price-free{font-weight:700;color:#0f172a}
         .terms-checkbox{display:flex;gap:8px;align-items:flex-start;margin-top:10px}
         .terms-checkbox input[type="checkbox"]{width:18px;height:18px;border-radius:4px;margin-top:4px}
         .activate{margin-top:12px}
-        .price-box{background:#fff;border-radius:10px;padding:14px;box-shadow:0 6px 20px rgba(11,22,39,0.04)}
-        .price-free{color:#0f172a;font-weight:700}
-        .activate{background:#2563eb;color:#fff;padding:10px 14px;border-radius:8px;border:none;cursor:pointer;width:100%}
-        .muted{color:#6b7280;font-size:13px}
+        .price-box{background:var(--surface);border-radius:10px;padding:14px;box-shadow:0 6px 20px rgba(0,0,0,0.04)}
+        .price-free{color:var(--text);font-weight:700}
+        .activate{background:var(--action);color:#fff;padding:10px 14px;border-radius:8px;border:none;cursor:pointer;width:100%}
+        .muted{color:var(--muted);font-size:13px}
         /* Responsive breakpoints: desktop, tablet, mobile */
         @media (min-width:1200px){
             .layout{grid-template-columns:220px 1fr 360px}
-            .main-content{margin-left:60px}
+            .main-content{margin-left:var(--sidebar-width)}
         }
 
         @media (min-width:768px) and (max-width:1199px){
@@ -77,21 +77,21 @@
         }
 
         /* Collapsible styles */
-        .collapse-toggle{width:100%;display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:8px;border:1px solid #eef2f7;background:#fff;cursor:pointer;font-size:14px;font-weight:600}
-        .collapse-toggle:hover{background:#f8fafc}
-        .collapse-toggle:focus{outline:none;box-shadow:0 0 0 3px rgba(59,130,246,0.12)}
+        .collapse-toggle{width:100%;display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:8px;border:1px solid rgba(0,0,0,0.04);background:var(--surface);cursor:pointer;font-size:14px;font-weight:600}
+        .collapse-toggle:hover{background:var(--main-bg)}
+        .collapse-toggle:focus{outline:none;box-shadow:0 0 0 3px rgba(176,141,112,0.12)}
         .collapse-content{overflow:hidden;max-height:0;transition:max-height 280ms ease;padding:0 4px}
         .collapsible.open .collapse-content{max-height:1000px;padding-top:12px}
-        .chevron{transition:transform 200ms ease;color:#374151}
+        .chevron{transition:transform 200ms ease;color:var(--muted)}
         .collapsible.open .chevron{transform:rotate(180deg)}
         .terms-card .btn-terms{font-weight:600}
-        .terms-row:hover{background:#fbfdff}
+        .terms-row:hover{background:var(--main-bg)}
         /* User dropdown (copied from partials/topbar for consistent behaviour) */
-        .user-dropdown{display:flex;align-items:center;gap:10px;background:#3b82f6;padding:8px 14px;border-radius:10px;cursor:pointer;color:#fff;box-shadow:0 6px 18px rgba(59,130,246,0.12)}
-        .user-avatar{width:34px;height:34px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center}
+        .user-dropdown{display:flex;align-items:center;gap:10px;background:var(--action);padding:8px 14px;border-radius:10px;cursor:pointer;color:#fff;box-shadow:0 6px 18px rgba(0,0,0,0.06)}
+        .user-avatar{width:34px;height:34px;border-radius:50%;background:var(--surface);display:flex;align-items:center;justify-content:center}
         .user-dropdown span{color:#fff;font-size:15px;font-weight:600}
         .user-dropdown-container{position:relative}
-        .user-dropdown-menu{position:absolute;top:100%;right:0;margin-top:8px;background:#fff;border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,0.12);min-width:220px;display:none;overflow:hidden;z-index:160}
+        .user-dropdown-menu{position:absolute;top:100%;right:0;margin-top:8px;background:var(--surface);border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,0.08);min-width:220px;display:none;overflow:hidden;z-index:160}
         .user-dropdown-menu.show{display:block}
         .user-dropdown-menu a,.user-dropdown-menu button{display:flex;align-items:center;gap:10px;width:100%;padding:12px 14px;color:#374151;text-decoration:none;background:none;border:none;cursor:pointer}
         .user-dropdown-menu a:hover,.user-dropdown-menu button:hover{background:#f3f4f6}
@@ -109,13 +109,13 @@
             </div>
             <div class="header-right" style="display:flex;align-items:center;gap:12px">
                 <div style="display:flex;gap:12px;align-items:center">
-                    <i class="fas fa-search" style="color:#6b7280"></i>
-                    <i class="fas fa-bell" style="color:#6b7280"></i>
+                    <i class="fas fa-search" style="color:var(--muted)"></i>
+                    <i class="fas fa-bell" style="color:var(--muted)"></i>
                 </div>
 
                 <div class="user-dropdown-container">
                     <div class="user-dropdown" onclick="toggleUserMenu()">
-                        <div class="user-avatar"><i class="fas fa-user" style="color:#3b82f6;font-size:14px"></i></div>
+                        <div class="user-avatar"><i class="fas fa-user" style="color:var(--accent);font-size:14px"></i></div>
                         <span>{{ Auth::user()->name ?? 'Admin' }}</span>
                         <i class="fas fa-chevron-down" style="color:white;font-size:12px"></i>
                     </div>
@@ -155,7 +155,7 @@
                             <h2 class="big-title">AntriCepat</h2>
                             <p class="meta">Layanan booking janji dokter secara online, praktis, dan hemat waktu.</p>
                             <div class="muted" style="margin-top:8px;display:flex;align-items:center;gap:8px">
-                                <i class="fas fa-info-circle" style="color:#6b7280;font-size:16px"></i>
+                                <i class="fas fa-info-circle" style="color:var(--muted);font-size:16px"></i>
                                 <div>513 klinik telah menggunakan fitur ini.</div>
                             </div>
                         </div>
@@ -191,13 +191,13 @@
                         </div>
 
                         <div style="margin-top:14px">
-                            <a href="#" class="terms-row" style="display:flex;justify-content:space-between;align-items:center;padding:12px;border:1px solid #eef2f7;border-radius:8px;background:#fff;text-decoration:none;color:inherit">
+                            <a href="#" class="terms-row" style="display:flex;justify-content:space-between;align-items:center;padding:12px;border:1px solid rgba(0,0,0,0.04);border-radius:8px;background:var(--surface);text-decoration:none;color:inherit">
                                 <div style="display:flex;flex-direction:column;gap:4px">
-                                    <span style="color:#2563eb;font-weight:600">Syarat dan Ketentuan</span>
+                                    <span style="color:var(--accent);font-weight:600">Syarat dan Ketentuan</span>
                                     <span class="muted" style="font-size:13px">Baca syarat lengkap sebelum mengaktivasi layanan.</span>
                                 </div>
                                 <div style="display:flex;align-items:center;gap:10px">
-                                    <i class="fas fa-external-link-alt" style="color:#2563eb;font-size:13px"></i>
+                                    <i class="fas fa-external-link-alt" style="color:var(--accent);font-size:13px"></i>
                                 </div>
                             </a>
                         </div>
@@ -238,8 +238,8 @@
                         </div>
                     </div>
 
-                    <div class="card muted" style="text-align:center">
-                        <i class="fas fa-info-circle" style="color:#3b82f6;font-size:20px;margin-bottom:8px"></i>
+                        <div class="card muted" style="text-align:center">
+                        <i class="fas fa-info-circle" style="color:var(--accent);font-size:20px;margin-bottom:8px"></i>
                         <div style="font-size:13px">Butuh bantuan? Hubungi tim support kami.</div>
                     </div>
                 </aside>

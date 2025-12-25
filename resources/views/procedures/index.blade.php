@@ -9,26 +9,26 @@
     <link rel="stylesheet" href="/css/responsive.css">
     <style>
         *{box-sizing:border-box;margin:0;padding:0}
-        body{font-family:'Poppins',sans-serif;background:#f6f7fb;display:flex;min-height:100vh}
+        body{font-family:'Poppins',sans-serif;background:var(--main-bg);display:flex;min-height:100vh;color:var(--text)}
 
         /* Layout containers */
-        .main{margin-left:60px;flex:1;padding:20px;padding-top:96px}
-        .card{background:#fff;border-radius:12px;padding:22px 24px;box-shadow:0 6px 18px rgba(0,0,0,0.06);margin:6px 18px}
+        .main{margin-left:var(--sidebar-width);flex:1;padding:20px;padding-top:72px}
+        .card{background:var(--surface);border-radius:12px;padding:22px 24px;box-shadow:0 6px 18px rgba(0,0,0,0.06);margin:12px 12px}
 
         /* Header and controls */
         .page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
-        .page-title{font-size:20px;font-weight:700;color:#0f172a}
+        .page-title{font-size:20px;font-weight:700;color:var(--text)}
         .actions{display:flex;gap:10px;align-items:center}
-        .btn{padding:10px 14px;border-radius:8px;background:linear-gradient(135deg,#5BA3E0 0%,#3B82C4 100%);color:#fff;border:none;cursor:pointer}
-        .btn.ghost{background:#fff;border:1px solid #e5e7eb;color:#374151}
+        .btn{padding:10px 14px;border-radius:8px;background:var(--accent);color:#fff;border:none;cursor:pointer}
+        .btn.ghost{background:var(--surface);border:1px solid rgba(0,0,0,0.06);color:var(--text)}
         .search-form{display:flex;gap:10px;align-items:center}
-        .search-input{padding:10px;border:1px solid #e5e7eb;border-radius:8px;width:260px;min-width:0}
+        .search-input{padding:10px;border:1px solid rgba(0,0,0,0.06);border-radius:8px;width:260px;min-width:0;background:var(--surface);color:var(--text)}
 
         /* Table */
         .table{width:100%;border-collapse:collapse;margin-top:12px}
-        .table th{text-align:left;padding:12px;border-bottom:1px solid #f1f5f9;color:#6b7280;font-size:13px}
-        .table td{padding:14px;border-bottom:1px solid #f8fafc;color:#374151;vertical-align:middle}
-        .price{color:#6b7280;font-weight:600}
+        .table th{text-align:left;padding:12px;border-bottom:1px solid rgba(0,0,0,0.04);color:var(--muted);font-size:13px}
+        .table td{padding:14px;border-bottom:1px solid rgba(0,0,0,0.04);color:var(--text);vertical-align:middle}
+        .price{color:var(--text);font-weight:600}
 
         /* Small/stacked card style for narrow viewports */
         @media (max-width: 768px){
@@ -47,10 +47,10 @@
             /* each cell becomes a horizontal row: label + value */
             .table td{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f3f4f6}
             .table td:last-child{border-bottom:none}
-            .table td:before{content:attr(data-label);font-weight:600;color:#64748b;margin-right:8px;display:inline-block;width:45%;font-size:12px}
+            .table td:before{content:attr(data-label);font-weight:600;color:var(--muted);margin-right:8px;display:inline-block;width:45%;font-size:12px}
             .table td > *:not(:before){width:55%}
 
-            .table td.price{font-size:15px;font-weight:700;color:#1e293b;text-align:right}
+            .table td.price{font-size:15px;font-weight:700;color:var(--text);text-align:right}
         }
 
         /* Medium screens tweak */

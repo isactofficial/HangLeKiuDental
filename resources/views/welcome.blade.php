@@ -2,19 +2,18 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
                 <style>
-                    /* Hamburger Menu */
+                    /* Hamburger Menu (standardized to theme) */
                     .hamburger {
                         display: none;
-                        background: #223a5f;
+                        background: var(--surface);
                         border: none;
-                        padding: 8px;
+                        padding: 0;
                         cursor: pointer;
-                        flex-direction: column;
                         justify-content: center;
                         align-items: center;
-                        height: 40px;
-                        width: 40px;
-                        border-radius: 10px;
+                        height: 36px;
+                        width: 36px;
+                        border-radius: 8px;
                         box-shadow: 0 2px 8px rgba(0,0,0,0.08);
                         position: absolute;
                         top: 16px;
@@ -23,10 +22,10 @@
                     }
                     .hamburger-bar {
                         display: block;
-                        width: 24px;
+                        width: 20px;
                         height: 3px;
-                        background: #fff;
-                        margin: 4px 0;
+                        background: var(--accent);
+                        margin: 3px 0;
                         border-radius: 2px;
                         transition: all 0.3s;
                     }

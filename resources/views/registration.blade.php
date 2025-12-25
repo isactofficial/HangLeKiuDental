@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/css/responsive.css">
     <style>
+        :root{ --sidebar-width:60px; --sidebar-compact-left:72px; }
                         /* Header horizontal di mobile */
                         @media (max-width: 768px) {
                             .header {
@@ -99,7 +100,8 @@
 
         body {
             font-family: 'Poppins', sans-serif;
-            background-color: #f5f7fa;
+            background-color: var(--main-bg);
+            color: var(--text);
             min-height: 100vh;
             display: flex;
             overflow-x: hidden;
@@ -107,8 +109,8 @@
 
         /* Sidebar */
         .sidebar {
-            width: 60px;
-            background: #1a365d;
+            width: var(--sidebar-width);
+            background: var(--surface);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -118,12 +120,13 @@
             left: 0;
             top: 0;
             z-index: 100;
+            border-right: 1px solid rgba(0,0,0,0.04);
         }
 
         .sidebar-logo {
             width: 40px;
             height: 40px;
-            background: #3b82f6;
+            background: var(--accent);
             border-radius: 8px;
             display: flex;
             align-items: center;
@@ -148,17 +151,17 @@
             padding: 12px 0;
             display: flex;
             justify-content: center;
-            color: #94a3b8;
+            color: var(--muted);
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             position: relative;
             text-decoration: none;
         }
 
         .sidebar-item:hover,
         .sidebar-item.active {
-            color: white;
-            background: rgba(59, 130, 246, 0.2);
+            color: var(--text);
+            background: rgba(0,0,0,0.03);
         }
 
         .sidebar-item.active::before {
@@ -167,31 +170,41 @@
             left: 0;
             top: 0;
             height: 100%;
-            width: 3px;
-            background: #3b82f6;
+            width: 4px;
+            background: var(--accent);
         }
 
         .sidebar-item i {
             font-size: 18px;
+            color: inherit;
         }
 
         /* Main Content */
         .main-content {
             flex: 1;
-            margin-left: 60px;
-            background: #f5f7fa;
+            margin-left: var(--sidebar-width);
+            background: var(--main-bg);
             min-height: 100vh;
             max-width: 100vw;
         }
 
         /* Header */
         .header {
-            background: #1e3a5f;
+            background: var(--surface);
             padding: 12px 20px;
             display: flex;
             flex-wrap: wrap;
             align-items: center;
             gap: 12px;
+            border-bottom: 1px solid rgba(0,0,0,0.04);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+        }
+
+        /* Align header with sidebar on larger screens */
+        @media (min-width: 900px) {
+            .header { padding-left: calc(var(--sidebar-width) + 20px); }
+            .page-title { padding-left: calc(var(--sidebar-width) + 20px); }
+            .content { padding-left: 12px; }
         }
 
         .header-left {
@@ -223,11 +236,11 @@
         }
 
         .search-box i {
-            color: #3b82f6;
+            color: var(--accent);
         }
 
         .btn-pendaftaran {
-            background: #3b82f6;
+            background: var(--action);
             color: white;
             border: none;
             padding: 8px 16px;
@@ -243,7 +256,7 @@
         }
 
         .btn-pendaftaran:hover {
-            background: #2563eb;
+            background: rgba(95,111,101,0.92);
         }
 
         .header-right {
@@ -260,7 +273,7 @@
         .header-logo {
             width: 40px;
             height: 40px;
-            background: #6b7280;
+            background: var(--accent);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -275,7 +288,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            background: #3b82f6;
+            background: var(--action);
             padding: 6px 10px;
             border-radius: 8px;
             cursor: pointer;
@@ -294,25 +307,25 @@
         }
 
         .header-icon {
-            color: white;
+            color: var(--muted);
             font-size: 18px;
             cursor: pointer;
         }
 
         /* Page Title */
         .page-title {
-            background: #1e3a5f;
+            background: var(--surface);
             padding: 15px 25px 25px;
         }
 
         .page-title h1 {
-            color: white;
+            color: var(--text);
             font-size: 24px;
             font-weight: 600;
         }
 
         .page-title p {
-            color: #94a3b8;
+            color: var(--muted);
             font-size: 13px;
         }
 
@@ -321,49 +334,53 @@
             padding: 25px;
             display: flex;
             gap: 20px;
+            justify-content: flex-start; /* let main panel fill available width */
         }
 
-        /* Left Menu */
-        .left-menu {
-            width: 220px;
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        /* Left Menu (hidden on this simplified page) */
+        .left-menu { display:none }
+
+        /* Section tab removed per request (was above the panel) */
+
+        /* Make main panel fill available content area */
+        .main-panel{flex:1;width:100%;max-width:none}
+
+        @media (max-width: 768px) {
+            .main-panel{max-width:100%}
         }
 
         .menu-item {
             padding: 15px 20px;
-            color: #1e3a5f;
+            color: var(--text);
             font-size: 14px;
             cursor: pointer;
             border-left: 4px solid transparent;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
         }
 
         .menu-item:hover {
-            background: #f8fafc;
+            background: var(--main-bg);
         }
 
         .menu-item.active {
-            background: #f97316;
+            background: var(--action);
             color: white;
-            border-left-color: #ea580c;
+            border-left-color: var(--accent);
         }
 
         /* Main Panel */
         .main-panel {
             flex: 1;
-            background: white;
+            background: var(--surface);
             border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.04);
             overflow: hidden;
         }
 
         /* Panel Header */
         .panel-header {
             padding: 20px 25px;
-            border-bottom: 1px solid #f1f5f9;
+            border-bottom: 1px solid rgba(0,0,0,0.04);
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -377,12 +394,12 @@
 
         .panel-title h2 {
             font-size: 20px;
-            color: #1e3a5f;
+            color: var(--text);
             font-weight: 600;
         }
 
         .panel-title i {
-            color: #94a3b8;
+            color: var(--muted);
             font-size: 18px;
         }
 
@@ -395,10 +412,10 @@
         .btn-info {
             width: 32px;
             height: 32px;
-            border: 1px solid #e2e8f0;
+            border: 1px solid rgba(0,0,0,0.06);
             border-radius: 50%;
-            background: white;
-            color: #64748b;
+            background: var(--surface);
+            color: var(--muted);
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -449,7 +466,7 @@
 
         .filter-label {
             font-size: 11px;
-            color: #3b82f6;
+            color: var(--accent);
         }
 
         .filter-input {
@@ -457,26 +474,26 @@
             align-items: center;
             gap: 8px;
             padding: 10px 15px;
-            border: 1px solid #e2e8f0;
+            border: 1px solid rgba(0,0,0,0.06);
             border-radius: 6px;
             font-size: 13px;
-            color: #374151;
-            background: white;
+            color: var(--text);
+            background: var(--surface);
             cursor: pointer;
             min-width: 160px;
         }
 
         .filter-input i {
-            color: #94a3b8;
+            color: var(--muted);
         }
 
         .filter-select {
             padding: 10px 15px;
-            border: 1px solid #e2e8f0;
+            border: 1px solid rgba(0,0,0,0.06);
             border-radius: 6px;
             font-size: 13px;
-            color: #374151;
-            background: white;
+            color: var(--text);
+            background: var(--surface);
             cursor: pointer;
             min-width: 180px;
             appearance: none;
@@ -489,10 +506,10 @@
         .btn-add {
             width: 40px;
             height: 40px;
-            background: white;
-            border: 1px solid #e2e8f0;
+            background: var(--surface);
+            border: 1px solid rgba(0,0,0,0.06);
             border-radius: 6px;
-            color: #64748b;
+            color: var(--muted);
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -505,9 +522,9 @@
             align-items: center;
             gap: 10px;
             padding: 10px 15px;
-            border: 1px solid #e2e8f0;
+            border: 1px solid rgba(0,0,0,0.06);
             border-radius: 6px;
-            background: white;
+            background: var(--surface);
             min-width: 250px;
         }
 
@@ -538,20 +555,20 @@
         }
 
         .data-table th {
-            background: #f8fafc;
+            background: var(--main-bg);
             padding: 15px 12px;
             text-align: left;
             font-size: 12px;
             font-weight: 600;
-            color: #64748b;
-            border-bottom: 1px solid #e2e8f0;
+            color: var(--muted);
+            border-bottom: 1px solid rgba(0,0,0,0.04);
         }
 
         .data-table td {
             padding: 15px 12px;
             font-size: 13px;
-            color: #374151;
-            border-bottom: 1px solid #f1f5f9;
+            color: var(--text);
+            border-bottom: 1px solid rgba(0,0,0,0.03);
         }
 
         .data-table tbody tr:hover {
@@ -651,7 +668,7 @@
             right: 25px;
             width: 55px;
             height: 55px;
-            background: #3b82f6;
+            background: var(--action);
             border-radius: 12px;
             display: flex;
             align-items: center;
@@ -659,7 +676,7 @@
             color: white;
             font-size: 24px;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
         }
 
         /* Responsive */
@@ -770,14 +787,14 @@
                 white-space: normal;
                 word-break: break-word;
             }
-            .data-table td:before {
-                content: attr(data-label);
-                font-weight: 600;
-                color: #3b82f6;
-                display: block;
-                margin-bottom: 2px;
-                font-size: 12px;
-            }
+                    .data-table td:before {
+                        content: attr(data-label);
+                        font-weight: 600;
+                        color: var(--accent);
+                        display: block;
+                        margin-bottom: 2px;
+                        font-size: 12px;
+                    }
             .data-table td:first-child {
                 border-top-left-radius: 8px;
                 border-top-right-radius: 8px;
@@ -824,7 +841,7 @@
             .header { align-items: flex-start; }
             .header-left { flex-wrap: wrap; }
             .header-right { margin-top: 6px; width: 100%; display:flex; justify-content:space-between; }
-            .hamburger { display: flex !important; }
+            .hamburger { display: flex !important; background: var(--surface); color: var(--accent); height:36px; width:36px; border-radius:8px; padding:0; justify-content:center; align-items:center }
             .left-menu { width: 100%; }
             .main-panel { width: 100%; }
             .content { gap: 12px; }
@@ -885,17 +902,7 @@
 
         <!-- Content -->
         <div class="content">
-            <!-- Left Menu -->
-            <div class="left-menu">
-                <div class="menu-item active">Rawat Jalan Poli</div>
-                <div class="menu-item">AntriCepat</div>
-                <div class="menu-item">Gawat Darurat</div>
-                <div class="menu-item">Kunjungan Sehat</div>
-                <div class="menu-item">Promotif Preventif</div>
-                <div class="menu-item">Kegiatan Kelompok</div>
-                <div class="menu-item">Antrian Awal</div>
-                <div class="menu-item">Screen Antrian</div>
-            </div>
+            <!-- (section tab removed) -->
 
             <!-- Main Panel -->
             <div class="main-panel">
@@ -1121,7 +1128,7 @@
 
         @media (max-width: 768px) {
             .main-content { margin-left: 0; padding: 8px; }
-            .hamburger { left: 8px; top: 8px; display:flex; }
+            .hamburger { left: 8px; top: 8px; display:flex; background: var(--surface); color: var(--accent); height:36px; width:36px; border-radius:8px; padding:0; justify-content:center; align-items:center }
             .left-menu { width: 100%; }
             .menu-item { padding: 12px 16px; }
 

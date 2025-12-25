@@ -5,7 +5,7 @@
             /* Hamburger Menu (icon button style) */
             .hamburger {
                 display: inline-flex;
-                background: #223a5f;
+                background: var(--surface);
                 border: none;
                 padding: 0;
                 cursor: pointer;
@@ -20,7 +20,7 @@
                 z-index: 1001;
             }
             .hamburger i {
-                color: #fff;
+                color: var(--accent);
                 font-size: 18px;
                 line-height: 1;
                 display: block;
@@ -40,8 +40,8 @@
             .emr-header {
                 display: flex;
                 align-items: center;
-                background: #fff;
-                border-bottom: 1px solid #eef2f6;
+                background: var(--surface);
+                border-bottom: 1px solid rgba(0,0,0,0.04);
                 padding: 14px 20px;
                 position: relative;
                 gap: 12px;
@@ -66,12 +66,12 @@
                 max-width: 520px;
                 padding: 10px 14px;
                 border-radius: 24px;
-                border: 1px solid #e6eef6;
+                border: 1px solid rgba(0,0,0,0.06);
                 box-shadow: none;
                 min-width: 0;
             }
             .advance-btn {
-                background: #2563eb;
+                background: var(--action);
                 color: #fff;
                 padding: 10px 18px;
                 border-radius: 8px;
@@ -90,7 +90,7 @@
                 width: 44px;
                 height: 44px;
                 border-radius: 22px;
-                background: #e6eef6;
+                background: var(--surface);
                 display: flex;
                 align-items: center;
                 justify-content: center;
@@ -99,7 +99,7 @@
                 position: relative;
             }
             .user-btn {
-                background: #2563eb;
+                background: var(--action);
                 color: #fff;
                 padding: 8px 14px;
                 border-radius: 8px;
@@ -114,10 +114,10 @@
                 position: absolute;
                 top: 100%;
                 right: 0;
-                background: #fff;
-                border: 1px solid #e6eef6;
+                background: var(--surface);
+                border: 1px solid rgba(0,0,0,0.04);
                 border-radius: 8px;
-                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                box-shadow: 0 4px 6px rgba(0,0,0,0.08);
                 display: none;
                 width: 160px;
                 z-index: 10050;
@@ -131,7 +131,7 @@
                 font-size: 15px;
             }
             .dropdown-item:hover {
-                background: #f3f4f6;
+                background: var(--main-bg);
             }
             .dropdown-item:last-child {
                 color: #e11d48;
@@ -146,9 +146,9 @@
                 gap: 10px;
                 z-index: 1000;
             }
-            .floating-actions button {
-                background: #fff;
-                border: 1px solid #e6eef6;
+                .floating-actions button {
+                background: var(--surface);
+                border: 1px solid rgba(0,0,0,0.04);
                 padding: 10px;
                 border-radius: 12px;
                 box-shadow: 0 2px 8px rgba(0,0,0,0.06);
@@ -165,9 +165,9 @@
             }
             @media (max-width: 900px) {
                 .emr-header-search input {
-                    width: 100%;
-                    max-width: none;
-                }
+                        width: 100%;
+                        max-width: none;
+                    }
                 .emr-header {
                     flex-direction: column;
                     align-items: flex-start;
@@ -195,32 +195,32 @@
     <link rel="stylesheet" href="/css/responsive.css">
     <style>
         *{box-sizing:border-box;margin:0;padding:0}
-        body{font-family:'Poppins',sans-serif;background:#f5f7fa;min-height:100vh;display:flex}
+        body{font-family:'Poppins',sans-serif;background:var(--main-bg);color:var(--text);min-height:100vh;display:flex}
         .main{margin-left:60px;flex:1;padding:0 12px}
 
         /* Header area */
-        .emr-header{padding:18px 28px;display:flex;align-items:center;gap:18px;border-bottom:1px solid #eef2f6;background:#fff}
+        .emr-header{padding:18px 28px;display:flex;align-items:center;gap:18px;border-bottom:1px solid rgba(0,0,0,0.06);background:var(--surface)}
         .search-compact{display:flex;align-items:center;gap:10px}
-        .search-compact input{width:100%;max-width:420px;padding:10px 14px;border-radius:24px;border:1px solid #e6eef6;box-shadow:none}
-        .advance-btn{background:#2b6cb0;color:#fff;padding:10px 16px;border-radius:8px;border:none}
+        .search-compact input{width:100%;max-width:420px;padding:10px 14px;border-radius:24px;border:1px solid rgba(0,0,0,0.06);box-shadow:none}
+        .advance-btn{background:var(--action);color:#fff;padding:10px 16px;border-radius:8px;border:none}
 
-        .emr-title{padding:18px 28px;background:#fff}
-        .emr-title h1{color:#1e3a8a;font-size:28px;margin-bottom:6px}
-        .emr-title p{color:#64748b;margin-top:0}
+        .emr-title{padding:18px 28px;background:var(--surface)}
+        .emr-title h1{color:var(--text);font-size:28px;margin-bottom:6px}
+        .emr-title p{color:var(--muted);margin-top:0}
 
-        .legend{display:flex;gap:18px;align-items:center;padding:8px 28px;background:#fff}
-        .legend .item{display:flex;gap:8px;align-items:center;font-size:13px;color:#6b7280}
+        .legend{display:flex;gap:18px;align-items:center;padding:8px 28px;background:var(--surface)}
+        .legend .item{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--muted)}
         .dot{width:12px;height:12px;border-radius:50%;display:inline-block}
 
-        .emr-content{padding:26px;background:#f1f6fb;min-height:60vh}
-        .filter-box{background:#fff;padding:12px;border-radius:8px;display:inline-block;margin-bottom:24px;border:1px solid #eef2f6}
+        .emr-content{padding:26px;background:var(--main-bg);min-height:60vh}
+        .filter-box{background:var(--surface);padding:12px;border-radius:8px;display:inline-block;margin-bottom:24px;border:1px solid rgba(0,0,0,0.06)}
 
-        .empty-state{background:#f8fafc;border-radius:8px;padding:40px;display:flex;flex-direction:column;align-items:center;gap:12px}
-        .empty-state h3{color:#1f4a8a}
-        .empty-state p{color:#7b8794}
+        .empty-state{background:var(--surface);border-radius:8px;padding:40px;display:flex;flex-direction:column;align-items:center;gap:12px}
+        .empty-state h3{color:var(--text)}
+        .empty-state p{color:var(--muted)}
 
         .floating-actions{position:absolute;right:40px;top:120px;display:flex;flex-direction:column;gap:12px}
-        .floating-actions button{background:#fff;border:1px solid #e6eef6;padding:10px;border-radius:8px}
+        .floating-actions button{background:var(--surface);border:1px solid rgba(0,0,0,0.06);padding:10px;border-radius:8px}
 
         @media (max-width: 900px){
             .search-compact input{width:100%;max-width:none}
@@ -297,21 +297,21 @@
                 </div>
             </div>
             <div class="emr-header-right">
-                <div class="emr-header-logo">
-                    <img src="/css/responsive.css" alt="logo" style="width:26px;height:26px;opacity:0.8">
+                    <div class="emr-header-logo">
+                    <img src="/css/responsive.css" alt="logo" style="width:26px;height:26px;opacity:0.8;filter:grayscale(100%) saturate(60%);">
                 </div>
-                <div class="emr-header-user">
-                    <button class="user-btn">
-                        <i class="fas fa-user"></i>
+                    <div class="emr-header-user">
+                    <div class="user-dropdown user-btn" role="button" tabindex="0">
+                        <div class="user-avatar"><i class="fas fa-user" style="color:var(--accent);font-size:14px"></i></div>
                         <span>Admin</span>
                         <i class="fas fa-chevron-down"></i>
-                    </button>
+                    </div>
                     <div class="dropdown-menu">
                         <a href="/profile" class="dropdown-item">
-                            <i class="fas fa-user" style="margin-right:8px;color:#6b7280;"></i> Profile
+                            <i class="fas fa-user" style="margin-right:8px;color:var(--muted);"></i> Profile
                         </a>
                         <a href="/settings" class="dropdown-item">
-                            <i class="fas fa-cog" style="margin-right:8px;color:#6b7280;"></i> Settings
+                            <i class="fas fa-cog" style="margin-right:8px;color:var(--muted);"></i> Settings
                         </a>
                         <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display:none;">
                             @csrf
@@ -323,8 +323,8 @@
                 </div>
             </div>
             <div class="floating-actions">
-                <button title="Print"><i class="fas fa-print" style="color:#2563eb"></i></button>
-                <button title="Refresh"><i class="fas fa-sync" style="color:#2563eb"></i></button>
+            <button title="Print"><i class="fas fa-print" style="color:var(--accent)"></i></button>
+            <button title="Refresh"><i class="fas fa-sync" style="color:var(--accent)"></i></button>
             </div>
         </div>
 
@@ -333,17 +333,17 @@
             <p>hanglekiu dental specialist</p>
         </section>
 
-        <div class="legend">
+            <div class="legend">
             <div class="item"><span class="dot" style="background:#f87171"></span> Pending</div>
             <div class="item"><span class="dot" style="background:#fbbf24"></span> Confirmed</div>
             <div class="item"><span class="dot" style="background:#a78bfa"></span> Waiting</div>
-            <div class="item"><span class="dot" style="background:#60a5fa"></span> Engaged</div>
+            <div class="item"><span class="dot" style="background:var(--accent)"></span> Engaged</div>
             <div class="item"><span class="dot" style="background:#86efac"></span> Succeed</div>
         </div>
 
         <div class="emr-content">
             <div class="filter-box">
-                <select style="padding:10px;border:none;background:#fff">
+                <select style="padding:10px;border:none;background:var(--surface)">
                     <option>Semua</option>
                 </select>
             </div>
@@ -352,13 +352,13 @@
                 <div style="width:100%;max-width:780px;padding:0 12px">
                     <div class="empty-state">
                         <svg width="160" height="120" viewBox="0 0 160 120" xmlns="http://www.w3.org/2000/svg">
-                            <g fill="none" stroke="#374151" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="18" y="30" width="48" height="48" rx="8" fill="#efe6ff" stroke="#374151" />
-                                <rect x="94" y="30" width="48" height="48" rx="8" fill="#efe6ff" stroke="#374151" />
-                                <circle cx="130" cy="22" r="12" fill="#22c55e" stroke="#22c55e" />
+                            <g fill="none" stroke="var(--muted)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="18" y="30" width="48" height="48" rx="8" fill="rgba(176,141,112,0.08)" stroke="var(--muted)" />
+                                <rect x="94" y="30" width="48" height="48" rx="8" fill="rgba(176,141,112,0.08)" stroke="var(--muted)" />
+                                <circle cx="130" cy="22" r="12" fill="#86efac" stroke="#86efac" />
                                 <path d="M126 22h8" stroke="#fff" stroke-width="3" stroke-linecap="round" />
-                                <path d="M40 82v14" stroke="#374151" stroke-width="4" />
-                                <path d="M120 82v14" stroke="#374151" stroke-width="4" />
+                                <path d="M40 82v14" stroke="var(--muted)" stroke-width="4" />
+                                <path d="M120 82v14" stroke="var(--muted)" stroke-width="4" />
                             </g>
                         </svg>
                         <h3>Tidak ada antrean pasien hari ini</h3>

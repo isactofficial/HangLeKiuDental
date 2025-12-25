@@ -77,9 +77,9 @@
         }
 
         /* Collapsible styles */
-        .collapse-toggle{width:100%;display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:8px;border:1px solid #eef2f7;background:#fff;cursor:pointer;font-size:14px;font-weight:600}
-        .collapse-toggle:hover{background:#f8fafc}
-        .collapse-toggle:focus{outline:none;box-shadow:0 0 0 3px rgba(59,130,246,0.12)}
+        .collapse-toggle{width:100%;display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:8px;border:1px solid rgba(0,0,0,0.04);background:var(--surface);cursor:pointer;font-size:14px;font-weight:600}
+        .collapse-toggle:hover{background:var(--main-bg)}
+        .collapse-toggle:focus{outline:none;box-shadow:0 0 0 3px rgba(176,141,112,0.12)}
         .collapse-content{overflow:hidden;max-height:0;transition:max-height 280ms ease;padding:0 4px}
         .collapsible.open .collapse-content{max-height:1000px;padding-top:12px}
         .chevron{transition:transform 200ms ease;color:#374151}
@@ -87,8 +87,8 @@
         .terms-card .btn-terms{font-weight:600}
         .terms-row:hover{background:#fbfdff}
         /* User dropdown (copied from partials/topbar for consistent behaviour) */
-        .user-dropdown{display:flex;align-items:center;gap:10px;background:#3b82f6;padding:8px 14px;border-radius:10px;cursor:pointer;color:#fff;box-shadow:0 6px 18px rgba(59,130,246,0.12)}
-        .user-avatar{width:34px;height:34px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center}
+        .user-dropdown{display:flex;align-items:center;gap:10px;background:var(--action);padding:8px 14px;border-radius:10px;cursor:pointer;color:#fff;box-shadow:0 6px 18px rgba(0,0,0,0.06)}
+        .user-avatar{width:34px;height:34px;border-radius:50%;background:var(--surface);display:flex;align-items:center;justify-content:center}
         .user-dropdown span{color:#fff;font-size:15px;font-weight:600}
         .user-dropdown-container{position:relative}
         .user-dropdown-menu{position:absolute;top:100%;right:0;margin-top:8px;background:#fff;border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,0.12);min-width:220px;display:none;overflow:hidden;z-index:160}
@@ -115,7 +115,7 @@
 
                 <div class="user-dropdown-container">
                     <div class="user-dropdown" onclick="toggleUserMenu()">
-                        <div class="user-avatar"><i class="fas fa-user" style="color:#3b82f6;font-size:14px"></i></div>
+                        <div class="user-avatar"><i class="fas fa-user" style="color:var(--accent);font-size:14px"></i></div>
                         <span>{{ Auth::user()->name ?? 'Admin' }}</span>
                         <i class="fas fa-chevron-down" style="color:white;font-size:12px"></i>
                     </div>
@@ -155,7 +155,7 @@
                             <h2 class="big-title">Telekonsultasi</h2>
                             <p class="meta">Konsultasi dokter lewat genggaman Anda, kapan saja dan di mana saja.</p>
                             <div class="muted" style="margin-top:8px;display:flex;align-items:center;gap:8px">
-                                <i class="fas fa-info-circle" style="color:#6b7280;font-size:16px"></i>
+                                <i class="fas fa-info-circle" style="color:var(--muted);font-size:16px"></i>
                                 <div>1.570 klinik telah menggunakan fitur ini.</div>
                             </div>
                         </div>
@@ -238,8 +238,8 @@
                         </div>
                     </div>
 
-                    <div class="card muted" style="text-align:center">
-                        <i class="fas fa-info-circle" style="color:#3b82f6;font-size:20px;margin-bottom:8px"></i>
+                        <div class="card muted" style="text-align:center">
+                        <i class="fas fa-info-circle" style="color:var(--accent);font-size:20px;margin-bottom:8px"></i>
                         <div style="font-size:13px">Butuh bantuan? Hubungi tim support kami.</div>
                     </div>
                 </aside>

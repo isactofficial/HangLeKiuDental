@@ -13,21 +13,7 @@
         <a href="{{ route('registration') }}" class="sidebar-item" title="Registration">
             <i class="fas fa-calendar-alt"></i>
         </a>
-        <div class="sidebar-item" title="Waktu">
-            <i class="fas fa-user-clock"></i>
-        </div>
-        <div class="sidebar-item" title="Users">
-            <i class="fas fa-users"></i>
-        </div>
-        <div class="sidebar-item" title="Medical">
-            <i class="fas fa-notes-medical"></i>
-        </div>
-        <div class="sidebar-item" title="Pharmacy">
-            <i class="fas fa-capsules"></i>
-        </div>
-        <div class="sidebar-item" title="Inventory">
-            <i class="fas fa-box"></i>
-        </div>
+        <!-- removed unused icon-only items: Waktu, Users, Medical, Pharmacy, Inventory -->
         <a href="{{ route('cashier') }}" class="sidebar-item" title="Kasir">
             <i class="fas fa-cash-register"></i>
         </a>
@@ -40,9 +26,7 @@
         <a href="{{ route('layanan.tambahan') }}" class="sidebar-item" title="Layanan Tambahan">
             <i class="fas fa-puzzle-piece"></i>
         </a>
-        <div class="sidebar-item" title="Reports">
-            <i class="fas fa-chart-bar"></i>
-        </div>
+        <!-- keep Settings item as requested -->
         <div class="sidebar-item" title="Settings">
             <i class="fas fa-cog"></i>
         </div>
@@ -58,21 +42,37 @@
 <div id="sidebarBackdrop" class="sidebar-backdrop" aria-hidden="true"></div>
 
 <style>
+    :root{
+        --surface: #FFFFFF; /* Sidebar/Header surface */
+        --main-bg: #FAF9F6; /* Main background warm off-white */
+        --accent: #B08D70; /* Wood tone accent */
+        --action: #5F6F65; /* Button / action color (deep sage) */
+        --text: #484848; /* Soft black text */
+        --muted: #94a3b8; /* fallback muted */
+    }
+    :root{
+        --sidebar-width:60px; /* desktop sidebar width */
+        --sidebar-compact-left:72px; /* default left offset used by topbar/hamburger */
+    }
     /* Desktop sidebar base styles (centralized) */
-    .sidebar{width:60px;background:#1a365d;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:15px 0;position:fixed;left:0;top:0;z-index:100;overflow-y:auto;max-height:100vh;box-shadow: 1px 0 0 #1a365d;}
-    .sidebar-logo{width:48px;height:48px;background:#3b82f6;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:30px}
+    .sidebar{width:var(--sidebar-width);background:var(--surface);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:15px 0;position:fixed;left:0;top:0;z-index:100;overflow-y:auto;max-height:100vh;box-shadow:0 1px 3px rgba(0,0,0,0.06)}
+    .sidebar-logo{width:48px;height:48px;background:var(--accent);border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:30px}
     .sidebar-logo i { font-size: 32px; color: #fff; }
     .sidebar-menu .sidebar-item i { font-size: 24px; }
     .sidebar-menu{display:flex;flex-direction:column;gap:8px;width:100%}
-    .sidebar-item{width:100%;padding:12px 0;display:flex;justify-content:center;color:#94a3b8;cursor:pointer;text-decoration:none;position:relative}
-    .sidebar-item.active{color:#fff;background:rgba(59,130,246,0.2)}
-    .sidebar-item.active::before{content:'';position:absolute;left:0;top:0;height:100%;width:3px;background:#3b82f6}
-    .logout-sidebar{color:#94a3b8}
-    .logout-sidebar:hover{color:#fff;background:rgba(59,130,246,0.2)}
+    .sidebar-item{width:100%;padding:12px 0;display:flex;justify-content:center;color:var(--muted);cursor:pointer;text-decoration:none;position:relative}
+    .sidebar-item.active{color:var(--surface);background:rgba(176,141,112,0.08)}
+    .sidebar-item.active::before{content:'';position:absolute;left:0;top:0;height:100%;width:3px;background:var(--accent)}
+    .logout-sidebar{color:var(--muted)}
+    .logout-sidebar:hover{color:var(--surface);background:rgba(176,141,112,0.08)}
+
+    /* Ensure main content leaves room for the sidebar on larger screens */
+    .main{margin-left:var(--sidebar-width);transition:margin-left .18s ease}
+
 
     /* Mobile hamburger + sidebar overrides (applies after page CSS) */
-    .hamburger.global-hamburger{display:none;position:fixed;left:72px;top:18px;z-index:260;background:#223a5f;color:#fff;border-radius:10px;width:40px;height:40px;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.08)}
-    .hamburger.global-hamburger i{font-size:18px}
+    .hamburger.global-hamburger{display:none;position:fixed;left:calc(var(--sidebar-width) + 12px);top:18px;z-index:260;background:var(--surface);color:var(--accent);border-radius:8px;width:36px;height:36px;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.08)}
+    .hamburger.global-hamburger i{font-size:16px;color:var(--accent)}
 
     .sidebar-backdrop{display:none}
 
@@ -92,6 +92,9 @@
 
         /* ensure page headers/content leave room for the hamburger */
         .main-content .header{padding-left:72px}
+
+        /* On small screens, remove left margin so content is full width */
+        .main{margin-left:0}
 
         /* backdrop */
         .sidebar-backdrop{display:block;position:fixed;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,0.35);z-index:200;opacity:0;transition:opacity .18s ease;pointer-events:none}
@@ -128,6 +131,47 @@
         document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeSidebar(); });
     })();
 </script>
+
+    <script>
+        // Global logout handler: submit logout via fetch then redirect to login
+        (function(){
+            function getCsrf(){
+                var m = document.querySelector('meta[name="csrf-token"]');
+                if(m) return m.getAttribute('content');
+                var t = document.querySelector('input[name="_token"]');
+                return t ? t.value : null;
+            }
+
+            document.addEventListener('DOMContentLoaded', function(){
+                var forms = Array.from(document.querySelectorAll('form[action*="logout"]'));
+                if(!forms.length) return;
+                forms.forEach(function(f){
+                    // avoid double-binding
+                    if(f.__logout_bound) return; f.__logout_bound = true;
+                    f.addEventListener('submit', function(e){
+                        e.preventDefault();
+                        var action = this.action;
+                        var token = getCsrf();
+                        // send POST request, then redirect to login regardless of outcome
+                        fetch(action, {
+                            method: 'POST',
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'X-CSRF-TOKEN': token || '',
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+                            },
+                            body: new URLSearchParams()
+                        }).then(function(){
+                            window.location.href = '{{ route('login') }}';
+                        }).catch(function(){
+                            window.location.href = '{{ route('login') }}';
+                        });
+                    });
+                });
+            });
+        })();
+    </script>
 
     <script>
         // Universal hamburger visibility handler

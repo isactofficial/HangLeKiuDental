@@ -17,7 +17,8 @@
 
         body {
             font-family: 'Poppins', sans-serif;
-            background-color: #1e3a5f;
+            background-color: var(--main-bg);
+            color: var(--text);
             min-height: 100vh;
             display: flex;
         }
@@ -28,28 +29,29 @@
         .main-content {
             flex: 1;
             margin-left: 60px;
-            background: #1e3a5f;
+            background: var(--main-bg);
             min-height: 100vh;
         }
 
         /* Header */
         .header {
-            background: #1e3a5f;
+            background: var(--surface);
             padding: 15px 25px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
         }
 
         .header-left h1 {
-            color: white;
+            color: var(--text);
             font-size: 20px;
             font-weight: 600;
         }
 
         .header-left p {
-            color: #94a3b8;
+            color: var(--muted);
             font-size: 12px;
         }
 
@@ -75,7 +77,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            background: #3b82f6;
+            background: var(--action);
             padding: 8px 15px;
             border-radius: 8px;
             cursor: pointer;
@@ -85,7 +87,7 @@
             width: 30px;
             height: 30px;
             border-radius: 50%;
-            background: white;
+            background: var(--surface);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -174,7 +176,8 @@
         }
 
         .promo-card {
-            background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
+            background: var(--surface);
+            border-left: 6px solid var(--accent);
             border-radius: 12px;
             padding: 20px;
             display: flex;
@@ -190,8 +193,8 @@
         }
 
         .promo-badge {
-            background: white;
-            color: #0f766e;
+            background: var(--accent);
+            color: #fff;
             padding: 4px 12px;
             border-radius: 20px;
             font-size: 11px;
@@ -201,21 +204,21 @@
         }
 
         .promo-content h3 {
-            color: white;
+            color: var(--text);
             font-size: 16px;
             font-weight: 600;
             margin-bottom: 8px;
         }
 
         .promo-content p {
-            color: rgba(255,255,255,0.8);
+            color: var(--muted);
             font-size: 11px;
             margin-bottom: 15px;
             line-height: 1.5;
         }
 
         .promo-btn {
-            background: #f97316;
+            background: var(--action);
             color: white;
             border: none;
             padding: 8px 20px;
@@ -420,8 +423,8 @@
         }
 
         .stat-icon.blue {
-            background: #dbeafe;
-            color: #3b82f6;
+            background: #f1f2f4;
+            color: var(--accent);
         }
 
         .stat-icon.green {
@@ -570,7 +573,7 @@
             border-radius: 50%;
         }
 
-        .legend-dot.blue { background: #3b82f6; }
+        .legend-dot.blue { background: var(--accent); }
         .legend-dot.light-blue { background: #93c5fd; }
         .legend-dot.green { background: #22c55e; }
         .legend-dot.gray { background: #d1d5db; }
@@ -733,35 +736,26 @@
             display: none;
         }
 
-        /* Hamburger Menu */
-        .hamburger {
+          /* Hamburger Menu (standardized) */
+          .hamburger {
               display: none;
-              background: #223a5f;
+              background: var(--surface);
               border: none;
-              padding: 8px;
+              padding: 0;
               cursor: pointer;
-              flex-direction: column;
               justify-content: center;
               align-items: center;
-              height: 40px;
-              width: 40px;
-              border-radius: 10px;
+              height: 36px;
+              width: 36px;
+              border-radius: 8px;
               box-shadow: 0 2px 8px rgba(0,0,0,0.08);
               position: absolute;
               top: 16px;
               left: 16px;
               z-index: 1001;
-        }
+          }
 
-        .hamburger-bar {
-            display: block;
-            width: 24px;
-            height: 3px;
-            background: #fff;
-            margin: 4px 0;
-            border-radius: 2px;
-            transition: all 0.3s;
-        }
+          .hamburger i { font-size: 16px; color: var(--accent); }
 
         /* Responsive */
         @media (max-width: 1200px) {
@@ -779,7 +773,7 @@
             }
             .header-left {
                 position: relative;
-                padding-left: 56px;
+                padding-left: 0;
             }
             .header {
                 min-height: 72px;
@@ -833,10 +827,10 @@
                 white-space: normal;
                 word-break: break-word;
             }
-            .queue-table td:before {
+                .queue-table td:before {
                 content: attr(data-label);
                 font-weight: 600;
-                color: #3b82f6;
+                color: var(--accent);
                 display: block;
                 margin-bottom: 2px;
                 font-size: 11px;
@@ -875,7 +869,7 @@
                 <div class="user-dropdown-container">
                     <div class="user-dropdown" onclick="toggleUserMenu()">
                         <div class="user-avatar">
-                            <i class="fas fa-user" style="color: #3b82f6; font-size: 14px;"></i>
+                            <i class="fas fa-user" style="color: var(--accent); font-size: 14px;"></i>
                         </div>
                         <span>{{ Auth::user()->name ?? 'Admin' }}</span>
                         <i class="fas fa-chevron-down" style="color: white; font-size: 12px;"></i>
@@ -1194,7 +1188,7 @@
                         <button class="queue-btn">
                             <i class="fas fa-filter"></i> FILTER
                         </button>
-                        <button class="queue-btn" style="background: #3b82f6; color: white; border-color: #3b82f6;">
+                        <button class="queue-btn" style="background: var(--action); color: white; border-color: var(--action);">
                             <i class="fas fa-plus"></i>
                         </button>
                     </div>
@@ -1244,7 +1238,7 @@
                 labels: ['-7H', '-6H', '-5H', '-4H', '-3H', '-2H', '-1H', '0', '1', '2', '3', '4', '5', '6', '7'],
                 datasets: [{
                     data: [2, 4, 8, 12, 8, 15, 18, 22, 35, 28, 42, 38, 32, 25, 20],
-                    backgroundColor: '#3b82f6',
+                        backgroundColor: '#B08D70',
                     borderRadius: 4,
                     barThickness: 12
                 }]
@@ -1276,7 +1270,7 @@
                 labels: ['Rawat Jalan', 'Rawat Inap', 'Kunjungan Sehat', 'Apotek'],
                 datasets: [{
                     data: [285, 0, 0, 0],
-                    backgroundColor: ['#3b82f6', '#93c5fd', '#22c55e', '#d1d5db'],
+                        backgroundColor: ['#B08D70', '#93c5fd', '#22c55e', '#d1d5db'],
                     borderWidth: 0
                 }]
             },
