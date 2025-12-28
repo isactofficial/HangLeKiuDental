@@ -95,6 +95,16 @@
                 align-items: center;
                 justify-content: center;
             }
+            .emr-header-logo .avatar{width:36px;height:36px;border-radius:8px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700}
+            /* Hide duplicated small logo so only profile pill appears */
+            .emr-header-logo{display:none}
+
+            /* Profile pill style to match requested design */
+            .user-btn{background:var(--action);color:#fff;padding:8px 12px;border-radius:10px;display:flex;align-items:center;gap:10px;cursor:pointer;border:none;font-weight:600}
+            .user-avatar{width:30px;height:30px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;color:var(--action);font-weight:700}
+            .user-avatar i{color:var(--action);font-size:14px}
+            .user-btn span{color:#fff;font-weight:600}
+            .user-btn .fa-chevron-down{color:rgba(255,255,255,0.9);font-size:12px}
             .emr-header-user {
                 position: relative;
             }
@@ -298,14 +308,14 @@
             </div>
             <div class="emr-header-right">
                     <div class="emr-header-logo">
-                    <img src="/css/responsive.css" alt="logo" style="width:26px;height:26px;opacity:0.8;filter:grayscale(100%) saturate(60%);">
-                </div>
-                    <div class="emr-header-user">
-                    <div class="user-dropdown user-btn" role="button" tabindex="0">
-                        <div class="user-avatar"><i class="fas fa-user" style="color:var(--accent);font-size:14px"></i></div>
-                        <span>Admin</span>
-                        <i class="fas fa-chevron-down"></i>
+                        <span class="avatar">{{ strtoupper(substr(auth()->user()->name ?? 'U',0,1)) }}</span>
                     </div>
+                        <div class="emr-header-user">
+                        <div class="user-dropdown user-btn" role="button" tabindex="0">
+                            <div class="user-avatar"><i class="fas fa-user" style="color:var(--accent);font-size:14px"></i></div>
+                            <span>{{ auth()->user()->name ?? 'User' }}</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
                     <div class="dropdown-menu">
                         <a href="/profile" class="dropdown-item">
                             <i class="fas fa-user" style="margin-right:8px;color:var(--muted);"></i> Profile

@@ -897,6 +897,18 @@
 
         <!-- Content -->
         <div class="content">
+            @if(session('warning'))
+                <div style="background:#fff4e5;border:1px solid #fde3b7;padding:12px;border-radius:8px;margin-bottom:12px;color:#92400e">
+                    {{ session('warning') }}
+                </div>
+            @endif
+
+            @if(!empty($show_doctor_panel) && $show_doctor_panel)
+                <div style="margin-bottom:18px">
+                    @include('doctor.partials.panel_full', ['appointments' => $appointments, 'doctor' => $doctor, 'date' => $date])
+                </div>
+            @endif
+            @if(empty($show_doctor_panel) || !$show_doctor_panel)
             <!-- Promo Banners Slider -->
             <section class="promo-section">
                 <button class="slider-nav prev" onclick="moveSlide(-1)">
@@ -1210,6 +1222,7 @@
                     </table>
                 </div>
             </section>
+            @endif
         </div>
     </main>
 
@@ -1369,6 +1382,27 @@
         .header-left h1 { font-size: 16px; }
         .header-right { gap: 8px; }
     }
+
+    /* Doctor panel tidy styles */
+    .doctor-panel { max-width: 1100px; margin: 0; }
+    .doctor-panel .panel-card { background: #ffffff; padding: 18px; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.04); margin-bottom: 16px; }
+    .doctor-panel .panel-title { margin: 0 0 6px 0; font-size: 18px; font-weight: 700; color: #2b2b2b; }
+    .doctor-panel .panel-subtitle { margin: 0 0 12px 0; font-size: 13px; color: #94a3b8; }
+    .doctor-panel .panel-title-small { margin: 0 0 8px 0; font-size: 16px; font-weight: 600; color: #2b2b2b; }
+    .doctor-panel .panel-actions { display:flex; gap:12px; margin-top:12px; }
+    .doctor-panel .action-link { color: #5b21b6; text-decoration: underline; font-weight:500 }
+    .doctor-panel table thead th { color:#94a3b8; font-size:13px; font-weight:600; padding:10px 6px; text-align:left }
+    .doctor-panel table tbody td { padding:14px 6px; vertical-align:top; border-top:1px solid #eef2f7; color:#484848 }
+    .doctor-panel .panel-body { margin-top:6px }
+    .doctor-panel .panel-header { display:flex; justify-content:space-between; align-items:flex-start; gap:16px }
+    .panel-date-controls { display:flex; align-items:center; gap:10px }
+    .panel-date-controls .date-arrow { background:transparent;border:1px solid rgba(0,0,0,0.06);width:34px;height:34px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--accent);font-size:18px }
+    .panel-date-controls .date-display { text-align:left }
+    .panel-date-controls .day-name{ font-weight:700; color:var(--accent); font-size:14px }
+    .panel-date-controls .date-text{ font-size:13px; color:var(--muted) }
+    .panel-date-controls .today-btn{ background:var(--action); color:#fff; padding:8px 12px; border-radius:8px; border:none; cursor:pointer }
+    .doctor-panel .panel-header { display:flex; justify-content:space-between; align-items:flex-start; gap:16px }
+    .doctor-panel .panel-date-form input[type="date"] { padding:6px 8px; border:1px solid #e6e9ee; border-radius:6px; background:white }
 </style>
 
 </body>

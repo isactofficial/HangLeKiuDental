@@ -8,16 +8,30 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/responsive.css">
     <style>
-        /* Minimal styles copied from login to keep look consistent */
+        /* Admin palette variables (match sidebar / topbar) */
+        :root{
+            --surface: #FFFFFF;
+            --main-bg: #FAF9F6;
+            --accent: #B08D70; /* wood tone */
+            --action: #5F6F65; /* button / action color */
+            --text: #484848;
+            --muted: #94a3b8;
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Poppins', sans-serif; background-color: #f5f5f5; min-height: 100vh; display:flex; align-items:center; justify-content:center; }
-        .card { background:white; padding:32px; border-radius:12px; box-shadow:0 6px 24px rgba(0,0,0,0.08); width:380px; }
-        .logo-text { font-size:24px; color:#2196F3; font-weight:700; text-align:center; margin-bottom:20px; }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--main-bg); color: var(--text); min-height: 100vh; display:flex; align-items:center; justify-content:center; }
+        .card { background:var(--surface); padding:32px; border-radius:12px; box-shadow:0 6px 24px rgba(0,0,0,0.08); width:380px; }
+        .logo-text { font-size:24px; color:var(--accent); font-weight:700; text-align:center; margin-bottom:20px; }
         .form-group { margin-bottom:18px; }
-        .form-group input { width:100%; padding:12px 8px; border:none; border-bottom:1px solid #e0e0e0; outline:none; }
-        .btn { width:100%; padding:12px; background:linear-gradient(135deg,#5BA3E0 0%,#3B82C4 100%); color:white; border:none; border-radius:8px; cursor:pointer; }
-        .muted { text-align:center; margin-top:12px; font-size:14px; }
+        .form-group input { width:100%; padding:12px 8px; border:none; border-bottom:1px solid #e6e6e6; outline:none; background:transparent; color:var(--text); }
+        .form-group input::placeholder{ color: #9aa4a0; }
+        .btn { width:100%; padding:12px; background:var(--action); color:white; border:none; border-radius:8px; cursor:pointer; font-weight:600; }
+        .btn:hover{ filter:brightness(.98); transform:translateY(-1px); }
+        .muted { text-align:center; margin-top:12px; font-size:14px; color:var(--muted); }
         .error { color:#dc2626; font-size:13px; margin-top:6px; }
+
+        a.link-action{ color:var(--action); font-weight:600; text-decoration:none }
+        a.link-action:hover{ text-decoration:underline }
 
         /* Responsive adjustments */
         @media (max-width: 992px) {
@@ -63,6 +77,8 @@
             <div class="form-group">
                 <input type="password" name="password_confirmation" placeholder="Konfirmasi Password" required autocomplete="new-password">
             </div>
+
+            <!-- Role selection removed for public registration; default role = Dokter -->
 
             <button type="submit" class="btn">Daftar</button>
         </form>

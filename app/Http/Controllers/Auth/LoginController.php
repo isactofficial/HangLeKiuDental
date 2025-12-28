@@ -37,6 +37,17 @@ class LoginController extends Controller
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
 
+            $user = Auth::user();
+            // Redirect doctor users to doctor dashboard, admins to admin dashboard
+            if (method_exists($user, 'isDoctor') && $user->isDoctor()) {
+                return redirect()->intended(route('doctor.dashboard'));
+            }
+
+            if (method_exists($user, 'isAdmin') && $user->isAdmin()) {
+                return redirect()->intended(route('dashboard'));
+            }
+
+            // Fallback
             return redirect()->intended('/dashboard');
         }
 

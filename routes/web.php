@@ -5,10 +5,16 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\BookingController;
 
 Route::get('/', function () {
     return view('welcome');
 });
+
+// Public booking routes (allow patients to book themselves)
+Route::get('/booking', [BookingController::class, 'create'])->name('booking.create');
+Route::post('/booking', [BookingController::class, 'store'])->name('booking.store');
+
 
 // Route untuk login
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
@@ -44,7 +50,7 @@ Route::middleware('auth')->group(function () {
     
     Route::get('/dashboard', function () {
         return view('dashboard');
-    })->name('dashboard');
+    })->name('dashboard')->middleware(\App\Http\Middleware\IsAdmin::class);
 
     Route::get('/registration', function () {
         return view('registration');
@@ -83,26 +89,70 @@ Route::middleware('auth')->group(function () {
     // Electronic Medical Record page
     Route::get('/emr', function () {
         return view('emr');
-    })->name('emr');
+    })->name('emr')->middleware(\App\Http\Middleware\DoctorRestrictPages::class);
 
     // Halaman Kasir
     Route::get('/cashier', function() {
         return view('cashier');
     })->name('cashier');
-    
-        // Layanan Tambahan - AntriCepat (now as layanan.tambahan)
-        Route::get('/layanan-tambahan', function () {
-            return view('layanan.tambahan');
-        })->name('layanan.tambahan');
 
-        // Layanan Telekonsultasi
-        Route::get('/layanan/telekonsultasi', function () {
-            return view('layanan.telekonsultasi');
-        })->name('layanan.telekonsultasi');
+    // Rawat Jalan schedule page
+    Route::get('/rawat-jalan', function () {
+        $doctors = \App\Models\Doctor::orderBy('id')->get();
+        return view('rawat-jalan', compact('doctors'));
+    })->name('rawat.jalan')->middleware(\App\Http\Middleware\DoctorRestrictPages::class);
+
+    // Doctor-specific dashboard (dokter dan admin boleh mengakses)
+    Route::get('/doctor-dashboard', function () {
+        $user = auth()->user();
+        $date = request()->query('date', now()->toDateString());
+
+        if(method_exists($user, 'isAdmin') && $user->isAdmin()){
+            $appointments = \App\Models\Appointment::with('doctor')
+                ->whereDate('start_at', $date)
+                ->orderBy('start_at')
+                ->get();
+            $doctor = null;
+            // Render the main admin dashboard but include doctor panel inside it
+            return view('dashboard', ['appointments' => $appointments, 'doctor' => $doctor, 'date' => $date, 'show_doctor_panel' => true]);
+        } else {
+            $doctor = \App\Models\Doctor::where('name', $user->name)->first();
+            $appointments = $doctor
+                ? \App\Models\Appointment::where('doctor_id', $doctor->id)->whereDate('start_at', $date)->orderBy('start_at')->get()
+                : collect();
+        }
+
+        return view('doctor.dashboard', compact('appointments', 'doctor', 'date'));
+    })->name('doctor.dashboard')->middleware(\App\Http\Middleware\IsDoctor::class);
+
+    // Appointments API for schedule (returns JSON)
+    Route::get('/appointments', [BookingController::class, 'index'])->name('appointments.index');
+
+    // Route to reset doctor's allowed page (clear selection)
+    Route::post('/doctor/reset', function () {
+        session()->forget('doctor_allowed');
+        return back();
+    })->name('doctor.reset');
     
-        // Layanan Add Ons
-        Route::get('/layanan/add-ons', function () {
-            return view('layanan.addons');
-        })->name('layanan.addons');
+    // Admin-only user management
+    Route::middleware(\App\Http\Middleware\IsAdmin::class)->group(function () {
+        Route::get('/admin/users/create', [\App\Http\Controllers\AdminUserController::class, 'create'])->name('admin.users.create');
+        Route::post('/admin/users', [\App\Http\Controllers\AdminUserController::class, 'store'])->name('admin.users.store');
+    });
+
+    // Layanan Tambahan - AntriCepat (now as layanan.tambahan)
+    Route::get('/layanan-tambahan', function () {
+        return view('layanan.tambahan');
+    })->name('layanan.tambahan');
+
+    // Layanan Telekonsultasi
+    Route::get('/layanan/telekonsultasi', function () {
+        return view('layanan.telekonsultasi');
+    })->name('layanan.telekonsultasi');
+
+    // Layanan Add Ons
+    Route::get('/layanan/add-ons', function () {
+        return view('layanan.addons');
+    })->name('layanan.addons');
 });
 

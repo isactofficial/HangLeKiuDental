@@ -16,25 +16,31 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Admin user
-        User::create([
-            'name' => 'Admin',
+        // Admin user (idempotent)
+        User::firstOrCreate([
             'email' => 'admin@hanglekiu.com',
+        ], [
+            'name' => 'Admin',
             'password' => Hash::make('password123'),
+            'role' => 'admin',
         ]);
 
-        // Doctor user
-        User::create([
-            'name' => 'Dr. John Doe',
+        // Doctor user (idempotent)
+        User::firstOrCreate([
             'email' => 'dokter@hanglekiu.com',
+        ], [
+            'name' => 'Dr. John Doe',
             'password' => Hash::make('password123'),
+            'role' => 'doctor',
         ]);
 
-        // Staff user
-        User::create([
-            'name' => 'Staff Klinik',
+        // Staff user (idempotent)
+        User::firstOrCreate([
             'email' => 'staff@hanglekiu.com',
+        ], [
+            'name' => 'Staff Klinik',
             'password' => Hash::make('password123'),
+            'role' => 'admin',
         ]);
     }
 }

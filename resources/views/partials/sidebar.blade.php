@@ -7,11 +7,23 @@
         <i class="fas fa-tooth"></i>
     </div>
     <nav class="sidebar-menu">
-        <a href="{{ route('dashboard') }}" class="sidebar-item" title="Dashboard">
-            <i class="fas fa-th-large"></i>
-        </a>
-        <a href="{{ route('registration') }}" class="sidebar-item" title="Registration">
-            <i class="fas fa-calendar-alt"></i>
+        @if(auth()->check() && method_exists(auth()->user(), 'isAdmin') && auth()->user()->isAdmin())
+            <a href="{{ route('dashboard') }}" class="sidebar-item" title="Dashboard">
+                <i class="fas fa-th-large"></i>
+            </a>
+            <a href="{{ route('registration') }}" class="sidebar-item" title="Registration">
+                <i class="fas fa-calendar-alt"></i>
+            </a>
+        @endif
+
+        {{-- Doctor dashboard: visible to doctors and admins --}}
+        @if(auth()->check() && method_exists(auth()->user(), 'isDoctor') && (auth()->user()->isDoctor() || auth()->user()->isAdmin()))
+            <a href="{{ route('doctor.dashboard') }}" class="sidebar-item" title="Dashboard Dokter">
+                <i class="fas fa-user-md"></i>
+            </a>
+        @endif
+        <a href="{{ route('rawat.jalan') }}" class="sidebar-item" title="Rawat Jalan">
+            <i class="fas fa-clinic-medical"></i>
         </a>
         <!-- removed unused icon-only items: Waktu, Users, Medical, Pharmacy, Inventory -->
         <a href="{{ route('cashier') }}" class="sidebar-item" title="Kasir">
@@ -23,20 +35,17 @@
         <a href="{{ route('procedures.index') }}" class="sidebar-item" title="Katalog Harga Prosedur">
             <i class="fas fa-tags"></i>
         </a>
-        <a href="{{ route('layanan.tambahan') }}" class="sidebar-item" title="Layanan Tambahan">
-            <i class="fas fa-puzzle-piece"></i>
-        </a>
+        @unless(auth()->check() && method_exists(auth()->user(), 'isAdmin') && auth()->user()->isAdmin())
+            <a href="{{ route('layanan.tambahan') }}" class="sidebar-item" title="Layanan Tambahan">
+                <i class="fas fa-puzzle-piece"></i>
+            </a>
+        @endunless
         <!-- keep Settings item as requested -->
         <div class="sidebar-item" title="Settings">
             <i class="fas fa-cog"></i>
         </div>
     </nav>
-    <form action="{{ route('logout') }}" method="POST" style="margin-top:auto;width:100%">
-        @csrf
-        <button type="submit" class="sidebar-item logout-sidebar" title="Logout" style="border:none;background:transparent;width:100%;cursor:pointer">
-            <i class="fas fa-sign-out-alt"></i>
-        </button>
-    </form>
+    <!-- logout moved to header/profile dropdown for doctor views -->
 </aside>
 
 <div id="sidebarBackdrop" class="sidebar-backdrop" aria-hidden="true"></div>
