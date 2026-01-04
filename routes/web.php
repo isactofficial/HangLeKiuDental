@@ -6,10 +6,21 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\LayananController;
+use App\Http\Controllers\PublicPageController;
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('index');
 });
+
+// Public header pages
+Route::get('/our-dentists', [PublicPageController::class, 'dentists'])->name('pages.dentists');
+Route::get('/artikel', [PublicPageController::class, 'articles'])->name('pages.articles');
+
+// Public layanan & perawatan pages
+Route::get('/layanan/{slug}', [LayananController::class, 'show'])
+    ->where('slug', 'bleaching|gigi-tiruan|implan-gigi|orthodontics|pencabutan-gigi|perawatan-gigi-anak|perawatan-saluran-akar|scaling|tambal-gigi|veneer')
+    ->name('layanan.show');
 
 // Public booking routes (allow patients to book themselves)
 Route::get('/booking', [BookingController::class, 'create'])->name('booking.create');
@@ -89,7 +100,7 @@ Route::middleware('auth')->group(function () {
     // Electronic Medical Record page
     Route::get('/emr', function () {
         return view('emr');
-    })->name('emr')->middleware(\App\Http\Middleware\DoctorRestrictPages::class);
+    })->name('emr');
 
     // Halaman Kasir
     Route::get('/cashier', function() {
@@ -128,6 +139,12 @@ Route::middleware('auth')->group(function () {
     // Appointments API for schedule (returns JSON)
     Route::get('/appointments', [BookingController::class, 'index'])->name('appointments.index');
 
+    // Simple profile page for authenticated users
+    Route::get('/profile', function () {
+        $user = auth()->user();
+        return view('profile.show', compact('user'));
+    })->name('profile.show');
+
     // Route to reset doctor's allowed page (clear selection)
     Route::post('/doctor/reset', function () {
         session()->forget('doctor_allowed');
@@ -136,8 +153,10 @@ Route::middleware('auth')->group(function () {
     
     // Admin-only user management
     Route::middleware(\App\Http\Middleware\IsAdmin::class)->group(function () {
+        Route::get('/admin/users', [\App\Http\Controllers\AdminUserController::class, 'index'])->name('admin.users.index');
         Route::get('/admin/users/create', [\App\Http\Controllers\AdminUserController::class, 'create'])->name('admin.users.create');
         Route::post('/admin/users', [\App\Http\Controllers\AdminUserController::class, 'store'])->name('admin.users.store');
+        Route::post('/admin/users/{user}/role', [\App\Http\Controllers\AdminUserController::class, 'updateRole'])->name('admin.users.updateRole');
     });
 
     // Layanan Tambahan - AntriCepat (now as layanan.tambahan)

@@ -9,7 +9,13 @@ class Doctor extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name','specialty','practice_days']; // practice_days stored as JSON array of weekday numbers 0(Sun)-6(Sat)
+    protected $fillable = [
+        'name',
+        'specialty',
+        'practice_days',
+        'practice_start_time',
+        'practice_end_time',
+    ]; // practice_days stored as JSON array of weekday numbers 0(Sun)-6(Sat)
 
     protected $casts = [
         'practice_days' => 'array',

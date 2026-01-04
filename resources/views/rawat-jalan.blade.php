@@ -128,8 +128,9 @@
                         <!-- Repeat time rows (15-min interval snippet to match image) -->
                         @php
                             $times = [];
-                            for($h=0;$h<3;$h++){
-                                for($m=0;$m<60;$m+=15){
+                            // generate 15-minute slots for a full day: 00:00 -> 23:45
+                            for($h=0; $h<24; $h++){
+                                for($m=0; $m<60; $m+=15){
                                     $times[] = sprintf('%02d:%02d WIB', $h, $m);
                                 }
                             }

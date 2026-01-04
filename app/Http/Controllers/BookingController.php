@@ -47,6 +47,19 @@ class BookingController extends Controller
             return back()->withErrors(['doctor_id' => 'Dokter tidak praktek pada hari yang dipilih'])->withInput();
         }
 
+        // check practice hours (if configured)
+        if ($doctor->practice_start_time && $doctor->practice_end_time) {
+            $practiceStart = \Carbon\Carbon::parse($date . ' ' . $doctor->practice_start_time, config('app.timezone'));
+            $practiceEnd = \Carbon\Carbon::parse($date . ' ' . $doctor->practice_end_time, config('app.timezone'));
+
+            if ($startAt->lt($practiceStart) || $endAt->gt($practiceEnd)) {
+                if ($request->wantsJson()) {
+                    return response()->json(['error' => 'Jam booking di luar jam praktek dokter'], 422);
+                }
+                return back()->withErrors(['time' => 'Jam booking di luar jam praktek dokter'])->withInput();
+            }
+        }
+
         // check overlapping appointments for same doctor (start < existing.end AND end > existing.start)
         $overlap = Appointment::where('doctor_id', $doctor->id)
             ->where('start_at', '<', $endAt)

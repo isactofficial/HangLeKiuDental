@@ -2,48 +2,66 @@
     <i class="fas fa-bars"></i>
 </button>
 
+@php
+    $isDoctor = auth()->check() && method_exists(auth()->user(), 'isDoctor') && auth()->user()->isDoctor();
+    $isAdmin = auth()->check() && method_exists(auth()->user(), 'isAdmin') && auth()->user()->isAdmin();
+@endphp
+
 <aside class="sidebar" id="appSidebar" style="overflow-y:auto;max-height:100vh;">
     <div class="sidebar-logo">
         <i class="fas fa-tooth"></i>
     </div>
     <nav class="sidebar-menu">
-        @if(auth()->check() && method_exists(auth()->user(), 'isAdmin') && auth()->user()->isAdmin())
-            <a href="{{ route('dashboard') }}" class="sidebar-item" title="Dashboard">
-                <i class="fas fa-th-large"></i>
-            </a>
-            <a href="{{ route('registration') }}" class="sidebar-item" title="Registration">
-                <i class="fas fa-calendar-alt"></i>
-            </a>
-        @endif
-
-        {{-- Doctor dashboard: visible to doctors and admins --}}
-        @if(auth()->check() && method_exists(auth()->user(), 'isDoctor') && (auth()->user()->isDoctor() || auth()->user()->isAdmin()))
+        @if($isDoctor && !$isAdmin)
             <a href="{{ route('doctor.dashboard') }}" class="sidebar-item" title="Dashboard Dokter">
                 <i class="fas fa-user-md"></i>
             </a>
-        @endif
-        <a href="{{ route('rawat.jalan') }}" class="sidebar-item" title="Rawat Jalan">
-            <i class="fas fa-clinic-medical"></i>
-        </a>
-        <!-- removed unused icon-only items: Waktu, Users, Medical, Pharmacy, Inventory -->
-        <a href="{{ route('cashier') }}" class="sidebar-item" title="Kasir">
-            <i class="fas fa-cash-register"></i>
-        </a>
-        <a href="{{ route('emr') }}" class="sidebar-item" title="EMR">
-            <i class="fas fa-plus-square"></i>
-        </a>
-        <a href="{{ route('procedures.index') }}" class="sidebar-item" title="Katalog Harga Prosedur">
-            <i class="fas fa-tags"></i>
-        </a>
-        @unless(auth()->check() && method_exists(auth()->user(), 'isAdmin') && auth()->user()->isAdmin())
-            <a href="{{ route('layanan.tambahan') }}" class="sidebar-item" title="Layanan Tambahan">
-                <i class="fas fa-puzzle-piece"></i>
+        @else
+            @if($isAdmin)
+                <a href="{{ route('dashboard') }}" class="sidebar-item" title="Dashboard">
+                    <i class="fas fa-th-large"></i>
+                </a>
+                <a href="{{ route('registration') }}" class="sidebar-item" title="Registration">
+                    <i class="fas fa-calendar-alt"></i>
+                </a>
+            @endif
+
+            {{-- Doctor dashboard: visible to doctors and admins --}}
+            @if(auth()->check() && method_exists(auth()->user(), 'isDoctor') && (auth()->user()->isDoctor() || auth()->user()->isAdmin()))
+                <a href="{{ route('doctor.dashboard') }}" class="sidebar-item" title="Dashboard Dokter">
+                    <i class="fas fa-user-md"></i>
+                </a>
+            @endif
+
+            <a href="{{ route('rawat.jalan') }}" class="sidebar-item" title="Rawat Jalan">
+                <i class="fas fa-clinic-medical"></i>
             </a>
-        @endunless
-        <!-- keep Settings item as requested -->
-        <div class="sidebar-item" title="Settings">
-            <i class="fas fa-cog"></i>
-        </div>
+            <!-- removed unused icon-only items: Waktu, Users, Medical, Pharmacy, Inventory -->
+            <a href="{{ route('cashier') }}" class="sidebar-item" title="Kasir">
+                <i class="fas fa-cash-register"></i>
+            </a>
+            <a href="{{ route('emr') }}" class="sidebar-item" title="EMR">
+                <i class="fas fa-plus-square"></i>
+            </a>
+            <a href="{{ route('procedures.index') }}" class="sidebar-item" title="Katalog Harga Prosedur">
+                <i class="fas fa-tags"></i>
+            </a>
+            @unless($isAdmin)
+                <a href="{{ route('layanan.tambahan') }}" class="sidebar-item" title="Layanan Tambahan">
+                    <i class="fas fa-puzzle-piece"></i>
+                </a>
+            @endunless
+            <!-- keep Settings item as requested -->
+            @if($isAdmin)
+                <a href="{{ route('admin.users.index') }}" class="sidebar-item" title="Settings">
+                    <i class="fas fa-cog"></i>
+                </a>
+            @else
+                <div class="sidebar-item" title="Settings">
+                    <i class="fas fa-cog"></i>
+                </div>
+            @endif
+        @endif
     </nav>
     <!-- logout moved to header/profile dropdown for doctor views -->
 </aside>
@@ -60,18 +78,19 @@
         --muted: #94a3b8; /* fallback muted */
     }
     :root{
-        --sidebar-width:60px; /* desktop sidebar width */
-        --sidebar-compact-left:72px; /* default left offset used by topbar/hamburger */
+        --sidebar-width:72px; /* desktop sidebar width (wider for circular icons) */
+        --sidebar-compact-left:84px; /* default left offset used by topbar/hamburger */
     }
     /* Desktop sidebar base styles (centralized) */
     .sidebar{width:var(--sidebar-width);background:var(--surface);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:15px 0;position:fixed;left:0;top:0;z-index:100;overflow-y:auto;max-height:100vh;box-shadow:0 1px 3px rgba(0,0,0,0.06)}
-    .sidebar-logo{width:48px;height:48px;background:var(--accent);border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:30px}
-    .sidebar-logo i { font-size: 32px; color: #fff; }
-    .sidebar-menu .sidebar-item i { font-size: 24px; }
-    .sidebar-menu{display:flex;flex-direction:column;gap:8px;width:100%}
-    .sidebar-item{width:100%;padding:12px 0;display:flex;justify-content:center;color:var(--muted);cursor:pointer;text-decoration:none;position:relative}
-    .sidebar-item.active{color:var(--surface);background:rgba(176,141,112,0.08)}
-    .sidebar-item.active::before{content:'';position:absolute;left:0;top:0;height:100%;width:3px;background:var(--accent)}
+    .sidebar-logo{width:56px;height:56px;background:var(--accent);border-radius:14px;display:flex;align-items:center;justify-content:center;margin-bottom:28px}
+    .sidebar-logo i { font-size: 28px; color: #fff; }
+    .sidebar-menu .sidebar-item i { font-size: 20px; }
+    .sidebar-menu{display:flex;flex-direction:column;gap:12px;width:100%;align-items:center}
+    .sidebar-item{width:48px;height:48px;display:flex;align-items:center;justify-content:center;color:var(--muted);cursor:pointer;text-decoration:none;position:relative;border-radius:12px}
+    .sidebar-item:hover{background:rgba(0,0,0,0.03);color:var(--accent)}
+    .sidebar-item.active{color:var(--accent);background:rgba(176,141,112,0.06)}
+    .sidebar-item.active::before{content:'';position:absolute;left:-8px;top:6px;height:36px;width:4px;background:var(--accent);border-radius:4px}
     .logout-sidebar{color:var(--muted)}
     .logout-sidebar:hover{color:var(--surface);background:rgba(176,141,112,0.08)}
 

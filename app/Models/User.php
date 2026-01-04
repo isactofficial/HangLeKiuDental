@@ -50,6 +50,7 @@ class User extends Authenticatable
     // Role helpers
     public const ROLE_ADMIN = 'admin';
     public const ROLE_DOCTOR = 'doctor';
+    public const ROLE_USER = 'user';
 
     public function isAdmin(): bool
     {

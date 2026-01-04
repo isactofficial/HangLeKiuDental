@@ -33,20 +33,12 @@ class RegisterController extends Controller
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
-            'role' => User::ROLE_DOCTOR,
+            'role' => User::ROLE_USER,
         ]);
 
         Auth::login($user);
 
-        // Redirect users based on role
-        if (method_exists($user, 'isAdmin') && $user->isAdmin()) {
-            return redirect()->intended(route('dashboard'));
-        }
-
-        if (method_exists($user, 'isDoctor') && $user->isDoctor()) {
-            return redirect()->intended(route('doctor.dashboard'));
-        }
-
+        // Setelah registrasi, semua user diarahkan ke halaman home
         return redirect()->intended('/');
     }
 }

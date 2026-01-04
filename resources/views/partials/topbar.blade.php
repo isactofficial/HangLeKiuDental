@@ -55,37 +55,37 @@
     </div>
 
     <style>
-        /* Fixed rounded topbar aligned after the sidebar */
+        /* Fixed rounded topbar aligned after the sidebar (dashboard style) */
         .topbar{
             position:fixed;
-            top:12px;
-            left:calc(var(--sidebar-width) + 12px); /* leave space for sidebar */
+            top:18px;
+            left:calc(var(--sidebar-width) + 18px); /* leave space for sidebar */
             right:24px;
             background:transparent;
             z-index:140;
             pointer-events:none;
         }
-        .topbar-inner{pointer-events:auto;background:var(--surface);border-radius:12px;padding:10px 14px;display:flex;align-items:center;gap:12px;box-shadow:0 6px 18px rgba(0,0,0,0.06);flex-wrap:wrap}
+        .topbar-inner{pointer-events:auto;background:var(--surface);border-radius:14px;padding:14px 20px;display:flex;align-items:center;gap:16px;box-shadow:0 10px 30px rgba(11,16,19,0.06);flex-wrap:wrap}
         .topbar-left{flex:0 0 auto;min-width:0}
-        .page-title{font-weight:700;font-size:18px;color:var(--text)}
+        .page-title{font-weight:800;font-size:20px;color:var(--text)}
         .last-update{font-size:12px;color:var(--muted);margin-top:4px}
-        .topbar-center{flex:1;min-width:160px}
+        .topbar-center{flex:1;min-width:260px}
         .btn{padding:8px 12px;border-radius:999px;border:none;cursor:pointer;font-weight:600;display:inline-flex;align-items:center;gap:8px}
         .btn-primary{background:var(--action);color:#fff;padding:8px 14px}
         .btn-ghost{background:var(--surface);border:1px solid rgba(0,0,0,0.06);color:var(--text);padding:8px 12px}
         .btn i{font-size:14px}
         .top-search{display:flex;gap:10px;align-items:center}
-        .top-search input{flex:1;padding:10px 14px;border:1px solid rgba(0,0,0,0.06);border-radius:8px;background:var(--surface);color:var(--text)}
+        .top-search input{flex:1;padding:12px 16px;border:1px solid rgba(0,0,0,0.06);border-radius:999px;background:#fff;color:var(--text);box-shadow:inset 0 1px 0 rgba(0,0,0,0.02)}
         .top-search button{padding:8px 12px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);background:var(--surface);cursor:pointer}
         .topbar-right{display:flex;align-items:center;gap:12px;flex:0 0 auto;min-width:0}
-        .header-icons{display:flex;gap:10px;align-items:center}
+        .header-icons{display:flex;gap:12px;align-items:center}
         .header-icon{color:var(--muted);font-size:16px;cursor:pointer}
-        .user-dropdown{display:inline-flex;align-items:center;gap:10px;background:var(--action);padding:6px 10px;border-radius:10px;cursor:pointer;color:#fff;box-shadow:0 6px 18px rgba(0,0,0,0.06);min-height:36px}
-        .user-avatar{width:28px;height:28px;border-radius:8px;background:var(--surface);display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto}
-        .user-dropdown span{color:#fff;font-size:14px;font-weight:600;line-height:1}
+        .user-dropdown{display:inline-flex;align-items:center;gap:12px;background:var(--action);padding:8px 14px;border-radius:12px;cursor:pointer;color:#fff;box-shadow:0 8px 20px rgba(0,0,0,0.06);min-height:44px}
+        .user-avatar{width:32px;height:32px;border-radius:10px;background:var(--surface);display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto}
+        .user-dropdown span{color:#fff;font-size:14px;font-weight:700;line-height:1}
         .user-dropdown i.fas.fa-chevron-down{color:#fff;font-size:12px}
         .user-dropdown-container{position:relative}
-        .user-dropdown-menu{position:absolute;top:100%;right:0;margin-top:8px;background:#fff;border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,0.12);min-width:220px;display:none;overflow:hidden;z-index:160}
+        .user-dropdown-menu{position:absolute;top:100%;right:0;margin-top:8px;background:#fff;border-radius:8px;box-shadow:0 6px 20px rgba(0,0,0,0.12);min-width:220px;display:none;overflow:hidden;z-index:160}
         .user-dropdown-menu.show{display:block}
         .user-dropdown-menu a,.user-dropdown-menu button{display:flex;align-items:center;gap:10px;width:100%;padding:12px 14px;color:#374151;text-decoration:none;background:none;border:none;cursor:pointer}
         .user-dropdown-menu a:hover,.user-dropdown-menu button:hover{background:#f3f4f6}
@@ -96,7 +96,6 @@
         /* Responsive topbar when sidebar collapses on small screens */
         @media (max-width: 768px) {
             .topbar{ left:12px; right:12px; }
-            /* leave space for the mobile hamburger on the left (match hamburger left + width + gap) */
             .topbar-inner{padding:10px 12px 10px 72px}
             .topbar{pointer-events:auto}
 

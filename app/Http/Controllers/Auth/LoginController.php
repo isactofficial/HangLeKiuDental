@@ -47,8 +47,8 @@ class LoginController extends Controller
                 return redirect()->intended(route('dashboard'));
             }
 
-            // Fallback
-            return redirect()->intended('/dashboard');
+            // Fallback: arahkan ke beranda (sama seperti register)
+            return redirect()->intended('/');
         }
 
         return back()->withErrors([
@@ -66,6 +66,7 @@ class LoginController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login');
+        // Setelah logout kembalikan ke halaman beranda
+        return redirect('/');
     }
 }

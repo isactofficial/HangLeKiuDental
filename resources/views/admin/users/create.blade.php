@@ -31,6 +31,7 @@
                 <select name="role" required>
                     <option value="doctor">Dokter</option>
                     <option value="admin">Admin</option>
+                    <option value="user">User</option>
                 </select>
             </div>
             <button class="btn" type="submit">Buat User</button>
