@@ -201,6 +201,48 @@
             box-shadow: 0 6px 18px rgba(0,0,0,0.08);
         }
 
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 18px 0;
+            color: #9ca3af;
+            font-size: 12px;
+        }
+        .divider::before,
+        .divider::after {
+            content: '';
+            height: 1px;
+            background: #e5e7eb;
+            flex: 1;
+        }
+
+        .google-btn {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 8px;
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            color: #111827;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: box-shadow 0.2s ease, background 0.2s ease;
+        }
+        .google-btn:hover {
+            background: #f9fafb;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+        }
+        .google-icon {
+            width: 18px;
+            height: 18px;
+            display: inline-block;
+        }
+
         .register-btn {
             display: block;
             width: 100%;
@@ -363,6 +405,18 @@
 
                     <button type="submit" class="login-btn">Login</button>
                 </form>
+
+                <div class="divider">atau</div>
+
+                <a class="google-btn" href="{{ route('auth.google.redirect') }}">
+                    <svg class="google-icon" viewBox="0 0 533.5 544.3" aria-hidden="true">
+                        <path fill="#4285F4" d="M533.5 278.4c0-17.4-1.6-34.1-4.7-50.4H272v95.3h146.9c-6.3 34.1-25 63-53.2 82.2v68h86.1c50.3-46.3 81.7-114.5 81.7-195.1z"/>
+                        <path fill="#34A853" d="M272 544.3c72.6 0 133.5-24.1 178-65.6l-86.1-68c-23.9 16-54.5 25.4-91.9 25.4-70.7 0-130.6-47.7-152-111.7h-89.8v70.4C75.8 475.1 167.6 544.3 272 544.3z"/>
+                        <path fill="#FBBC05" d="M120 324.4c-10.6-31.9-10.6-66.2 0-98.1V155.9H30.2c-39.6 78.9-39.6 172.6 0 251.5L120 324.4z"/>
+                        <path fill="#EA4335" d="M272 107.7c39.5-.6 77.6 14.4 106.6 41.8l79.6-79.6C416.3 24.6 345.4-1.4 272 0 167.6 0 75.8 69.2 30.2 155.9l89.8 70.4C141.4 155.4 201.3 107.7 272 107.7z"/>
+                    </svg>
+                    Login dengan Google
+                </a>
 
                 <div class="register-link" style="text-align:center;margin-top:12px;">
                     <a href="{{ route('register') }}" class="register-btn">Belum punya akun?</a>
