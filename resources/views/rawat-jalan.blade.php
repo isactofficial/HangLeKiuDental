@@ -43,15 +43,17 @@
         .schedule-card{background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 2px 14px rgba(0,0,0,0.06)}
 
         /* sticky header row with doctor columns */
-        .schedule-header{display:grid;grid-template-columns:150px repeat(3,1fr);background:var(--accent);color:#fff}
+        .schedule-header{display:grid;background:var(--accent);color:#fff}
         .schedule-header .col{padding:16px;font-weight:700;text-transform:uppercase;font-size:13px;border-right:1px solid rgba(255,255,255,0.08)}
         .schedule-header .col:first-child{background:transparent;color:#fff;font-weight:700;display:flex;align-items:center;gap:6px;padding-left:18px}
 
         .schedule-body{max-height:640px;overflow:auto}
-        .time-row{display:grid;grid-template-columns:150px repeat(3,1fr);gap:0;border-bottom:1px solid rgba(0,0,0,0.04)}
+        .time-row{display:grid;gap:0;border-bottom:1px solid rgba(0,0,0,0.04)}
         .time-cell{padding:18px;font-weight:600;color:var(--muted);border-right:1px solid rgba(0,0,0,0.03);background:transparent}
         .slot-cell{padding:12px;border-right:1px solid rgba(0,0,0,0.03);background:transparent;color:var(--muted);font-size:13px}
         .slot-cell .empty{color:rgba(0,0,0,0.2)}
+        .slot-cell .empty-slot{min-height:18px}
+        .slot-cell .booked{background:var(--accent);color:#fff;padding:6px;border-radius:6px;font-weight:600}
 
         /* tiny scrollbar styling */
         .schedule-body::-webkit-scrollbar{width:10px}
@@ -125,19 +127,46 @@
                     </div>
 
                     <div class="schedule-body">
-                        <!-- Repeat time rows (15-min interval snippet to match image) -->
                         @php
                             $times = [];
-                            // generate 15-minute slots for a full day: 00:00 -> 23:45
+                            // generate 20-minute slots for a full day: 00:00 -> 23:40 (matches booking duration)
                             for($h=0; $h<24; $h++){
-                                for($m=0; $m<60; $m+=15){
+                                for($m=0; $m<60; $m+=20){
                                     $times[] = sprintf('%02d:%02d WIB', $h, $m);
                                 }
                             }
+
+                            // doctor practice meta (dummy defaults if not configured)
+                            $dayNames = [
+                                0 => 'Minggu',
+                                1 => 'Senin',
+                                2 => 'Selasa',
+                                3 => 'Rabu',
+                                4 => 'Kamis',
+                                5 => 'Jumat',
+                                6 => 'Sabtu',
+                            ];
+
+                            $doctorMeta = $doctors->mapWithKeys(function ($d) use ($dayNames) {
+                                $days = is_array($d->practice_days) ? $d->practice_days : [];
+                                if (empty($days)) {
+                                    $days = [1,2,3,4,5,6]; // dummy: Senin-Sabtu
+                                }
+                                $start = $d->practice_start_time ? substr((string) $d->practice_start_time, 0, 5) : '09:00';
+                                $end = $d->practice_end_time ? substr((string) $d->practice_end_time, 0, 5) : '17:00';
+
+                                return [
+                                    $d->id => [
+                                        'days' => array_values($days),
+                                        'start' => $start,
+                                        'end' => $end,
+                                    ],
+                                ];
+                            });
                         @endphp
 
                         @foreach($times as $t)
-                            <div class="time-row">
+                            <div class="time-row" style="grid-template-columns:150px repeat({{ count($doctors) }},1fr);">
                                 <div class="time-cell">{{ $t }}</div>
                                 @foreach($doctors as $d)
                                     <div class="slot-cell"><div class="empty">Tidak Praktek</div></div>
@@ -153,6 +182,9 @@
 
 <script>
     (function(){
+        const doctorMeta = @json($doctorMeta);
+        const SLOT_MINUTES = 20;
+
         const dateTitle = document.querySelector('.date-title');
         const dateText = document.querySelector('.date-text');
         const prev = document.getElementById('prevDay');
@@ -178,8 +210,50 @@
             }catch(e){ console.error(e); return []; }
         }
 
-        function clearSlots(){
-            document.querySelectorAll('.slot-cell').forEach(function(s){ s.innerHTML = '<div class="empty">Tidak Praktek</div>'; });
+        function timeToMinutes(hhmm){
+            const parts = String(hhmm || '').split(':');
+            if(parts.length < 2) return null;
+            const h = parseInt(parts[0], 10);
+            const m = parseInt(parts[1], 10);
+            if(Number.isNaN(h) || Number.isNaN(m)) return null;
+            return h * 60 + m;
+        }
+
+        function isPracticeTime(doctorId, weekdayNum, minutes){
+            const meta = doctorMeta ? doctorMeta[doctorId] : null;
+            if(!meta) return false;
+
+            const days = Array.isArray(meta.days) ? meta.days.map(Number) : [];
+            if(days.length && !days.includes(Number(weekdayNum))) return false;
+
+            const startMin = timeToMinutes(meta.start);
+            const endMin = timeToMinutes(meta.end);
+            if(startMin === null || endMin === null) return false;
+
+            // practice window inclusive start, exclusive end
+            return minutes >= startMin && (minutes + SLOT_MINUTES) <= endMin;
+        }
+
+        function clearSlots(dateIso){
+            const weekdayNum = new Date(dateIso + 'T00:00:00').getDay();
+            const doctorOrder = getDoctorOrder();
+            const timeRows = Array.from(document.querySelectorAll('.time-row'));
+
+            timeRows.forEach(function(row){
+                const timeLabel = row.querySelector('.time-cell').textContent.trim();
+                const hhmm = timeLabel.split(' ')[0];
+                const minutes = timeToMinutes(hhmm);
+
+                doctorOrder.forEach(function(docId, idx){
+                    const cell = row.children[idx + 1];
+                    if(!cell) return;
+
+                    const ok = minutes !== null && isPracticeTime(String(docId), weekdayNum, minutes);
+                    cell.innerHTML = ok
+                        ? '<div class="empty-slot"></div>'
+                        : '<div class="empty">Tidak Praktek</div>';
+                });
+            });
         }
 
         function formatTimeToLabel(dt){
@@ -195,7 +269,7 @@
             if(dateText) dateText.textContent = dateStr;
 
             const dateIso = current.toISOString().slice(0,10);
-            clearSlots();
+            clearSlots(dateIso);
 
             const appointments = await fetchAppointmentsFor(dateIso);
             if(!appointments || !appointments.length) return;
@@ -223,9 +297,9 @@
                     if(row){
                         // slot cells start at child index 1
                         const cell = row.children[docIndex + 1];
-                        if(cell) cell.innerHTML = `<div style="background:var(--accent);color:#fff;padding:6px;border-radius:6px;font-weight:600">${a.patient_name}</div>`;
+                        if(cell) cell.innerHTML = `<div class="booked">${a.patient_name}</div>`;
                     }
-                    cur.setMinutes(cur.getMinutes() + 15);
+                    cur.setMinutes(cur.getMinutes() + SLOT_MINUTES);
                 }
             });
         }
@@ -241,8 +315,8 @@
         document.addEventListener('click', function(e){
             const cell = e.target.closest('.slot-cell');
             if(!cell) return;
-            // only allow when slot is empty
-            if(!cell.textContent.includes('Tidak Praktek') && !cell.querySelector('.empty')) return;
+            // only allow when slot is an available (practice) empty slot
+            if(!cell.querySelector('.empty-slot')) return;
 
             const row = cell.parentElement;
             const timeLabel = row.querySelector('.time-cell').textContent.trim(); // e.g. 08:00 WIB
@@ -259,17 +333,10 @@
 
             // build booking url with prefill
             const dateIso = current.toISOString().slice(0,10);
-            // default end time = start + 1 hour
-            const [hh, mm] = hhmm.split(':').map(Number);
-            const endDate = new Date(current.getFullYear(), current.getMonth(), current.getDate(), hh + 1, mm);
-            const endHH = String(endDate.getHours()).padStart(2,'0');
-            const endMM = String(endDate.getMinutes()).padStart(2,'0');
-
             const params = new URLSearchParams({
                 doctor_id: doctorId,
                 date: dateIso,
-                start_time: hhmm,
-                end_time: `${endHH}:${endMM}`
+                start_time: hhmm
             });
 
             window.location.href = '/booking?'+params.toString();

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Register - Hanglekiu Dental Clinic</title>
+    <title>Register - HangLeKiu Dental Specialist</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/responsive.css">
     <style>
@@ -50,7 +50,7 @@
 </head>
 <body>
     <div class="card">
-        <div class="logo-text">Hanglekiu Dental Clinic</div>
+        <div class="logo-text">HangLeKiu<br>Dental<br>Specialist</div>
 
         @if($errors->any())
             <div class="error">

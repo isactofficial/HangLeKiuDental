@@ -163,13 +163,6 @@
     <script>
         // Global logout handler: submit logout via fetch then redirect to login
         (function(){
-            function getCsrf(){
-                var m = document.querySelector('meta[name="csrf-token"]');
-                if(m) return m.getAttribute('content');
-                var t = document.querySelector('input[name="_token"]');
-                return t ? t.value : null;
-            }
-
             document.addEventListener('DOMContentLoaded', function(){
                 var forms = Array.from(document.querySelectorAll('form[action*="logout"]'));
                 if(!forms.length) return;
@@ -179,17 +172,18 @@
                     f.addEventListener('submit', function(e){
                         e.preventDefault();
                         var action = this.action;
-                        var token = getCsrf();
-                        // send POST request, then redirect to login regardless of outcome
+                        var body = new URLSearchParams(new FormData(this));
+
+                        // send POST request (with cookies), then redirect to login regardless of outcome
                         fetch(action, {
                             method: 'POST',
+                            credentials: 'same-origin',
                             headers: {
                                 'X-Requested-With': 'XMLHttpRequest',
-                                'X-CSRF-TOKEN': token || '',
                                 'Accept': 'application/json',
                                 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
                             },
-                            body: new URLSearchParams()
+                            body: body
                         }).then(function(){
                             window.location.href = '{{ route('login') }}';
                         }).catch(function(){

@@ -27,6 +27,7 @@ Route::get('/layanan/{slug}', [LayananController::class, 'show'])
 // Public booking routes (allow patients to book themselves)
 Route::get('/booking', [BookingController::class, 'create'])->name('booking.create');
 Route::post('/booking', [BookingController::class, 'store'])->name('booking.store');
+Route::get('/booking/slots', [BookingController::class, 'slots'])->name('booking.slots');
 
 
 // Route untuk login

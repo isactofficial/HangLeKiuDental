@@ -43,20 +43,26 @@
 
         $doctorMeta = $doctors->mapWithKeys(function ($d) use ($dayNames) {
             $days = is_array($d->practice_days) ? $d->practice_days : [];
+            // dummy defaults if not configured
+            if (empty($days)) {
+                $days = [1,2,3,4,5,6]; // Senin-Sabtu
+            }
             $daysText = collect($days)
                 ->map(fn ($n) => $dayNames[(int) $n] ?? null)
                 ->filter()
                 ->values()
                 ->implode(', ');
 
-            $start = $d->practice_start_time ? substr((string) $d->practice_start_time, 0, 5) : null;
-            $end = $d->practice_end_time ? substr((string) $d->practice_end_time, 0, 5) : null;
+            $start = $d->practice_start_time ? substr((string) $d->practice_start_time, 0, 5) : '09:00';
+            $end = $d->practice_end_time ? substr((string) $d->practice_end_time, 0, 5) : '17:00';
 
             return [
                 $d->id => [
                     'daysText' => $daysText,
+                    'days' => array_values($days),
                     'start' => $start,
                     'end' => $end,
+                    'specialty' => $d->specialty,
                 ],
             ];
         });
@@ -79,6 +85,12 @@
         </div>
 
         <div class="field">
+            <label for="patient_phone">No. WhatsApp</label>
+            <input id="patient_phone" name="patient_phone" placeholder="contoh: 62812xxxx" value="{{ old('patient_phone') }}" required>
+            <div class="hint" style="margin-top:6px">Notifikasi WA dikirim 10 menit sebelum selesai tindakan.</div>
+        </div>
+
+        <div class="field">
             <label for="doctor_id">Pilih Dokter</label>
             <select id="doctor_id" name="doctor_id" required>
                 <option value="">-- Pilih Dokter --</option>
@@ -98,18 +110,29 @@
         </div>
 
         <div class="field">
+            <label for="procedure">Pilih Tindakan</label>
+            <select id="procedure" name="procedure" required>
+                <option value="">-- Pilih Tindakan --</option>
+            </select>
+            <div class="hint" style="margin-top:6px">Durasi tindakan: {{ (int) ($durationMinutes ?? 20) }} menit.</div>
+        </div>
+
+        <div class="field">
             <label for="date">Tanggal</label>
             <input id="date" name="date" type="date" value="{{ old('date', $prefill['date'] ?? date('Y-m-d')) }}" required>
         </div>
 
         <div class="field">
-            <label for="start_time">Jam Mulai (HH:MM)</label>
-            <input id="start_time" name="start_time" type="time" value="{{ old('start_time', $prefill['start_time'] ?? '09:00') }}" required>
+            <label for="start_time">Jam Mulai (Available)</label>
+            <select id="start_time" name="start_time" required>
+                <option value="">-- Pilih Jam --</option>
+            </select>
+            <div class="hint" id="slotHint" style="margin-top:6px"></div>
         </div>
 
         <div class="field">
-            <label for="end_time">Jam Selesai (HH:MM)</label>
-            <input id="end_time" name="end_time" type="time" value="{{ old('end_time', $prefill['end_time'] ?? '10:00') }}" required>
+            <label for="end_time">Jam Selesai (Otomatis)</label>
+            <input id="end_time" type="time" value="" disabled>
         </div>
 
         <div class="actions">
@@ -121,10 +144,149 @@
 <script>
     (function() {
         const doctorMeta = @json($doctorMeta);
+        const proceduresBySpecialty = @json($proceduresBySpecialty ?? []);
+        const durationMinutes = Number(@json((int) ($durationMinutes ?? 20)));
 
         const selectDoctor = document.getElementById('doctor_id');
+        const selectProcedure = document.getElementById('procedure');
+        const inputDate = document.getElementById('date');
+        const selectStart = document.getElementById('start_time');
+        const inputEnd = document.getElementById('end_time');
         const elDays = document.getElementById('doctorScheduleDays');
         const elHours = document.getElementById('doctorScheduleHours');
+        const slotHint = document.getElementById('slotHint');
+
+        function normalizeSpecialty(s) {
+            return String(s || '')
+                .trim()
+                .toLowerCase()
+                .replace(/\s+/g, ' ')
+                .replace(/\s*\.\s*/g, '.');
+        }
+
+        function setOptions(select, items, selectedValue) {
+            select.innerHTML = '';
+            const opt0 = document.createElement('option');
+            opt0.value = '';
+            opt0.textContent = '-- Pilih --';
+            select.appendChild(opt0);
+
+            (items || []).forEach(function(v){
+                const opt = document.createElement('option');
+                opt.value = v;
+                opt.textContent = v;
+                if (selectedValue && selectedValue === v) opt.selected = true;
+                select.appendChild(opt);
+            });
+        }
+
+        function computeEndTime(startHHMM) {
+            if (!startHHMM) return '';
+            const parts = String(startHHMM).split(':');
+            if (parts.length < 2) return '';
+            const h = parseInt(parts[0], 10);
+            const m = parseInt(parts[1], 10);
+            if (Number.isNaN(h) || Number.isNaN(m)) return '';
+            const total = h * 60 + m + durationMinutes;
+            const eh = Math.floor(total / 60) % 24;
+            const em = total % 60;
+            return String(eh).padStart(2,'0') + ':' + String(em).padStart(2,'0');
+        }
+
+        function weekdayOf(dateIso) {
+            const d = new Date(dateIso + 'T00:00:00');
+            return d.getDay(); // 0-6
+        }
+
+        function isPracticeDay(doctorId, dateIso) {
+            const meta = doctorMeta && doctorId ? doctorMeta[doctorId] : null;
+            const days = meta && Array.isArray(meta.days) ? meta.days.map(Number) : [];
+            if (!days.length) return true;
+            return days.includes(weekdayOf(dateIso));
+        }
+
+        function findNextPracticeDate(doctorId, dateIso) {
+            // Search up to 14 days ahead.
+            const base = new Date(dateIso + 'T00:00:00');
+            for (let i = 0; i < 14; i++) {
+                const d = new Date(base);
+                d.setDate(base.getDate() + i);
+                const iso = d.toISOString().slice(0, 10);
+                if (isPracticeDay(doctorId, iso)) return iso;
+            }
+            return dateIso;
+        }
+
+        function ensureValidDate() {
+            const doctorId = selectDoctor.value;
+            const dateIso = inputDate.value;
+            if (!doctorId || !dateIso) return false;
+
+            if (isPracticeDay(doctorId, dateIso)) return false;
+
+            const next = findNextPracticeDate(doctorId, dateIso);
+            if (next && next !== dateIso) {
+                inputDate.value = next;
+                return true;
+            }
+            return false;
+        }
+
+        async function loadSlots() {
+            const doctorId = selectDoctor.value;
+            // auto-adjust date to a practice day
+            ensureValidDate();
+            const date = inputDate.value;
+
+            selectStart.innerHTML = '<option value="">-- Pilih Jam --</option>';
+            inputEnd.value = '';
+            if (slotHint) slotHint.textContent = '';
+
+            if (!doctorId || !date) return;
+
+            try {
+                const url = new URL('{{ route('booking.slots') }}', window.location.origin);
+                url.searchParams.set('doctor_id', doctorId);
+                url.searchParams.set('date', date);
+
+                const res = await fetch(url.toString(), { headers: { 'Accept': 'application/json' } });
+                const data = await res.json();
+                const slots = (data && data.slots) ? data.slots : [];
+                const error = (data && data.error) ? String(data.error) : '';
+
+                selectStart.innerHTML = '<option value="">-- Pilih Jam --</option>';
+                slots.forEach(function(t){
+                    const opt = document.createElement('option');
+                    opt.value = t;
+                    opt.textContent = t;
+                    selectStart.appendChild(opt);
+                });
+
+                // hint/status
+                if (slotHint) {
+                    if (error) {
+                        slotHint.textContent = error;
+                    } else if (!slots.length) {
+                        slotHint.textContent = 'Tidak ada jam tersedia pada tanggal ini.';
+                    } else {
+                        slotHint.textContent = 'Pilih salah satu jam yang tersedia.';
+                    }
+                }
+
+                // disable start select when no slots
+                selectStart.disabled = !slots.length;
+
+                // prefill if any
+                const prefillStart = @json(old('start_time', $prefill['start_time'] ?? ''));
+                if (prefillStart) {
+                    selectStart.value = prefillStart;
+                    inputEnd.value = computeEndTime(prefillStart);
+                }
+            } catch (e) {
+                // keep empty slots
+                selectStart.disabled = true;
+            }
+        }
 
         function updateSchedule() {
             const id = selectDoctor.value;
@@ -135,12 +297,36 @@
 
             elDays.textContent = `Hari: ${daysText}`;
             elHours.textContent = `Jam: ${hoursText}`;
+
+            // update tindakan options
+            const specKey = normalizeSpecialty(meta && meta.specialty ? meta.specialty : '');
+            const list = (proceduresBySpecialty && proceduresBySpecialty[specKey]) ? proceduresBySpecialty[specKey] : (proceduresBySpecialty['*'] || []);
+            const prefillProcedure = @json(old('procedure', ''));
+            setOptions(selectProcedure, list, prefillProcedure);
         }
 
         if (selectDoctor) {
             selectDoctor.addEventListener('change', updateSchedule);
+            selectDoctor.addEventListener('change', loadSlots);
             updateSchedule();
         }
+
+        if (inputDate) {
+            inputDate.addEventListener('change', function(){
+                // if user picked non-practice day, jump to next practice day
+                ensureValidDate();
+                loadSlots();
+            });
+        }
+
+        if (selectStart) {
+            selectStart.addEventListener('change', function(){
+                inputEnd.value = computeEndTime(selectStart.value);
+            });
+        }
+
+        // initial load
+        loadSlots();
     })();
 </script>
 </body>

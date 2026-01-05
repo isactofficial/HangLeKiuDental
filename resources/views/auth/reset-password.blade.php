@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Reset Password - Hanglekiu Dental Clinic</title>
+    <title>Reset Password - HangLeKiu Dental Specialist</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root{
@@ -39,8 +39,9 @@
 
         .logo{text-align:center;margin-bottom:30px}
         .logo-container{display:flex;align-items:center;justify-content:center;gap:10px}
-        .logo-icon{width:50px;height:50px;color:var(--accent)}
-        .logo-text{font-size:28px;font-weight:700;color:var(--accent);line-height:1.2}
+        .logo-icon{width:50px;height:50px;display:flex;align-items:center;justify-content:center}
+        .logo-icon img{width:100%;height:100%;object-fit:contain;display:block}
+        .logo-text{font-size:28px;font-weight:700;color:var(--accent);line-height:1.05;display:inline-block;text-align:left}
 
         h2{text-align:center;font-size:20px;color:var(--text);margin-bottom:15px}
         p{text-align:center;font-size:14px;color:#6b7280;margin-bottom:25px;line-height:1.5}
@@ -90,13 +91,9 @@
             <div class="logo">
                 <div class="logo-container">
                     <div class="logo-icon">
-                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                            <path d="M30 5 L50 12 L50 30 Q50 50 30 55 Q10 50 10 30 L10 12 Z" fill="currentColor"/>
-                            <rect x="26" y="18" width="8" height="24" rx="2" fill="white"/>
-                            <rect x="18" y="26" width="24" height="8" rx="2" fill="white"/>
-                        </svg>
+                        <img src="{{ asset('assets/logo2.jpeg') }}" alt="HangLeKiu">
                     </div>
-                    <span class="logo-text">Hanglekiu Dental Clinic</span>
+                    <span class="logo-text">HangLeKiu<br>Dental<br>Specialist</span>
                 </div>
             </div>
 

@@ -46,7 +46,7 @@
                         min-height: auto;
                         align-items: center;
                     }
-                    .kasir-title{ margin-left:0; flex:1 1 auto; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+                    .kasir-title{ margin-left:0; flex:1 1 auto; white-space:normal; overflow:visible; text-overflow:clip; }
                     .header-actions{ margin-left:0; min-width:0; }
                 }
         </style>
@@ -59,7 +59,7 @@
         .cashier-header{padding:14px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(0,0,0,0.06);background:var(--surface);flex-wrap:wrap;}
         .cashier-header .kasir-title{display:flex;flex-direction:column;gap:2px;min-width:220px}
         .cashier-header .kasir-title-main{font-size:26px;line-height:1.1;font-weight:700;color:#B08D70}
-        .cashier-header .kasir-title-sub{font-size:14px;color:#5F6F65;opacity:1}
+        .cashier-header .kasir-title-sub{font-size:14px;color:#5F6F65;opacity:1;line-height:1.1;font-weight:600;white-space:normal}
         .header-actions{display:flex;align-items:center;gap:12px;margin-left:auto;flex:0 0 auto;min-width:0}
         .header-hd{display:flex;align-items:center;gap:10px;position:relative;min-width:0}
         .header-logo{width:44px;height:44px;border-radius:22px;background:#e6eef6;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
@@ -161,7 +161,7 @@
                 </button>
                 <div class="kasir-title">
                     <div class="kasir-title-main">Cashier</div>
-                    <div class="kasir-title-sub">hanglekiu dental specialist</div>
+                    <div class="kasir-title-sub">HangLeKiu<br>Dental<br>Specialist</div>
                 </div>
                 <div class="header-actions">
                     <div class="header-hd">
