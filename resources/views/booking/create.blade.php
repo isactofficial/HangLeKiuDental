@@ -6,6 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Booking - Hanglekiu</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <link rel="stylesheet" href="/css/responsive.css">
     <style>
         *{box-sizing:border-box}
@@ -25,6 +26,24 @@
         button{background:var(--action, #B08D70);color:#fff;height:44px;padding:0 14px;border-radius:8px;border:none;font-weight:600;cursor:pointer;width:100%}
         .error-box{color:#b91c1c;background:rgba(185,28,28,0.08);border:1px solid rgba(185,28,28,0.18);padding:12px 14px;border-radius:8px;margin-bottom:14px}
         .error-box ul{margin:0;padding-left:18px}
+
+        /* flatpickr (keep within existing theme tokens) */
+        .flatpickr-calendar{font-family:'Poppins',sans-serif}
+        .flatpickr-day.selected,
+        .flatpickr-day.startRange,
+        .flatpickr-day.endRange,
+        .flatpickr-day.selected.inRange,
+        .flatpickr-day.startRange.inRange,
+        .flatpickr-day.endRange.inRange{
+            background: var(--action, #B08D70);
+            border-color: var(--action, #B08D70);
+        }
+        .flatpickr-day.today{border-color: var(--accent, #B08D70)}
+        .flatpickr-day.inRange{
+            background: rgba(176,141,112,0.12);
+            border-color: transparent;
+            box-shadow: none;
+        }
     </style>
 </head>
 <body>
@@ -43,15 +62,15 @@
 
         $doctorMeta = $doctors->mapWithKeys(function ($d) use ($dayNames) {
             $days = is_array($d->practice_days) ? $d->practice_days : [];
-            // dummy defaults if not configured
-            if (empty($days)) {
-                $days = [1,2,3,4,5,6]; // Senin-Sabtu
-            }
             $daysText = collect($days)
                 ->map(fn ($n) => $dayNames[(int) $n] ?? null)
                 ->filter()
                 ->values()
                 ->implode(', ');
+
+            if ($daysText === '') {
+                $daysText = 'Setiap hari';
+            }
 
             $start = $d->practice_start_time ? substr((string) $d->practice_start_time, 0, 5) : '09:00';
             $end = $d->practice_end_time ? substr((string) $d->practice_end_time, 0, 5) : '17:00';
@@ -82,6 +101,20 @@
         <div class="field">
             <label for="patient_name">Nama Pasien</label>
             <input id="patient_name" name="patient_name" value="{{ old('patient_name') }}" required>
+        </div>
+
+        <div class="field">
+            <label for="patient_gender">Jenis Kelamin</label>
+            <select id="patient_gender" name="patient_gender" required>
+                <option value="">-- Pilih Jenis Kelamin --</option>
+                <option value="Laki - laki" {{ old('patient_gender') === 'Laki - laki' ? 'selected' : '' }}>Laki - laki</option>
+                <option value="Perempuan" {{ old('patient_gender') === 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
+            </select>
+        </div>
+
+        <div class="field">
+            <label for="patient_birth_date">Tanggal Lahir</label>
+            <input id="patient_birth_date" name="patient_birth_date" type="date" value="{{ old('patient_birth_date') }}" required>
         </div>
 
         <div class="field">
@@ -119,7 +152,7 @@
 
         <div class="field">
             <label for="date">Tanggal</label>
-            <input id="date" name="date" type="date" value="{{ old('date', $prefill['date'] ?? date('Y-m-d')) }}" required>
+            <input id="date" name="date" type="text" inputmode="none" autocomplete="off" value="{{ old('date', $prefill['date'] ?? date('Y-m-d')) }}" required>
         </div>
 
         <div class="field">
@@ -135,12 +168,27 @@
             <input id="end_time" type="time" value="" disabled>
         </div>
 
+        <div class="field">
+            <label for="payment_method">Metode Pembayaran</label>
+            @php
+                $pay = old('payment_method', 'Langsung');
+            @endphp
+            <select id="payment_method" name="payment_method" required>
+                <option value="Langsung" {{ $pay === 'Langsung' ? 'selected' : '' }}>Langsung</option>
+                <option value="Tunai" {{ $pay === 'Tunai' ? 'selected' : '' }}>Tunai</option>
+                <option value="BPJS" {{ $pay === 'BPJS' ? 'selected' : '' }}>BPJS</option>
+                <option value="Asuransi" {{ $pay === 'Asuransi' ? 'selected' : '' }}>Asuransi</option>
+            </select>
+        </div>
+
         <div class="actions">
             <button type="submit">Booking Sekarang</button>
         </div>
     </form>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/id.js"></script>
 <script>
     (function() {
         const doctorMeta = @json($doctorMeta);
@@ -155,6 +203,8 @@
         const elDays = document.getElementById('doctorScheduleDays');
         const elHours = document.getElementById('doctorScheduleHours');
         const slotHint = document.getElementById('slotHint');
+
+        let datePicker = null;
 
         function normalizeSpecialty(s) {
             return String(s || '')
@@ -198,10 +248,22 @@
             return d.getDay(); // 0-6
         }
 
-        function isPracticeDay(doctorId, dateIso) {
+        function toLocalIsoDate(d) {
+            const y = d.getFullYear();
+            const m = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${y}-${m}-${day}`;
+        }
+
+        function getPracticeDays(doctorId) {
             const meta = doctorMeta && doctorId ? doctorMeta[doctorId] : null;
             const days = meta && Array.isArray(meta.days) ? meta.days.map(Number) : [];
-            if (!days.length) return true;
+            return days;
+        }
+
+        function isPracticeDay(doctorId, dateIso) {
+            const days = getPracticeDays(doctorId);
+            if (!days.length) return true; // not configured: allow all days
             return days.includes(weekdayOf(dateIso));
         }
 
@@ -211,7 +273,7 @@
             for (let i = 0; i < 14; i++) {
                 const d = new Date(base);
                 d.setDate(base.getDate() + i);
-                const iso = d.toISOString().slice(0, 10);
+                const iso = toLocalIsoDate(d);
                 if (isPracticeDay(doctorId, iso)) return iso;
             }
             return dateIso;
@@ -226,10 +288,30 @@
 
             const next = findNextPracticeDate(doctorId, dateIso);
             if (next && next !== dateIso) {
-                inputDate.value = next;
+                if (datePicker) {
+                    datePicker.setDate(next, true);
+                } else {
+                    inputDate.value = next;
+                }
                 return true;
             }
             return false;
+        }
+
+        function applyDatePickerConstraints() {
+            if (!datePicker) return;
+
+            const doctorId = selectDoctor.value;
+            const allowedDays = getPracticeDays(doctorId);
+
+            datePicker.set('disable', [function(date){
+                if (!doctorId) return false;
+                if (!allowedDays.length) return false;
+                return !allowedDays.includes(date.getDay());
+            }]);
+
+            // if currently selected date is invalid, jump to next valid
+            ensureValidDate();
         }
 
         async function loadSlots() {
@@ -303,6 +385,8 @@
             const list = (proceduresBySpecialty && proceduresBySpecialty[specKey]) ? proceduresBySpecialty[specKey] : (proceduresBySpecialty['*'] || []);
             const prefillProcedure = @json(old('procedure', ''));
             setOptions(selectProcedure, list, prefillProcedure);
+
+            applyDatePickerConstraints();
         }
 
         if (selectDoctor) {
@@ -312,11 +396,27 @@
         }
 
         if (inputDate) {
-            inputDate.addEventListener('change', function(){
-                // if user picked non-practice day, jump to next practice day
-                ensureValidDate();
-                loadSlots();
-            });
+            // date picker: only show selectable days that match doctor schedule
+            if (window.flatpickr) {
+                datePicker = window.flatpickr(inputDate, {
+                    dateFormat: 'Y-m-d',
+                    altInput: true,
+                    altFormat: 'd/m/Y',
+                    allowInput: false,
+                    locale: (window.flatpickr && window.flatpickr.l10ns && window.flatpickr.l10ns.id) ? window.flatpickr.l10ns.id : undefined,
+                    defaultDate: inputDate.value || undefined,
+                    onChange: function(){
+                        ensureValidDate();
+                        loadSlots();
+                    },
+                });
+                applyDatePickerConstraints();
+            } else {
+                inputDate.addEventListener('change', function(){
+                    ensureValidDate();
+                    loadSlots();
+                });
+            }
         }
 
         if (selectStart) {

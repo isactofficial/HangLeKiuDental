@@ -15,7 +15,7 @@
             --accent: #B08D70; /* wood tone */
             --action: #5F6F65; /* button / action color */
             --text: #484848;
-            --muted: #94a3b8;
+            --muted: #6b7280;
         }
 
         * {
@@ -79,7 +79,7 @@
 
         .left-side p {
             font-size: 14px;
-            color: #6b7280;
+            color: var(--muted);
             line-height: 1.6;
             margin-bottom: 15px;
         }
@@ -277,7 +277,7 @@
 
         .forgot-password {
             text-align: center;
-            margin-top: 25px;
+            margin-top: 8px;
         }
 
         .forgot-password a {
@@ -295,6 +295,11 @@
             margin-top: 20px;
             font-size: 12px;
             color: #bbb;
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 12px;
         }
 
         /* Error Messages */
@@ -353,9 +358,6 @@
             <div class="illustration">
                 <img src="{{ asset('assets/dokter.png') }}" alt="Dokter" class="illustration-img">
             </div>
-            <!-- <h2>Pilih Hanya Yang Terbaik</h2>
-            <p>Assist.id adalah sistem informasi kesehatan terbaik untuk klinik, praktek pribadi Anda. Berbagai fitur tersedia untuk Anda.</p>
-            <a href="#">Pelajari lebih lanjut ></a> -->
         </div>
 
         <!-- Right Side - Login Form -->
@@ -381,11 +383,11 @@
                 <form method="POST" action="{{ route('login') }}">
                     @csrf
                     <div class="form-group">
-                        <input 
-                            type="text" 
-                            name="email" 
-                            id="email" 
-                            placeholder="Username/Email" 
+                        <input
+                            type="text"
+                            name="email"
+                            id="email"
+                            placeholder="Username/Email"
                             value="{{ old('email') }}"
                             required
                             autocomplete="email"
@@ -393,11 +395,11 @@
                     </div>
 
                     <div class="form-group">
-                        <input 
-                            type="password" 
-                            name="password" 
-                            id="password" 
-                            placeholder="Password" 
+                        <input
+                            type="password"
+                            name="password"
+                            id="password"
+                            placeholder="Password"
                             required
                             autocomplete="current-password"
                         >
@@ -424,15 +426,13 @@
                     Login dengan Google
                 </a>
 
-                <div class="register-link" style="text-align:center;margin-top:12px;">
+                <div class="register-link">
                     <a href="{{ route('register') }}" class="register-btn">Belum punya akun?</a>
                 </div>
 
-                <div class="forgot-password" style="text-align:center;margin-top:8px;">
+                <div class="forgot-password">
                     <a href="{{ route('password.request') }}">Lupa password?</a>
                 </div>
-
-                <!-- <div class="version">V.3.37.0</div> -->
             </div>
         </div>
     </div>

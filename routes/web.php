@@ -65,55 +65,73 @@ Route::middleware('auth')->group(function () {
         return view('dashboard');
     })->name('dashboard')->middleware(\App\Http\Middleware\IsAdmin::class);
 
-    Route::get('/registration', function () {
-        return view('registration');
-    })->name('registration');
+    // Admin-only pages
+    Route::middleware(\App\Http\Middleware\IsAdmin::class)->group(function () {
+        Route::get('/registration', function () {
+            $date = request()->query('date', now()->toDateString());
 
-    // Katalog Harga Prosedur (sederhana, sementara)
-    Route::get('/procedures', function (Request $request) {
-        $q = trim($request->query('q', ''));
+            $appointments = \App\Models\Appointment::with('doctor')
+                ->whereDate('start_at', $date)
+                ->orderBy('start_at')
+                ->get();
 
-        $procedures = [
-            ['name' => 'Alveolectomy', 'note' => 'Operasi kecil', 'price' => 2500000],
-            ['name' => 'Cleaning (Scaling)', 'note' => 'Pembersihan karang', 'price' => 150000],
-            ['name' => 'Composite Filling', 'note' => 'Tambal komposit', 'price' => 200000],
-            ['name' => 'Crown', 'note' => 'Mahkota gigi', 'price' => 1200000],
-            ['name' => 'Extraction', 'note' => 'Pencabutan gigi', 'price' => 300000],
-            ['name' => 'Root Canal Treatment', 'note' => 'Perawatan saluran akar', 'price' => 900000],
-            ['name' => 'Teeth Whitening', 'note' => 'Pemutihan', 'price' => 800000],
-            ['name' => 'Veneer', 'note' => 'Lapisan tipis', 'price' => 1500000],
-        ];
+            $doctors = \App\Models\Doctor::orderBy('name')->get();
 
-        // Filter by query
-        if ($q !== '') {
-            $procedures = array_values(array_filter($procedures, function ($p) use ($q) {
-                return stripos($p['name'], $q) !== false || stripos($p['note'], $q) !== false;
-            }));
-        }
+            return view('registration', compact('appointments', 'doctors', 'date'));
+        })->name('registration');
 
-        // Sort alphabetically by name
-        usort($procedures, function ($a, $b) {
-            return strcasecmp($a['name'], $b['name']);
-        });
+        // Katalog Harga Prosedur (sederhana, sementara)
+        Route::get('/procedures', function (Request $request) {
+            $q = trim($request->query('q', ''));
 
-        return view('procedures.index', compact('procedures', 'q'));
-    })->name('procedures.index');
+            $procedures = [
+                ['name' => 'Alveolectomy', 'note' => 'Operasi kecil', 'price' => 2500000],
+                ['name' => 'Cleaning (Scaling)', 'note' => 'Pembersihan karang', 'price' => 150000],
+                ['name' => 'Composite Filling', 'note' => 'Tambal komposit', 'price' => 200000],
+                ['name' => 'Crown', 'note' => 'Mahkota gigi', 'price' => 1200000],
+                ['name' => 'Extraction', 'note' => 'Pencabutan gigi', 'price' => 300000],
+                ['name' => 'Root Canal Treatment', 'note' => 'Perawatan saluran akar', 'price' => 900000],
+                ['name' => 'Teeth Whitening', 'note' => 'Pemutihan', 'price' => 800000],
+                ['name' => 'Veneer', 'note' => 'Lapisan tipis', 'price' => 1500000],
+            ];
 
-    // Electronic Medical Record page
-    Route::get('/emr', function () {
-        return view('emr');
-    })->name('emr');
+            // Filter by query
+            if ($q !== '') {
+                $procedures = array_values(array_filter($procedures, function ($p) use ($q) {
+                    return stripos($p['name'], $q) !== false || stripos($p['note'], $q) !== false;
+                }));
+            }
 
-    // Halaman Kasir
-    Route::get('/cashier', function() {
-        return view('cashier');
-    })->name('cashier');
+            // Sort alphabetically by name
+            usort($procedures, function ($a, $b) {
+                return strcasecmp($a['name'], $b['name']);
+            });
 
-    // Rawat Jalan schedule page
-    Route::get('/rawat-jalan', function () {
-        $doctors = \App\Models\Doctor::orderBy('id')->get();
-        return view('rawat-jalan', compact('doctors'));
-    })->name('rawat.jalan')->middleware(\App\Http\Middleware\DoctorRestrictPages::class);
+            return view('procedures.index', compact('procedures', 'q'));
+        })->name('procedures.index');
+
+        // Electronic Medical Record page
+        Route::get('/emr', function () {
+            return view('emr');
+        })->name('emr');
+
+        // Halaman Kasir
+        Route::get('/cashier', function() {
+            return view('cashier');
+        })->name('cashier');
+
+        // Rawat Jalan schedule page
+        Route::get('/rawat-jalan', function () {
+            $doctors = \App\Models\Doctor::orderBy('id')->get();
+            return view('rawat-jalan', compact('doctors'));
+        })->name('rawat.jalan');
+
+        // Appointments API for schedule (returns JSON)
+        Route::get('/appointments', [BookingController::class, 'index'])->name('appointments.index');
+        
+        // Update appointment status
+        Route::post('/appointments/{id}/status', [BookingController::class, 'updateStatus'])->name('appointments.updateStatus');
+    });
 
     // Doctor-specific dashboard (dokter dan admin boleh mengakses)
     Route::get('/doctor-dashboard', function () {
@@ -137,9 +155,6 @@ Route::middleware('auth')->group(function () {
 
         return view('doctor.dashboard', compact('appointments', 'doctor', 'date'));
     })->name('doctor.dashboard')->middleware(\App\Http\Middleware\IsDoctor::class);
-
-    // Appointments API for schedule (returns JSON)
-    Route::get('/appointments', [BookingController::class, 'index'])->name('appointments.index');
 
     // Simple profile page for authenticated users
     Route::get('/profile', function () {

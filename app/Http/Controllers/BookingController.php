@@ -163,9 +163,13 @@ class BookingController extends Controller
     {
         $v = Validator::make($request->all(), [
             'patient_name' => 'required|string|max:255',
+            'medical_record_number' => 'nullable|string|max:50',
+            'patient_gender' => 'required|string|in:Laki - laki,Perempuan',
+            'patient_birth_date' => 'required|date|before_or_equal:today',
             'patient_phone' => 'required|string|max:30',
             'doctor_id' => 'required|exists:doctors,id',
             'procedure' => 'required|string|max:255',
+            'payment_method' => 'required|string|in:Langsung,Tunai,BPJS,Asuransi',
             'date' => 'required|date',
             'start_time' => 'required',
         ]);
@@ -219,13 +223,18 @@ class BookingController extends Controller
         \DB::transaction(function() use (&$appt, $request, $doctor, $startAt, $endAt){
             $appt = Appointment::create([
                 'patient_name' => $request->patient_name,
+                'medical_record_number' => $request->medical_record_number,
+                'patient_gender' => $request->patient_gender,
+                'patient_birth_date' => $request->patient_birth_date,
                 'patient_phone' => $request->patient_phone,
                 'doctor_id' => $doctor->id,
                 'procedure' => $request->procedure,
                 'duration_minutes' => self::APPOINTMENT_DURATION_MINUTES,
+                'payment_method' => $request->payment_method,
                 'start_at' => $startAt,
                 'end_at' => $endAt,
                 'status' => 'confirmed',
+                'created_by_user_id' => $request->user()?->id,
             ]);
         });
 
@@ -237,12 +246,12 @@ class BookingController extends Controller
             return response()->json(['success' => true, 'appointment' => [
                 'id'=>$appt->id,
                 'doctor_id'=>$appt->doctor_id,
-                'start_at'=>$appt->start_at->toDateTimeString(),
-                'end_at'=>$appt->end_at->toDateTimeString(),
+                'start_at'=>$appt->start_at->toIso8601String(),
+                'end_at'=>$appt->end_at->toIso8601String(),
             ]], 201);
         }
 
-        return redirect()->route('rawat.jalan')->with('success','Booking berhasil');
+        return redirect('/')->with('success','Booking berhasil');
     }
 
     // API: get appointments for date (YYYY-MM-DD)
@@ -253,21 +262,62 @@ class BookingController extends Controller
         $start = \Carbon\Carbon::parse($date.' 00:00:00');
         $end = \Carbon\Carbon::parse($date.' 23:59:59');
 
-        $appointments = Appointment::with('doctor')
+        $appointments = Appointment::with(['doctor', 'createdByUser'])
             ->whereBetween('start_at', [$start, $end])
             ->get()
             ->map(function($a){
+                $tz = config('app.timezone');
                 return [
                     'id' => $a->id,
+                    'code' => $a->code,
                     'patient_name' => $a->patient_name,
+                    'medical_record_number' => $a->medical_record_number,
+                    'patient_gender' => $a->patient_gender,
+                    'patient_birth_date' => $a->patient_birth_date ? $a->patient_birth_date->toDateString() : null,
+                    'patient_phone' => $a->patient_phone,
                     'doctor_id' => $a->doctor_id,
                     'doctor_name' => $a->doctor->name ?? null,
-                    'start_at' => $a->start_at->toDateTimeString(),
-                    'end_at' => $a->end_at->toDateTimeString(),
+                    'procedure' => $a->procedure,
+                    'duration_minutes' => (int) ($a->duration_minutes ?? 20),
+                    'payment_method' => $a->payment_method,
+                    'start_at' => $a->start_at ? $a->start_at->copy()->setTimezone($tz)->format('Y-m-d H:i:s') : null,
+                    'end_at' => $a->end_at ? $a->end_at->copy()->setTimezone($tz)->format('Y-m-d H:i:s') : null,
                     'status' => $a->status,
+                    // keep full created_at for compatibility, but also send a dedicated WIB time for display
+                    'created_at' => $a->created_at ? $a->created_at->copy()->setTimezone($tz)->format('Y-m-d H:i:s') : null,
+                    'created_time_wib' => $a->created_at ? $a->created_at->copy()->setTimezone($tz)->format('H:i') : null,
+                    'created_by' => $a->createdByUser ? $a->createdByUser->name : null,
                 ];
             });
 
         return response()->json($appointments);
+    }
+
+    /**
+     * Update appointment status
+     */
+    public function updateStatus(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'status' => 'required|in:pending,confirmed,waiting,engaged,succeed',
+        ]);
+
+        $appointment = Appointment::findOrFail($id);
+        $appointment->status = $validated['status'];
+        $appointment->save();
+
+        $tz = config('app.timezone');
+        return response()->json([
+            'success' => true,
+            'message' => 'Status berhasil diperbarui',
+            'appointment' => [
+                'id' => $appointment->id,
+                'status' => $appointment->status,
+                'code' => $appointment->code,
+                'patient_name' => $appointment->patient_name,
+                'doctor_name' => $appointment->doctor->name ?? null,
+                'start_at' => $appointment->start_at ? $appointment->start_at->copy()->setTimezone($tz)->format('Y-m-d H:i:s') : null,
+            ]
+        ]);
     }
 }

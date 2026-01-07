@@ -930,7 +930,12 @@
                     <div class="filter-group">
                         <span class="filter-label">Tanggal Kunjungan</span>
                         <div class="filter-input">
-                            <span>{{ date('d/m/Y') }}</span>
+                            <input
+                                id="visitDate"
+                                type="date"
+                                value="{{ $date ?? now()->toDateString() }}"
+                                style="border:none;outline:none;background:transparent;font-size:13px;color:var(--text);width:100%"
+                            >
                             <i class="fas fa-calendar"></i>
                         </div>
                     </div>
@@ -941,8 +946,9 @@
                         <span class="filter-label">Tenaga Medis *</span>
                         <select class="filter-select">
                             <option>Semua Tenaga Medis</option>
-                            <option>Dr. Ahmad</option>
-                            <option>Dr. Siti</option>
+                            @foreach(($doctors ?? collect()) as $d)
+                                <option>{{ $d->name }}</option>
+                            @endforeach
                         </select>
                     </div>
                     <div class="filter-group">
@@ -955,7 +961,7 @@
                         </select>
                     </div>
                     <div class="search-patient">
-                        <input type="text" placeholder="Nama Pasien, Nomor MR">
+                        <input type="text" placeholder="Nama Pasien, Booking Code">
                         <i class="fas fa-search"></i>
                     </div>
                     <div class="filter-group">
@@ -976,7 +982,6 @@
                                 <th>Status</th>
                                 <th>Tanggal Kunjungan</th>
                                 <th>Tanggal Dibuat</th>
-                                <th>No</th>
                                 <th>Poli</th>
                                 <th>Nama Pasien</th>
                                 <th>Rencana Tindakan</th>
@@ -987,71 +992,63 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td data-label="Status"><span class="status-badge status-succeed">Succeed</span></td>
-                                <td data-label="Tanggal Kunjungan">15/12/2025, 12:00</td>
-                                <td data-label="Tanggal Dibuat">15/12/2025, 10:24</td>
-                                <td data-label="No">1</td>
-                                <td data-label="Poli"><span class="poli-badge">Gigi</span></td>
-                                <td data-label="Nama Pasien">Agasya, MR000074, 30 Tahun</td>
-                                <td data-label="Rencana Tindakan">Scaling</td>
-                                <td data-label="Rencana Paket">-</td>
-                                <td data-label="Tenaga Medis">Dr. Ahmad</td>
-                                <td data-label="Tipe Bayar">Tunai</td>
-                                <td data-label="Rujuk BPJS">-</td>
-                            </tr>
-                            <tr>
-                                <td data-label="Status"><span class="status-badge status-succeed">Succeed</span></td>
-                                <td data-label="Tanggal Kunjungan">15/12/2025, 12:15</td>
-                                <td data-label="Tanggal Dibuat">15/12/2025, 11:31</td>
-                                <td data-label="No">2</td>
-                                <td data-label="Poli"><span class="poli-badge">Gigi</span></td>
-                                <td data-label="Nama Pasien">Alex, 230769, 1 Tahun</td>
-                                <td data-label="Rencana Tindakan">Konsultasi</td>
-                                <td data-label="Rencana Paket">-</td>
-                                <td data-label="Tenaga Medis">Dr. Siti</td>
-                                <td data-label="Tipe Bayar">BPJS</td>
-                                <td data-label="Rujuk BPJS">Ya</td>
-                            </tr>
-                            <tr>
-                                <td data-label="Status"><span class="status-badge status-succeed">Succeed</span></td>
-                                <td data-label="Tanggal Kunjungan">15/12/2025, 12:30</td>
-                                <td data-label="Tanggal Dibuat">15/12/2025, 11:21</td>
-                                <td data-label="No">3</td>
-                                <td data-label="Poli"><span class="poli-badge">Gigi</span></td>
-                                <td data-label="Nama Pasien">Obby, 230739, 35 Tahun</td>
-                                <td data-label="Rencana Tindakan">Cabut Gigi</td>
-                                <td data-label="Rencana Paket">-</td>
-                                <td data-label="Tenaga Medis">Dr. Ahmad</td>
-                                <td data-label="Tipe Bayar">Tunai</td>
-                                <td data-label="Rujuk BPJS">-</td>
-                            </tr>
-                            <tr>
-                                <td data-label="Status"><span class="status-badge status-pending">Pending</span></td>
-                                <td data-label="Tanggal Kunjungan">15/12/2025, 13:00</td>
-                                <td data-label="Tanggal Dibuat">15/12/2025, 12:05</td>
-                                <td data-label="No">4</td>
-                                <td data-label="Poli"><span class="poli-badge">Gigi</span></td>
-                                <td data-label="Nama Pasien">Rina, 230845, 28 Tahun</td>
-                                <td data-label="Rencana Tindakan">Tambal Gigi</td>
-                                <td data-label="Rencana Paket">Paket Perawatan</td>
-                                <td data-label="Tenaga Medis">Dr. Siti</td>
-                                <td data-label="Tipe Bayar">Asuransi</td>
-                                <td data-label="Rujuk BPJS">-</td>
-                            </tr>
-                            <tr>
-                                <td data-label="Status"><span class="status-badge status-pending">Pending</span></td>
-                                <td data-label="Tanggal Kunjungan">15/12/2025, 13:30</td>
-                                <td data-label="Tanggal Dibuat">15/12/2025, 12:15</td>
-                                <td data-label="No">5</td>
-                                <td data-label="Poli"><span class="poli-badge">Gigi</span></td>
-                                <td data-label="Nama Pasien">Budi, 230901, 42 Tahun</td>
-                                <td data-label="Rencana Tindakan">Pemasangan Behel</td>
-                                <td data-label="Rencana Paket">Paket Ortodonti</td>
-                                <td data-label="Tenaga Medis">Dr. Ahmad</td>
-                                <td data-label="Tipe Bayar">Tunai</td>
-                                <td data-label="Rujuk BPJS">-</td>
-                            </tr>
+                            @php
+                                $rows = $appointments ?? collect();
+                            @endphp
+
+                            @forelse($rows as $i => $a)
+                                @php
+                                    $statusRaw = strtolower((string) ($a->status ?? ''));
+                                    $statusText = $a->status ? ucfirst($statusRaw) : '-';
+                                    $statusClass = 'status-succeed';
+                                    if (in_array($statusRaw, ['pending'], true)) {
+                                        $statusClass = 'status-pending';
+                                    } elseif (in_array($statusRaw, ['cancelled', 'canceled'], true)) {
+                                        $statusClass = 'status-cancelled';
+                                    }
+
+                                    $visitAt = $a->start_at ? \Carbon\Carbon::parse($a->start_at)->format('d/m/Y, H:i') : '-';
+                                    $createdAt = $a->created_at ? \Carbon\Carbon::parse($a->created_at)->format('d/m/Y') : '-';
+
+                                    $patientName = \Illuminate\Support\Str::title(preg_replace('/\s+/', ' ', trim((string) ($a->patient_name ?? ''))));
+                                    $mr = $a->medical_record_number ?: '-';
+
+                                    $ageText = null;
+                                    if (!empty($a->patient_birth_date)) {
+                                        $ageYears = \Carbon\Carbon::parse($a->patient_birth_date)->age;
+                                        $ageText = $ageYears . ' Tahun';
+                                    }
+
+                                    $patientPieces = array_filter([
+                                        $patientName,
+                                        $mr !== '-' ? $mr : null,
+                                        $ageText,
+                                    ]);
+                                    $patientCell = !empty($patientPieces) ? implode(', ', $patientPieces) : '-';
+
+                                    $poli = 'Gigi';
+                                    $procedure = $a->procedure ?: '-';
+                                    $doctorName = $a->doctor?->name ?: '-';
+                                    $payment = $a->payment_method ?: 'Langsung';
+                                @endphp
+
+                                <tr>
+                                    <td data-label="Status"><span class="status-badge {{ $statusClass }}">{{ $statusText }}</span></td>
+                                    <td data-label="Tanggal Kunjungan">{{ $visitAt }}</td>
+                                    <td data-label="Tanggal Dibuat">{{ $createdAt }}</td>
+                                    <td data-label="Poli"><span class="poli-badge">{{ $poli }}</span></td>
+                                    <td data-label="Nama Pasien">{{ $patientCell }}</td>
+                                    <td data-label="Rencana Tindakan">{{ $procedure }}</td>
+                                    <td data-label="Rencana Paket">-</td>
+                                    <td data-label="Tenaga Medis">{{ $doctorName }}</td>
+                                    <td data-label="Tipe Bayar">{{ $payment }}</td>
+                                    <td data-label="Rujuk BPJS">-</td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="10" style="padding:18px 12px;color:var(--muted);text-align:center">Belum ada booking pada tanggal ini.</td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
@@ -1113,6 +1110,21 @@
                     // fallback: redirect anyway
                     window.location.href = '{{ route('login') }}';
                 });
+            });
+        })();
+
+        // Registration visit date filter
+        (function(){
+            const input = document.getElementById('visitDate');
+            if(!input) return;
+
+            input.addEventListener('change', function(){
+                const value = String(input.value || '').trim();
+                if(!value) return;
+
+                const url = new URL(window.location.href);
+                url.searchParams.set('date', value);
+                window.location.href = url.toString();
             });
         })();
     </script>

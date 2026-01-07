@@ -225,6 +225,18 @@
         .emr-content{padding:26px;background:var(--main-bg);min-height:60vh}
         .filter-box{background:var(--surface);padding:12px;border-radius:8px;display:inline-block;margin-bottom:24px;border:1px solid rgba(0,0,0,0.06)}
 
+        .patient-card{background:var(--surface);border:1px solid rgba(0,0,0,0.06);border-radius:12px;max-width:780px;margin:0 auto 18px;overflow:hidden}
+        .patient-card-head{padding:14px 16px;border-bottom:1px solid rgba(0,0,0,0.06);display:flex;align-items:center;justify-content:space-between;gap:12px}
+        .patient-code{color:#2563eb;font-weight:800;font-size:13px;display:flex;align-items:center;gap:10px}
+        .patient-card-body{padding:14px 16px}
+        .patient-name{display:flex;align-items:center;gap:10px;font-weight:800;font-size:18px;margin-bottom:8px}
+        .patient-dot{width:10px;height:10px;border-radius:999px;background:#10b981;display:inline-block}
+        .patient-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+        .kv{font-size:13px;color:var(--muted)}
+        .kv b{color:var(--text)}
+        .patient-actions{display:flex;gap:10px;margin-top:14px}
+        .patient-actions a{flex:1;text-align:center;text-decoration:none;background:var(--action);color:#fff;padding:10px 12px;border-radius:10px;font-weight:800}
+
         .empty-state{background:var(--surface);border-radius:8px;padding:40px;display:flex;flex-direction:column;align-items:center;gap:12px}
         .empty-state h3{color:var(--text)}
         .empty-state p{color:var(--muted)}
@@ -357,6 +369,53 @@
                     <option>Semua</option>
                 </select>
             </div>
+
+            @php
+                $fromRawatJalan = request()->has('appointment_id') || request()->has('mr') || request()->has('code');
+                $pCode = (string) request('code', '-');
+                $pMr = (string) request('mr', '-');
+                $pName = (string) request('name', 'Pasien');
+                $pBio = (string) request('bio', '-');
+                $pDoctor = (string) request('doctor', '-');
+                $pTime = (string) request('time', '-');
+                $pStatus = (string) request('status', 'Confirmed');
+
+                $statusKey = strtolower(trim($pStatus));
+                $statusColor = match ($statusKey) {
+                    'pending' => '#ef4444',
+                    'confirmed' => '#f59e0b',
+                    'waiting' => '#8b5cf6',
+                    'engaged' => '#0ea5e9',
+                    'succeed', 'success', 'succeeded' => '#10b981',
+                    default => '#f59e0b',
+                };
+
+                $doctorLower = strtolower(trim($pDoctor));
+                if ($pDoctor !== '-' && $pDoctor !== '' && !str_starts_with($doctorLower, 'drg.') && !str_starts_with($doctorLower, 'dr.')) {
+                    $pDoctor = 'drg. ' . $pDoctor;
+                }
+            @endphp
+
+            @if($fromRawatJalan)
+                <div class="patient-card" aria-label="Ringkasan pasien (dummy)">
+                    <div class="patient-card-head">
+                        <div class="patient-code">Code: {{ $pCode }}</div>
+                        <div style="color:var(--muted);font-weight:700;font-size:13px">{{ $pStatus }}</div>
+                    </div>
+                    <div class="patient-card-body">
+                        <div class="patient-name"><span class="patient-dot" style="background: {{ $statusColor }}"></span> {{ $pName }}</div>
+                        <div class="patient-grid">
+                            <div class="kv"><b>Booking Code:</b> {{ $pMr }}</div>
+                            <div class="kv"><b>Jadwal:</b> {{ $pTime }} dengan {{ $pDoctor }}</div>
+                            <div class="kv"><b>Bio:</b> {{ $pBio }}</div>
+                            <div class="kv"><b>Catatan:</b> Data dummy (dari Rawat Jalan)</div>
+                        </div>
+                        <div class="patient-actions">
+                            <a href="{{ url('/rawat-jalan') }}">Kembali ke Rawat Jalan</a>
+                        </div>
+                    </div>
+                </div>
+            @endif
 
             <div style="margin-top:40px;display:flex;justify-content:center">
                 <div style="width:100%;max-width:780px;padding:0 12px">
