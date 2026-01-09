@@ -10,88 +10,6 @@
     <link rel="stylesheet" href="/css/responsive.css">
     <style>
         :root{ --sidebar-width:60px; --sidebar-compact-left:72px; }
-                        /* Header horizontal di mobile */
-                        @media (max-width: 768px) {
-                            .header {
-                                flex-wrap: nowrap;
-                                flex-direction: row;
-                                overflow: visible; /* allow dropdown to overflow */
-                                gap: 8px;
-                                justify-content: flex-start;
-                                align-items: center;
-                                padding: 8px 4px;
-                            }
-                            .header-left, .header-right {
-                                flex-direction: row !important;
-                                gap: 8px;
-                                align-items: center;
-                            }
-                            .search-box {
-                                min-width: 180px;
-                                max-width: 220px;
-                                flex: 1 0 180px;
-                            }
-                            .btn-pendaftaran {
-                                padding: 8px 12px;
-                                font-size: 13px;
-                            }
-                            .header-logo, .user-dropdown {
-                                min-width: 36px;
-                                min-height: 36px;
-                                font-size: 12px;
-                                padding: 6px 8px;
-                            }
-                            .header-icons {
-                                gap: 8px;
-                            }
-                        }
-                /* --- Tambahan Responsive untuk Mobile Registration --- */
-                @media (max-width: 768px) {
-                    .content { flex-direction: column; gap: 10px; padding: 8px; }
-                    .left-menu { width: 100%; margin-bottom: 10px; border-radius: 8px; }
-                    .main-panel { width: 100%; border-radius: 8px; }
-                    .filters { flex-wrap: wrap; gap: 8px; }
-                    .filter-group, .search-patient { width: 100%; margin-bottom: 8px; }
-                    .panel-header { flex-direction: column; align-items: flex-start; gap: 8px; padding: 12px; }
-                    .panel-title h2 { font-size: 16px; }
-                    .panel-actions { gap: 8px; }
-                }
-                @media (max-width: 480px) {
-                    .main-content { margin-left: 0; padding: 4px; }
-                    .header, .page-title { padding: 10px 8px; }
-                    .page-title h1 { font-size: 18px; }
-                    .content { padding: 4px; }
-                    .left-menu { border-radius: 6px; }
-                    .menu-item { padding: 10px 10px; font-size: 13px; }
-                    .main-panel { border-radius: 6px; }
-                    .filters { gap: 6px; }
-                    .filter-group, .search-patient { margin-bottom: 6px; }
-                    .filter-label { font-size: 11px; }
-                    .filter-select, .search-patient input { font-size: 13px; }
-                    .table-container { overflow-x: auto; }
-                    .data-table, .data-table thead, .data-table tbody, .data-table tr, .data-table th, .data-table td {
-                        display: block;
-                        width: 100%;
-                    }
-                    .data-table thead { display: none; }
-                    .data-table tr { margin-bottom: 16px; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); background: #fff; }
-                    .data-table td {
-                        padding: 8px 10px;
-                        text-align: left;
-                        position: relative;
-                        border: none;
-                        border-bottom: 1px solid #f3f4f6;
-                        font-size: 13px;
-                    }
-                    .data-table td:before {
-                        content: attr(data-label);
-                        font-weight: 600;
-                        color: #64748b;
-                        display: block;
-                        margin-bottom: 2px;
-                        font-size: 11px;
-                    }
-                }
         * {
             margin: 0;
             padding: 0;
@@ -191,7 +109,7 @@
         /* Header */
         .header {
             background: var(--surface);
-            padding: 12px 20px;
+            padding: 12px 25px;
             display: flex;
             flex-wrap: wrap;
             align-items: center;
@@ -200,12 +118,7 @@
             box-shadow: 0 2px 6px rgba(0,0,0,0.03);
         }
 
-        /* Align header with sidebar on larger screens */
-        @media (min-width: 900px) {
-            .header { padding-left: calc(var(--sidebar-width) + 20px); }
-            .page-title { padding-left: calc(var(--sidebar-width) + 20px); }
-            .content { padding-left: 12px; }
-        }
+        /* Note: main-content already offsets for the sidebar via margin-left */
 
         .header-left {
             display: flex;
@@ -253,6 +166,7 @@
             gap: 8px;
             white-space: nowrap;
             flex: 0 0 auto;
+            margin-left: auto; /* push to the right inside header-left (desktop) */
         }
 
         .btn-pendaftaran:hover {
@@ -481,10 +395,134 @@
             background: var(--surface);
             cursor: pointer;
             min-width: 160px;
+            position: relative;
         }
 
         .filter-input i {
             color: var(--muted);
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+        }
+
+        /* Date input: hide native calendar icon (avoid double icons) */
+        .filter-input .filter-date {
+            -webkit-appearance: none;
+            appearance: none;
+            padding-right: 34px;
+        }
+
+        .filter-input .filter-date::-webkit-calendar-picker-indicator {
+            opacity: 0;
+            position: absolute;
+            right: 8px;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+        }
+
+        .filter-input .filter-date::-webkit-inner-spin-button,
+        .filter-input .filter-date::-webkit-clear-button {
+            display: none;
+        }
+
+        /* Date range popover (opened by + button) */
+        .date-range-container { position: relative; display: flex; align-items: flex-end; }
+
+        .date-range-popover {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            background: var(--surface);
+            border: 1px solid rgba(0,0,0,0.10);
+            border-radius: 8px;
+            padding: 10px 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.10);
+            z-index: 1000;
+            display: none;
+            min-width: 420px;
+        }
+
+        .date-range-popover.open { display: block; }
+
+        .date-range-row { display: flex; align-items: flex-start; gap: 10px; }
+        .date-range-field { display: flex; flex-direction: column; gap: 6px; }
+        .date-range-sep { padding-top: 8px; color: var(--muted); }
+
+        .date-range-input {
+            position: relative;
+            display: flex;
+            align-items: center;
+            width: 170px;
+            padding: 8px 10px;
+            border-bottom: 1px solid rgba(0,0,0,0.20);
+            background: transparent;
+        }
+
+        .date-range-input input {
+            border: none;
+            outline: none;
+            background: transparent;
+            color: var(--text);
+            font-size: 14px;
+            width: 100%;
+            padding-right: 28px;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .date-range-input i {
+            position: absolute;
+            right: 6px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--muted);
+            pointer-events: none;
+        }
+
+        .date-range-input input::-webkit-calendar-picker-indicator {
+            opacity: 0;
+            position: absolute;
+            right: 0;
+            width: 28px;
+            height: 28px;
+            cursor: pointer;
+        }
+
+        .date-range-label { font-size: 12px; color: var(--muted); }
+
+        .date-range-clear {
+            border: none;
+            background: transparent;
+            color: var(--muted);
+            cursor: pointer;
+            padding: 6px;
+            line-height: 1;
+        }
+
+        .date-range-clear:hover { color: var(--text); }
+
+        @media (max-width: 768px) {
+            .date-range-popover {
+                min-width: 0;
+                width: min(360px, calc(100vw - 24px));
+                padding-top: 28px;
+            }
+
+            .date-range-row { flex-wrap: wrap; gap: 8px; }
+            .date-range-field { flex: 1 1 160px; }
+            .date-range-sep { display: none; }
+
+            .date-range-input { width: 100%; }
+            .date-range-input input { font-size: 13px; }
+
+            .date-range-clear {
+                position: absolute;
+                top: 6px;
+                right: 6px;
+            }
         }
 
         .filter-select {
@@ -661,23 +699,7 @@
             background: #fee2e2;
         }
 
-        /* Chat Button */
-        .chat-button {
-            position: fixed;
-            bottom: 25px;
-            right: 25px;
-            width: 55px;
-            height: 55px;
-            background: var(--action);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 24px;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        }
+        
 
         /* Responsive */
         @media (max-width: 1200px) {
@@ -710,50 +732,52 @@
             }
             .main-content {
                 margin-left: 0;
+                display: flex;
+                flex-direction: column;
             }
+
+            /* Mobile: show page title first, then header controls */
+            .page-title { order: 1; }
+            .header { order: 2; }
+            .content { order: 3; }
             .content {
                 flex-direction: column;
+                padding: 12px;
+                gap: 12px;
             }
             .left-menu {
                 width: 100%;
             }
-            .chat-button {
-                right: 10px;
-                bottom: 10px;
-                width: 45px;
-                height: 45px;
-                font-size: 18px;
-            }
-            .header {
-                flex-direction: column;
-                gap: 10px;
-                padding: 10px 10px;
-            }
-            .header-left {
-                width: 100%;
-                flex-direction: column;
-                gap: 8px;
-            }
-            .search-box {
-                min-width: 0;
-                width: 100%;
-                padding: 8px 10px;
-            }
-            .btn-pendaftaran {
-                width: 100%;
-                justify-content: center;
-            }
-            .header-right {
-                width: 100%;
-                justify-content: flex-end;
-            }
+
             .page-title {
                 padding: 10px 10px 15px;
             }
+
+            .panel-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+                padding: 12px;
+            }
+
+            .panel-actions {
+                width: 100%;
+                justify-content: flex-end;
+                gap: 10px;
+            }
+
             .filters {
                 padding: 10px 10px;
                 gap: 10px;
+                flex-direction: column;
+                align-items: stretch;
             }
+
+            .filter-group,
+            .search-patient {
+                width: 100%;
+            }
+
             .filter-input,
             .filter-select,
             .search-patient {
@@ -840,7 +864,8 @@
         @media (max-width: 992px) {
             .header { align-items: flex-start; }
             .header-left { flex-wrap: wrap; }
-            .header-right { margin-top: 6px; width: 100%; display:flex; justify-content:space-between; }
+            .header-right { margin-top: 6px; width: 100%; display:flex; justify-content:flex-end; gap: 12px; }
+            .btn-pendaftaran { margin-left: 0; }
             .hamburger { display: flex !important; background: var(--surface); color: var(--accent); height:36px; width:36px; border-radius:8px; padding:0; justify-content:center; align-items:center }
             .left-menu { width: 100%; }
             .main-panel { width: 100%; }
@@ -886,11 +911,6 @@
                             </form>
                     </div>
                 </div>
-                <div class="header-icons">
-                    <i class="fas fa-question-circle header-icon"></i>
-                    <i class="fas fa-bell header-icon"></i>
-                    <i class="fas fa-user-circle header-icon"></i>
-                </div>
             </div>
         </header>
 
@@ -913,14 +933,14 @@
                         <i class="fas fa-desktop"></i>
                     </div>
                     <div class="panel-actions">
-                        <button class="btn-info">
+                        <button class="btn-info" title="Info">
                             <i class="fas fa-info"></i>
                         </button>
-                        <button class="btn-export">
+                        <button id="exportBtn" class="btn-export">
                             EXPORT
                         </button>
-                        <button class="btn-print">
-                            <i class="fas fa-print"></i>
+                        <button id="printBtn" class="btn-print" title="Print">
+                            <i class="fas fa-print" aria-hidden="true"></i>
                         </button>
                     </div>
                 </div>
@@ -932,6 +952,7 @@
                         <div class="filter-input">
                             <input
                                 id="visitDate"
+                                class="filter-date"
                                 type="date"
                                 value="{{ $date ?? now()->toDateString() }}"
                                 style="border:none;outline:none;background:transparent;font-size:13px;color:var(--text);width:100%"
@@ -939,38 +960,88 @@
                             <i class="fas fa-calendar"></i>
                         </div>
                     </div>
-                    <button class="btn-add">
-                        <i class="fas fa-plus"></i>
-                    </button>
+                    <div class="date-range-container">
+                        <button id="dateRangeBtn" class="btn-add" type="button" aria-label="Pilih rentang tanggal">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                        <div id="dateRangePopover" class="date-range-popover" aria-hidden="true">
+                            <div class="date-range-row">
+                                <div class="date-range-field">
+                                    <div class="date-range-input">
+                                        <input id="dateFrom" type="date" value="{{ $dateFrom ?? '' }}">
+                                        <i class="fas fa-calendar"></i>
+                                    </div>
+                                    <div class="date-range-label">Dari tanggal</div>
+                                </div>
+                                <div class="date-range-sep">-</div>
+                                <div class="date-range-field">
+                                    <div class="date-range-input">
+                                        <input id="dateTo" type="date" value="{{ $dateTo ?? '' }}">
+                                        <i class="fas fa-calendar"></i>
+                                    </div>
+                                    <div class="date-range-label">Hingga tanggal</div>
+                                </div>
+                                <button id="dateRangeClear" class="date-range-clear" type="button" aria-label="Tutup">
+                                    <i class="fas fa-xmark"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                     <div class="filter-group">
                         <span class="filter-label">Tenaga Medis *</span>
-                        <select class="filter-select">
-                            <option>Semua Tenaga Medis</option>
+                        <select id="doctorFilter" class="filter-select">
+                            <option value="">Semua Tenaga Medis</option>
                             @foreach(($doctors ?? collect()) as $d)
-                                <option>{{ $d->name }}</option>
+                                <option value="{{ $d->id }}" {{ (string)($selectedDoctorId ?? '') === (string)$d->id ? 'selected' : '' }}>{{ $d->name }}</option>
                             @endforeach
                         </select>
                     </div>
                     <div class="filter-group">
                         <span class="filter-label">Metode Pembayaran *</span>
-                        <select class="filter-select">
-                            <option>Semua Metode Pembayar...</option>
-                            <option>Tunai</option>
-                            <option>BPJS</option>
-                            <option>Asuransi</option>
+                        <select id="paymentFilter" class="filter-select">
+                            <option value="">Semua Metode Pembayaran</option>
+                            @php $paySel = (string)($selectedPayment ?? ''); @endphp
+                            @foreach(['Langsung','Tunai','BPJS','Asuransi'] as $pm)
+                                <option value="{{ $pm }}" {{ $paySel === (string)$pm ? 'selected' : '' }}>{{ $pm }}</option>
+                            @endforeach
                         </select>
                     </div>
                     <div class="search-patient">
-                        <input type="text" placeholder="Nama Pasien, Booking Code">
-                        <i class="fas fa-search"></i>
+                        <input id="searchFilter" type="text" value="{{ $q ?? '' }}" placeholder="Nama Pasien, Booking Code">
+                        <i id="searchButton" class="fas fa-search" style="cursor:pointer"></i>
                     </div>
                     <div class="filter-group">
                         <span class="filter-label">Poli *</span>
-                        <select class="filter-select">
-                            <option>Semua Poli</option>
-                            <option>Gigi</option>
-                            <option>Umum</option>
+                        @php $poliSel = (string)($selectedPoli ?? ''); @endphp
+                        <select id="poliFilter" class="filter-select">
+                            <option value="" {{ $poliSel === '' ? 'selected' : '' }}>Semua Poli</option>
+                            <option value="Gigi" {{ $poliSel === 'Gigi' ? 'selected' : '' }}>Gigi</option>
+                            <option value="Umum" {{ $poliSel === 'Umum' ? 'selected' : '' }}>Umum</option>
                         </select>
+                    </div>
+                </div>
+
+                <!-- Print Header (only visible when printing) -->
+                <div class="print-only print-header">
+                    <div class="print-header-left">
+                        <div class="print-logo">HDS</div>
+                    </div>
+                    <div class="print-header-right">
+                        <div class="print-clinic-name">Hanglekiu Dental Specialist</div>
+                        <div class="print-clinic-address">
+                            <div>Jl. R. Haji Leki Kiu V No. 1</div>
+                            <div>Kebon Jeruk, Kota Jakarta Selatan</div>
+                            <div>Daerah Khusus Ibukota Jakarta</div>
+                        </div>
+                        <div class="print-meta">
+                            <span>Tanggal: {{ \Carbon\Carbon::parse($date ?? now()->toDateString())->format('d/m/Y') }}</span>
+                            @if(!empty($selectedDoctorId))
+                                <span>• Dokter: {{ optional(($doctors ?? collect())->firstWhere('id', (int)$selectedDoctorId))->name ?? '-' }}</span>
+                            @endif
+                            @if(!empty($selectedPayment))
+                                <span>• Bayar: {{ $selectedPayment }}</span>
+                            @endif
+                        </div>
                     </div>
                 </div>
 
@@ -979,16 +1050,17 @@
                     <table class="data-table">
                         <thead>
                             <tr>
-                                <th>Status</th>
-                                <th>Tanggal Kunjungan</th>
-                                <th>Tanggal Dibuat</th>
-                                <th>Poli</th>
-                                <th>Nama Pasien</th>
-                                <th>Rencana Tindakan</th>
-                                <th>Rencana Paket</th>
-                                <th>Tenaga Medis</th>
-                                <th>Tipe Bayar</th>
-                                <th>Rujuk BPJS</th>
+                                <th class="col-status">Status</th>
+                                <th class="col-visit">Tanggal Kunjungan</th>
+                                <th class="no-print col-created">Tanggal Dibuat</th>
+                                <th class="no-print col-poli">Poli</th>
+                                <th class="col-patient">Nama Pasien</th>
+                                <th class="col-procedure">Rencana Tindakan</th>
+                                <th class="col-package">Rencana Paket</th>
+                                <th class="col-doctor">Tenaga Medis</th>
+                                <th class="col-payment">Tipe Bayar</th>
+                                <th class="col-bpjs">Rujuk BPJS</th>
+                                <th class="print-cell-only col-bpjs-code">Kode Booking BPJS</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -1030,23 +1102,28 @@
                                     $procedure = $a->procedure ?: '-';
                                     $doctorName = $a->doctor?->name ?: '-';
                                     $payment = $a->payment_method ?: 'Langsung';
+                                    $isBpjs = strcasecmp((string) $payment, 'BPJS') === 0;
+                                    $bpjsCode = $isBpjs
+                                        ? ((string) ($a->code ?: ($a->medical_record_number ?: '-')))
+                                        : '-';
                                 @endphp
 
                                 <tr>
-                                    <td data-label="Status"><span class="status-badge {{ $statusClass }}">{{ $statusText }}</span></td>
-                                    <td data-label="Tanggal Kunjungan">{{ $visitAt }}</td>
-                                    <td data-label="Tanggal Dibuat">{{ $createdAt }}</td>
-                                    <td data-label="Poli"><span class="poli-badge">{{ $poli }}</span></td>
-                                    <td data-label="Nama Pasien">{{ $patientCell }}</td>
-                                    <td data-label="Rencana Tindakan">{{ $procedure }}</td>
-                                    <td data-label="Rencana Paket">-</td>
-                                    <td data-label="Tenaga Medis">{{ $doctorName }}</td>
-                                    <td data-label="Tipe Bayar">{{ $payment }}</td>
-                                    <td data-label="Rujuk BPJS">-</td>
+                                    <td class="col-status" data-label="Status"><span class="status-badge {{ $statusClass }}">{{ $statusText }}</span></td>
+                                    <td class="col-visit" data-label="Tanggal Kunjungan">{{ $visitAt }}</td>
+                                    <td class="no-print col-created" data-label="Tanggal Dibuat">{{ $createdAt }}</td>
+                                    <td class="no-print col-poli" data-label="Poli"><span class="poli-badge">{{ $poli }}</span></td>
+                                    <td class="col-patient" data-label="Nama Pasien">{{ $patientCell }}</td>
+                                    <td class="col-procedure" data-label="Rencana Tindakan">{{ $procedure }}</td>
+                                    <td class="col-package" data-label="Rencana Paket">-</td>
+                                    <td class="col-doctor" data-label="Tenaga Medis">{{ $doctorName }}</td>
+                                    <td class="col-payment" data-label="Tipe Bayar">{{ $payment }}</td>
+                                    <td class="col-bpjs" data-label="Rujuk BPJS">{{ $isBpjs ? 'Ya' : '-' }}</td>
+                                    <td class="print-cell-only col-bpjs-code" data-label="Kode Booking BPJS">{{ $bpjsCode }}</td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="10" style="padding:18px 12px;color:var(--muted);text-align:center">Belum ada booking pada tanggal ini.</td>
+                                    <td colspan="11" style="padding:18px 12px;color:var(--muted);text-align:center">Belum ada booking pada tanggal ini.</td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -1056,10 +1133,7 @@
         </div>
     </main>
 
-    <!-- Chat Button -->
-    <div class="chat-button">
-        <i class="fas fa-comment"></i>
-    </div>
+    
 
     <script>
         // User Dropdown Menu
@@ -1113,19 +1187,166 @@
             });
         })();
 
-        // Registration visit date filter
+        // Registration filters handlers
         (function(){
-            const input = document.getElementById('visitDate');
-            if(!input) return;
-
-            input.addEventListener('change', function(){
-                const value = String(input.value || '').trim();
-                if(!value) return;
-
+            function applyFilters(){
                 const url = new URL(window.location.href);
-                url.searchParams.set('date', value);
+                const date = document.getElementById('visitDate')?.value || '';
+                const dateFrom = document.getElementById('dateFrom')?.value || '';
+                const dateTo = document.getElementById('dateTo')?.value || '';
+                const doctor = document.getElementById('doctorFilter')?.value || '';
+                const payment = document.getElementById('paymentFilter')?.value || '';
+                const q = document.getElementById('searchFilter')?.value || '';
+                const poli = document.getElementById('poliFilter')?.value || '';
+
+                // Prefer date range only when BOTH are set; otherwise keep single-date filter
+                if (dateFrom && dateTo) {
+                    url.searchParams.set('date_from', dateFrom);
+                    url.searchParams.set('date_to', dateTo);
+                    url.searchParams.delete('date');
+                } else {
+                    url.searchParams.delete('date_from');
+                    url.searchParams.delete('date_to');
+                    if(date) url.searchParams.set('date', date); else url.searchParams.delete('date');
+                }
+                if(doctor) url.searchParams.set('doctor', doctor); else url.searchParams.delete('doctor');
+                if(payment) url.searchParams.set('payment', payment); else url.searchParams.delete('payment');
+                if(q) url.searchParams.set('q', q); else url.searchParams.delete('q');
+                if(poli) url.searchParams.set('poli', poli); else url.searchParams.delete('poli');
+
                 window.location.href = url.toString();
-            });
+            }
+
+            const dateEl = document.getElementById('visitDate');
+            if(dateEl){
+                dateEl.addEventListener('change', function(){
+                    const fromEl = document.getElementById('dateFrom');
+                    const toEl = document.getElementById('dateTo');
+                    if(fromEl) fromEl.value = '';
+                    if(toEl) toEl.value = '';
+                    applyFilters();
+                });
+            }
+
+            // Date range popover
+            (function(){
+                const btn = document.getElementById('dateRangeBtn');
+                const popover = document.getElementById('dateRangePopover');
+                const clearBtn = document.getElementById('dateRangeClear');
+                const fromEl = document.getElementById('dateFrom');
+                const toEl = document.getElementById('dateTo');
+                const singleDateEl = document.getElementById('visitDate');
+                if(!btn || !popover) return;
+
+                function openPopover(){
+                    popover.classList.add('open');
+                    popover.setAttribute('aria-hidden', 'false');
+                }
+                function closePopover(){
+                    popover.classList.remove('open');
+                    popover.setAttribute('aria-hidden', 'true');
+                }
+
+                btn.addEventListener('click', function(ev){
+                    ev.stopPropagation();
+                    if (popover.classList.contains('open')) {
+                        closePopover();
+                        return;
+                    }
+
+                    // Prefill "Dari tanggal" from the single date picker for convenience
+                    if (fromEl && !fromEl.value && singleDateEl && singleDateEl.value) {
+                        fromEl.value = singleDateEl.value;
+                    }
+
+                    openPopover();
+                });
+
+                popover.addEventListener('click', function(ev){
+                    ev.stopPropagation();
+                });
+
+                document.addEventListener('click', function(){
+                    if (popover.classList.contains('open')) closePopover();
+                });
+
+                document.addEventListener('keydown', function(ev){
+                    if(ev.key === 'Escape' && popover.classList.contains('open')) closePopover();
+                });
+
+                if(clearBtn){
+                    clearBtn.addEventListener('click', function(){
+                        if(fromEl) fromEl.value = '';
+                        if(toEl) toEl.value = '';
+                        closePopover();
+                        applyFilters();
+                    });
+                }
+
+                function onRangeChange(){
+                    applyFilters();
+                }
+                if(fromEl) fromEl.addEventListener('change', onRangeChange);
+                if(toEl) toEl.addEventListener('change', onRangeChange);
+            })();
+            const doctorEl = document.getElementById('doctorFilter');
+            if(doctorEl){
+                doctorEl.addEventListener('change', applyFilters);
+            }
+            const paymentEl = document.getElementById('paymentFilter');
+            if(paymentEl){
+                paymentEl.addEventListener('change', applyFilters);
+            }
+            const poliEl = document.getElementById('poliFilter');
+            if(poliEl){
+                poliEl.addEventListener('change', applyFilters);
+            }
+            const searchEl = document.getElementById('searchFilter');
+            if(searchEl){
+                searchEl.addEventListener('keydown', function(ev){
+                    if(ev.key === 'Enter') applyFilters();
+                });
+            }
+            const searchBtn = document.getElementById('searchButton');
+            if(searchBtn){
+                searchBtn.addEventListener('click', applyFilters);
+            }
+
+            // Export CSV using current filters
+            const exportBtn = document.getElementById('exportBtn');
+            if(exportBtn){
+                exportBtn.addEventListener('click', function(){
+                    const url = new URL(window.location.origin + '/registration/export');
+                    const date = document.getElementById('visitDate')?.value || '';
+                    const dateFrom = document.getElementById('dateFrom')?.value || '';
+                    const dateTo = document.getElementById('dateTo')?.value || '';
+                    const doctor = document.getElementById('doctorFilter')?.value || '';
+                    const payment = document.getElementById('paymentFilter')?.value || '';
+                    const q = document.getElementById('searchFilter')?.value || '';
+                    const poli = document.getElementById('poliFilter')?.value || '';
+
+                    if (dateFrom && dateTo) {
+                        url.searchParams.set('date_from', dateFrom);
+                        url.searchParams.set('date_to', dateTo);
+                    } else {
+                        if(date) url.searchParams.set('date', date);
+                    }
+                    if(doctor) url.searchParams.set('doctor', doctor);
+                    if(payment) url.searchParams.set('payment', payment);
+                    if(q) url.searchParams.set('q', q);
+                    if(poli) url.searchParams.set('poli', poli);
+
+                    window.location.href = url.toString();
+                });
+            }
+
+            // Print current page
+            const printBtn = document.getElementById('printBtn');
+            if(printBtn){
+                printBtn.addEventListener('click', function(){
+                    window.print();
+                });
+            }
         })();
     </script>
 
@@ -1138,18 +1359,262 @@
             .filters { flex-direction: column; align-items: stretch; }
         }
 
+        /* Print template */
+        .print-only { display: none; }
+        .print-cell-only { display: none; }
+
+        .print-header {
+            display: none;
+            gap: 14px;
+            align-items: flex-start;
+            padding: 16px 18px 10px;
+        }
+
+        .print-logo {
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            border: 2px solid #6b7280;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .print-clinic-name {
+            font-weight: 700;
+            font-size: 14px;
+            color: #111827;
+            margin-bottom: 4px;
+        }
+
+        .print-clinic-address {
+            font-size: 11px;
+            color: #374151;
+            line-height: 1.35;
+            margin-bottom: 6px;
+        }
+
+        .print-meta {
+            font-size: 11px;
+            color: #111827;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        @media print {
+            @page { size: A4 landscape; margin: 12mm; }
+
+            body {
+                display: block !important;
+            }
+
+            .content {
+                display: block !important;
+                gap: 0 !important;
+            }
+
+            body {
+                background: #fff !important;
+                color: #111827 !important;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+
+            /* Hide app chrome */
+            .sidebar,
+            .hamburger,
+            .header,
+            .page-title,
+            .filters,
+            .panel-actions,
+            .btn-add,
+            .chat-button {
+                display: none !important;
+            }
+
+            .main-content {
+                margin-left: 0 !important;
+                padding: 0 !important;
+                width: 100% !important;
+            }
+
+            .content {
+                padding: 0 !important;
+            }
+
+            .main-panel {
+                box-shadow: none !important;
+                border-radius: 0 !important;
+                overflow: visible !important;
+            }
+
+            .panel-header {
+                border-bottom: none !important;
+                padding: 0 !important;
+            }
+
+            .panel-title {
+                display: none !important;
+            }
+
+            .print-only {
+                display: block !important;
+            }
+
+            .print-cell-only {
+                display: table-cell !important;
+            }
+
+            .print-header {
+                display: flex !important;
+            }
+
+            .table-container {
+                overflow: visible !important;
+                width: 100% !important;
+            }
+
+            .data-table {
+                width: 100% !important;
+                table-layout: fixed !important;
+                border-collapse: collapse !important;
+                display: table !important;
+            }
+
+            /* Override mobile "table-as-cards" rules for printing */
+            .data-table thead {
+                display: table-header-group !important;
+            }
+
+            .data-table tbody {
+                display: table-row-group !important;
+            }
+
+            .data-table tr {
+                display: table-row !important;
+                margin: 0 !important;
+                box-shadow: none !important;
+                border-radius: 0 !important;
+                padding: 0 !important;
+                background: transparent !important;
+            }
+
+            .data-table th,
+            .data-table td {
+                display: table-cell !important;
+            }
+
+            /* Ensure print-only / no-print utilities win against table-cell overrides */
+            .data-table th.no-print,
+            .data-table td.no-print {
+                display: none !important;
+            }
+
+            .data-table th.print-cell-only,
+            .data-table td.print-cell-only {
+                display: table-cell !important;
+            }
+
+            .data-table td:before {
+                content: none !important;
+                display: none !important;
+            }
+
+            .data-table th,
+            .data-table td {
+                border: 1px solid #9ca3af !important;
+                padding: 4px 4px !important;
+                font-size: 9px !important;
+                line-height: 1.2 !important;
+                vertical-align: top;
+                background: #fff !important;
+                color: #111827 !important;
+                white-space: normal !important;
+                word-break: normal !important;
+                overflow-wrap: break-word !important;
+            }
+
+            /* Column sizing hints (matches the sample print table) */
+            .data-table th.col-status,
+            .data-table td.col-status { width: 8%; }
+            .data-table th.col-visit,
+            .data-table td.col-visit { width: 12%; }
+            .data-table th.col-patient,
+            .data-table td.col-patient { width: 18%; }
+            .data-table th.col-procedure,
+            .data-table td.col-procedure { width: 16%; }
+            .data-table th.col-package,
+            .data-table td.col-package { width: 8%; }
+            .data-table th.col-doctor,
+            .data-table td.col-doctor { width: 16%; }
+            .data-table th.col-payment,
+            .data-table td.col-payment { width: 8%; }
+            .data-table th.col-bpjs,
+            .data-table td.col-bpjs { width: 6%; }
+            .data-table th.col-bpjs-code,
+            .data-table td.col-bpjs-code { width: 8%; }
+
+            .data-table th {
+                font-weight: 700;
+                background: #fff !important;
+            }
+
+            .status-badge,
+            .poli-badge {
+                background: transparent !important;
+                color: #111827 !important;
+                border: none !important;
+                padding: 0 !important;
+                font-weight: 600;
+            }
+
+            .status-succeed { color: #16a34a !important; }
+            .status-pending { color: #2563eb !important; }
+            .status-cancelled { color: #dc2626 !important; }
+
+            /* Ensure header prints on each page */
+            thead { display: table-header-group; }
+            tfoot { display: table-footer-group; }
+
+            /* Avoid row splitting */
+            tr { page-break-inside: avoid; }
+        }
+
         @media (max-width: 768px) {
-            .main-content { margin-left: 0; padding: 8px; }
+            .main-content { margin-left: 0; padding: 8px; display: flex; flex-direction: column; }
+
+            /* Mobile: show page title first, then header controls */
+            .page-title { order: 1; }
+            .header { order: 2; }
+            .content { order: 3; }
             .hamburger { left: 8px; top: 8px; display:flex; background: var(--surface); color: var(--accent); height:36px; width:36px; border-radius:8px; padding:0; justify-content:center; align-items:center }
             .left-menu { width: 100%; }
             .menu-item { padding: 12px 16px; }
 
             /* Keep header items on a single responsive row when possible */
             .header { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 8px; padding: 8px 10px; }
-            .header-left { flex-direction: row; align-items: center; gap: 8px; flex: 1 1 auto; min-width: 0; }
-            .search-box { flex: 1 1 180px; min-width: 0; max-width: calc(100% - 140px); }
+            .header-left { flex-direction: row; align-items: center; gap: 8px; flex: 1 1 100%; min-width: 0; }
+            .search-box { flex: 1 1 220px; min-width: 0; max-width: none; }
             .btn-pendaftaran { flex: 0 0 auto; padding: 8px 12px; }
-            .header-right { width: auto; margin-left: auto; order: 2; justify-content: flex-end; }
+
+            /* Header right row: keep items aligned to the right */
+            .header-right { flex: 1 1 100%; width: 100%; margin-left: 0; order: 3; display: flex; align-items: center; justify-content: flex-end; gap: 8px; flex-wrap: nowrap; }
+            .header-logo { width: 34px; height: 34px; font-size: 11px; }
+            .user-dropdown { padding: 6px 10px; }
+            .user-dropdown span { max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block; vertical-align: bottom; }
+            .header-icon { font-size: 16px; }
+
+            /* Avoid hamburger overlaying the page title/header */
+            .page-title { padding-left: 54px; padding-right: 10px; }
+            .page-title h1 { font-size: 20px; }
+            .page-title p { font-size: 12px; }
+            .header { padding-left: 54px; }
         }
 
         @media (max-width: 480px) {

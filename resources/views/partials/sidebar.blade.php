@@ -115,6 +115,8 @@
         .sidebar.open{transform:translateX(0)}
 
         .sidebar .sidebar-logo{width:40px;height:40px;margin:8px auto}
+        /* Keep the hamburger above the tooth logo (avoid overlap) */
+        .sidebar.open .sidebar-logo{margin-top:56px}
         .sidebar .sidebar-menu{display:flex;flex-direction:column;gap:8px;align-items:center;padding:6px 0}
         .sidebar .sidebar-item{padding:10px 0;display:flex;justify-content:center;width:100%}
 

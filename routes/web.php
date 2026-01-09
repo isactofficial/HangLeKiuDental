@@ -69,16 +69,172 @@ Route::middleware('auth')->group(function () {
     Route::middleware(\App\Http\Middleware\IsAdmin::class)->group(function () {
         Route::get('/registration', function () {
             $date = request()->query('date', now()->toDateString());
+            $dateFrom = request()->query('date_from');
+            $dateTo = request()->query('date_to');
+            $selectedDoctorId = request()->query('doctor');
+            $selectedPayment = request()->query('payment');
+            $selectedPoli = request()->query('poli');
+            $q = trim((string) request()->query('q', ''));
 
             $appointments = \App\Models\Appointment::with('doctor')
-                ->whereDate('start_at', $date)
+                ->when($dateFrom || $dateTo, function ($query) use ($dateFrom, $dateTo) {
+                    $from = $dateFrom ?: $dateTo;
+                    $to = $dateTo ?: $dateFrom;
+
+                    if ($from && $to && $from > $to) {
+                        [$from, $to] = [$to, $from];
+                    }
+
+                    return $query
+                        ->when($from, fn($q) => $q->whereDate('start_at', '>=', $from))
+                        ->when($to, fn($q) => $q->whereDate('start_at', '<=', $to));
+                }, function ($query) use ($date) {
+                    return $query->whereDate('start_at', $date);
+                })
+                ->when($selectedDoctorId, function ($query, $doctorId) {
+                    return $query->where('doctor_id', $doctorId);
+                })
+                ->when($selectedPayment, function ($query, $payment) {
+                    return $query->where('payment_method', $payment);
+                })
+                ->when($selectedPoli, function ($query, $poli) {
+                    // For now, only 'Gigi' clinic exists; 'Umum' yields no results
+                    if (strcasecmp((string) $poli, 'Umum') === 0) {
+                        return $query->whereRaw('1=0');
+                    }
+                    return $query; // 'Gigi' or others: no additional filter
+                })
+                ->when($q !== '', function ($query) use ($q) {
+                    $like = "%" . str_replace(["%","_"], ["\\%","\\_"], $q) . "%";
+                    return $query->where(function ($sub) use ($like) {
+                        $sub->where('patient_name', 'like', $like)
+                            ->orWhere('code', 'like', $like)
+                            ->orWhere('medical_record_number', 'like', $like);
+                    });
+                })
                 ->orderBy('start_at')
                 ->get();
 
             $doctors = \App\Models\Doctor::orderBy('name')->get();
 
-            return view('registration', compact('appointments', 'doctors', 'date'));
+            return view('registration', compact('appointments', 'doctors', 'date', 'dateFrom', 'dateTo', 'selectedDoctorId', 'selectedPayment', 'selectedPoli', 'q'));
         })->name('registration');
+
+        // Export Registration list (CSV) with current filters
+        Route::get('/registration/export', function (Request $request) {
+            $date = $request->query('date', now()->toDateString());
+            $dateFrom = $request->query('date_from');
+            $dateTo = $request->query('date_to');
+            $selectedDoctorId = $request->query('doctor');
+            $selectedPayment = $request->query('payment');
+            $selectedPoli = $request->query('poli');
+            $q = trim((string) $request->query('q', ''));
+
+            $appointments = \App\Models\Appointment::with('doctor')
+                ->when($dateFrom || $dateTo, function ($query) use ($dateFrom, $dateTo) {
+                    $from = $dateFrom ?: $dateTo;
+                    $to = $dateTo ?: $dateFrom;
+
+                    if ($from && $to && $from > $to) {
+                        [$from, $to] = [$to, $from];
+                    }
+
+                    return $query
+                        ->when($from, fn($q) => $q->whereDate('start_at', '>=', $from))
+                        ->when($to, fn($q) => $q->whereDate('start_at', '<=', $to));
+                }, function ($query) use ($date) {
+                    return $query->whereDate('start_at', $date);
+                })
+                ->when($selectedDoctorId, function ($query, $doctorId) {
+                    return $query->where('doctor_id', $doctorId);
+                })
+                ->when($selectedPayment, function ($query, $payment) {
+                    return $query->where('payment_method', $payment);
+                })
+                ->when($selectedPoli, function ($query, $poli) {
+                    if (strcasecmp((string) $poli, 'Umum') === 0) {
+                        return $query->whereRaw('1=0');
+                    }
+                    return $query;
+                })
+                ->when($q !== '', function ($query) use ($q) {
+                    $like = "%" . str_replace(["%","_"], ["\\%","\\_"], $q) . "%";
+                    return $query->where(function ($sub) use ($like) {
+                        $sub->where('patient_name', 'like', $like)
+                            ->orWhere('code', 'like', $like)
+                            ->orWhere('medical_record_number', 'like', $like);
+                    });
+                })
+                ->orderBy('start_at')
+                ->get();
+
+            if ($dateFrom || $dateTo) {
+                $from = $dateFrom ?: $dateTo;
+                $to = $dateTo ?: $dateFrom;
+                if ($from && $to && $from > $to) {
+                    [$from, $to] = [$to, $from];
+                }
+                $filename = 'registration_' . str_replace('-', '', (string) $from) . '-' . str_replace('-', '', (string) $to) . '.csv';
+            } else {
+                $filename = 'registration_' . str_replace('-', '', $date) . '.csv';
+            }
+
+            return response()->streamDownload(function () use ($appointments) {
+                $out = fopen('php://output', 'w');
+                // CSV Header
+                fputcsv($out, [
+                    'Status',
+                    'Tanggal Kunjungan',
+                    'Tanggal Dibuat',
+                    'Poli',
+                    'Nama Pasien',
+                    'Rencana Tindakan',
+                    'Rencana Paket',
+                    'Tenaga Medis',
+                    'Tipe Bayar',
+                    'Rujuk BPJS',
+                ]);
+
+                foreach ($appointments as $a) {
+                    $statusRaw = strtolower((string) ($a->status ?? ''));
+                    $statusText = $a->status ? ucfirst($statusRaw) : '-';
+                    $visitAt = $a->start_at ? \Carbon\Carbon::parse($a->start_at)->format('d/m/Y, H:i') : '-';
+                    $createdAt = $a->created_at ? \Carbon\Carbon::parse($a->created_at)->format('d/m/Y') : '-';
+                    $poli = 'Gigi';
+
+                    $patientName = \Illuminate\Support\Str::title(preg_replace('/\s+/', ' ', trim((string) ($a->patient_name ?? ''))));
+                    $mr = $a->medical_record_number ?: '-';
+                    $ageText = null;
+                    if (!empty($a->patient_birth_date)) {
+                        $ageYears = \Carbon\Carbon::parse($a->patient_birth_date)->age;
+                        $ageText = $ageYears . ' Tahun';
+                    }
+                    $pieces = array_filter([$patientName, $mr !== '-' ? $mr : null, $ageText]);
+                    $patientCell = !empty($pieces) ? implode(', ', $pieces) : '-';
+
+                    $procedure = $a->procedure ?: '-';
+                    $doctorName = $a->doctor?->name ?: '-';
+                    $payment = $a->payment_method ?: 'Langsung';
+                    $isBpjs = strcasecmp((string) $payment, 'BPJS') === 0 ? 'Ya' : '-';
+
+                    fputcsv($out, [
+                        $statusText,
+                        $visitAt,
+                        $createdAt,
+                        $poli,
+                        $patientCell,
+                        $procedure,
+                        '-', // Rencana Paket placeholder
+                        $doctorName,
+                        $payment,
+                        $isBpjs,
+                    ]);
+                }
+                fclose($out);
+            }, $filename, [
+                'Content-Type' => 'text/csv; charset=UTF-8',
+            ]);
+        })->name('registration.export');
 
         // Katalog Harga Prosedur (sederhana, sementara)
         Route::get('/procedures', function (Request $request) {

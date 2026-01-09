@@ -95,7 +95,30 @@
         @media (max-width: 1000px){
             .left-panel{display:none}
             .main{margin-left:0}
-            .detail-panel{display:none}
+            /* Mobile: stack schedule + detail so the detail card is visible */
+            .topbar{flex-direction:column;align-items:stretch}
+            .date-block{align-items:flex-start}
+
+            .container{padding:8px 12px}
+            .layout{flex-direction:column}
+            .schedule-wrap{width:100%}
+
+            .detail-panel{display:block;width:100%;flex:1 1 auto}
+            .detail-card{max-width:520px;margin:14px auto 0}
+
+            .schedule-body{max-height:420px}
+        }
+
+        /* Small screens: prevent hamburger from overlapping the title area */
+        @media (max-width: 900px){
+            .topbar{padding:14px 12px 12px 56px}
+            .title-block h1{font-size:18px;line-height:1.2}
+            .title-block p{font-size:12px}
+
+            .legend{flex-wrap:wrap;gap:8px 12px;font-size:12px}
+            .date-row{flex-wrap:wrap;align-items:center;gap:8px 12px}
+            .arrow-btn{width:32px;height:32px;font-size:16px}
+            .today-btn{font-size:12px;padding:6px 10px}
         }
     </style>
 </head>
