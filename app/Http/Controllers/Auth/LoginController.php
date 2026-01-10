@@ -37,7 +37,18 @@ class LoginController extends Controller
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
 
-            return redirect()->intended('/dashboard');
+            $user = Auth::user();
+            // Redirect doctor users to doctor dashboard, admins to admin dashboard
+            if (method_exists($user, 'isDoctor') && $user->isDoctor()) {
+                return redirect()->intended(route('doctor.dashboard'));
+            }
+
+            if (method_exists($user, 'isAdmin') && $user->isAdmin()) {
+                return redirect()->intended(route('dashboard'));
+            }
+
+            // Fallback: arahkan ke beranda (sama seperti register)
+            return redirect()->intended('/');
         }
 
         return back()->withErrors([
@@ -55,6 +66,7 @@ class LoginController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login');
+        // Setelah logout kembalikan ke halaman beranda
+        return redirect('/');
     }
 }

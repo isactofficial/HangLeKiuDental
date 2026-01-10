@@ -33,10 +33,12 @@ class RegisterController extends Controller
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
+            'role' => User::ROLE_USER,
         ]);
 
         Auth::login($user);
 
-        return redirect()->intended('/dashboard');
+        // Setelah registrasi, semua user diarahkan ke halaman home
+        return redirect()->intended('/');
     }
 }

@@ -7,6 +7,15 @@
     <title>Lupa Password - Hanglekiu Dental Clinic</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        :root{
+            --surface: #FFFFFF;
+            --main-bg: #FAF9F6;
+            --accent: #B08D70;
+            --action: #5F6F65;
+            --text: #484848;
+            --muted: #94a3b8;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -15,7 +24,8 @@
 
         body {
             font-family: 'Poppins', sans-serif;
-            background-color: #f5f5f5;
+            background-color: var(--main-bg);
+            color: var(--text);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -29,7 +39,7 @@
         }
 
         .card {
-            background: white;
+            background: var(--surface);
             border-radius: 12px;
             padding: 40px 35px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
@@ -50,25 +60,26 @@
         .logo-icon {
             width: 50px;
             height: 50px;
+            color: var(--accent); /* allow SVG to inherit currentColor */
         }
 
         .logo-text {
             font-size: 32px;
             font-weight: 700;
-            color: #2196F3;
+            color: var(--accent);
         }
 
         h2 {
             text-align: center;
             font-size: 20px;
-            color: #333;
+            color: var(--text);
             margin-bottom: 15px;
         }
 
         p {
             text-align: center;
             font-size: 14px;
-            color: #666;
+            color: #6b7280;
             margin-bottom: 25px;
             line-height: 1.5;
         }
@@ -83,7 +94,7 @@
             border: none;
             border-bottom: 1px solid #e0e0e0;
             font-size: 15px;
-            color: #333;
+            color: var(--text);
             background: transparent;
             outline: none;
             transition: border-color 0.3s ease;
@@ -94,13 +105,13 @@
         }
 
         .form-group input:focus {
-            border-bottom-color: #2196F3;
+            border-bottom-color: var(--action);
         }
 
         .submit-btn {
             width: 100%;
             padding: 15px;
-            background: linear-gradient(135deg, #5BA3E0 0%, #3B82C4 100%);
+            background: var(--action);
             border: none;
             border-radius: 8px;
             color: white;
@@ -111,8 +122,8 @@
         }
 
         .submit-btn:hover {
-            background: linear-gradient(135deg, #4A93D0 0%, #2B72B4 100%);
-            box-shadow: 0 4px 15px rgba(59, 130, 196, 0.4);
+            filter:brightness(.96);
+            box-shadow: 0 6px 18px rgba(0,0,0,0.08);
         }
 
         .back-link {
@@ -121,7 +132,7 @@
         }
 
         .back-link a {
-            color: #2196F3;
+            color: var(--action);
             text-decoration: none;
             font-size: 14px;
         }
@@ -156,8 +167,8 @@
             <div class="logo">
                 <div class="logo-container">
                     <div class="logo-icon">
-                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M30 5 L50 12 L50 30 Q50 50 30 55 Q10 50 10 30 L10 12 Z" fill="#2196F3"/>
+                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path d="M30 5 L50 12 L50 30 Q50 50 30 55 Q10 50 10 30 L10 12 Z" fill="currentColor"/>
                             <rect x="26" y="18" width="8" height="24" rx="2" fill="white"/>
                             <rect x="18" y="26" width="24" height="8" rx="2" fill="white"/>
                         </svg>

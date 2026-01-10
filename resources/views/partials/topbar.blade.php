@@ -27,7 +27,7 @@
             <div class="user-dropdown-container">
                 <div class="user-dropdown" onclick="toggleUserMenu()">
                     <div class="user-avatar">
-                        <i class="fas fa-user" style="color:#3b82f6;font-size:14px"></i>
+                        <i class="fas fa-user" style="color:var(--accent);font-size:14px"></i>
                     </div>
                     <span>{{ Auth::user()->name ?? 'Admin' }}</span>
                     <i class="fas fa-chevron-down" style="color:white;font-size:12px"></i>
@@ -55,39 +55,70 @@
     </div>
 
     <style>
-        /* Fixed rounded topbar aligned after the sidebar */
+        /* Fixed rounded topbar aligned after the sidebar (dashboard style) */
         .topbar{
             position:fixed;
-            top:12px;
-            left:72px; /* leave space for sidebar */
+            top:18px;
+            left:calc(var(--sidebar-width) + 18px); /* leave space for sidebar */
             right:24px;
             background:transparent;
             z-index:140;
             pointer-events:none;
         }
-        .topbar-inner{pointer-events:auto;background:#fff;border-radius:12px;padding:12px 18px;display:flex;align-items:center;gap:18px;box-shadow:0 10px 30px rgba(2,6,23,0.06)}
-        .topbar-left{flex:0 0 auto}
-        .page-title{font-weight:700;font-size:18px;color:#0f172a}
-        .last-update{font-size:12px;color:#6b7280;margin-top:4px}
-        .topbar-center{flex:1}
-        .btn{padding:8px 14px;border-radius:8px;border:none;cursor:pointer;font-weight:600}
-        .btn-primary{background:linear-gradient(135deg,#5BA3E0 0%,#3B82C4 100%);color:#fff}
-        .btn-ghost{background:#fff;border:1px solid #e5e7eb;color:#374151}
+        .topbar-inner{pointer-events:auto;background:var(--surface);border-radius:14px;padding:14px 20px;display:flex;align-items:center;gap:16px;box-shadow:0 10px 30px rgba(11,16,19,0.06);flex-wrap:wrap}
+        .topbar-left{flex:0 0 auto;min-width:0}
+        .page-title{font-weight:800;font-size:20px;color:var(--text)}
+        .last-update{font-size:12px;color:var(--muted);margin-top:4px}
+        .topbar-center{flex:1;min-width:260px}
+        .btn{padding:8px 12px;border-radius:999px;border:none;cursor:pointer;font-weight:600;display:inline-flex;align-items:center;gap:8px}
+        .btn-primary{background:var(--action);color:#fff;padding:8px 14px}
+        .btn-ghost{background:var(--surface);border:1px solid rgba(0,0,0,0.06);color:var(--text);padding:8px 12px}
+        .btn i{font-size:14px}
         .top-search{display:flex;gap:10px;align-items:center}
-        .top-search input{flex:1;padding:10px 14px;border:1px solid #e5e7eb;border-radius:8px}
-        .top-search button{padding:8px 12px;border-radius:8px;border:1px solid #e5e7eb;background:#fff;cursor:pointer}
-        .topbar-right{display:flex;align-items:center;gap:12px}
+        .top-search input{flex:1;padding:12px 16px;border:1px solid rgba(0,0,0,0.06);border-radius:999px;background:#fff;color:var(--text);box-shadow:inset 0 1px 0 rgba(0,0,0,0.02)}
+        .top-search button{padding:8px 12px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);background:var(--surface);cursor:pointer}
+        .topbar-right{display:flex;align-items:center;gap:12px;flex:0 0 auto;min-width:0}
         .header-icons{display:flex;gap:12px;align-items:center}
-        .header-icon{color:#64748b;font-size:16px;cursor:pointer}
-        .user-dropdown{display:flex;align-items:center;gap:10px;background:#3b82f6;padding:8px 14px;border-radius:10px;cursor:pointer;color:#fff;box-shadow:0 6px 18px rgba(59,130,246,0.12)}
-        .user-avatar{width:34px;height:34px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center}
-        .user-dropdown span{color:#fff;font-size:15px;font-weight:600}
+        .header-icon{color:var(--muted);font-size:16px;cursor:pointer}
+        .user-dropdown{display:inline-flex;align-items:center;gap:12px;background:var(--action);padding:8px 14px;border-radius:12px;cursor:pointer;color:#fff;box-shadow:0 8px 20px rgba(0,0,0,0.06);min-height:44px}
+        .user-avatar{width:32px;height:32px;border-radius:10px;background:var(--surface);display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto}
+        .user-dropdown span{color:#fff;font-size:14px;font-weight:700;line-height:1}
+        .user-dropdown i.fas.fa-chevron-down{color:#fff;font-size:12px}
         .user-dropdown-container{position:relative}
-        .user-dropdown-menu{position:absolute;top:100%;right:0;margin-top:8px;background:#fff;border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,0.12);min-width:220px;display:none;overflow:hidden;z-index:160}
+        .user-dropdown-menu{position:absolute;top:100%;right:0;margin-top:8px;background:#fff;border-radius:8px;box-shadow:0 6px 20px rgba(0,0,0,0.12);min-width:220px;display:none;overflow:hidden;z-index:160}
         .user-dropdown-menu.show{display:block}
         .user-dropdown-menu a,.user-dropdown-menu button{display:flex;align-items:center;gap:10px;width:100%;padding:12px 14px;color:#374151;text-decoration:none;background:none;border:none;cursor:pointer}
         .user-dropdown-menu a:hover,.user-dropdown-menu button:hover{background:#f3f4f6}
         .logout-btn{color:#dc2626;border-top:1px solid #f3f4f6;width:100%;text-align:left}
+    </style>
+
+    <style>
+        /* Responsive topbar when sidebar collapses on small screens */
+        @media (max-width: 768px) {
+            .topbar{ left:12px; right:12px; }
+            .topbar-inner{padding:10px 12px 10px 72px}
+            .topbar{pointer-events:auto}
+
+            /* Stack and reflow topbar sections */
+            .topbar-left{width:100%;order:1;display:flex;align-items:center;justify-content:space-between}
+            .topbar-left .page-title{font-size:16px}
+            .last-update{display:none}
+
+            .topbar-center{width:100%;order:2;margin-top:8px}
+            .top-search{width:100%;display:flex}
+            .top-search input{width:100%;max-width:100%}
+
+            .topbar-right{width:100%;order:3;margin-top:8px;justify-content:space-between}
+            .actions{display:flex;gap:8px;align-items:center}
+
+            /* hide less important ghost actions on mobile to prevent overflow */
+            .actions .btn.btn-ghost{display:none}
+            .actions .btn.btn-primary{padding:8px 10px}
+
+            /* simplify user box on mobile: show avatar only */
+            .user-dropdown span{display:none}
+            .user-dropdown i.fas.fa-chevron-down{display:none}
+        }
     </style>
 
     <script>

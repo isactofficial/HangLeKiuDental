@@ -1,6 +1,45 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
+                <style>
+                    /* Hamburger Menu (standardized to theme) */
+                    .hamburger {
+                        display: none;
+                        background: var(--surface);
+                        border: none;
+                        padding: 0;
+                        cursor: pointer;
+                        justify-content: center;
+                        align-items: center;
+                        height: 36px;
+                        width: 36px;
+                        border-radius: 8px;
+                        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+                        position: absolute;
+                        top: 16px;
+                        left: 16px;
+                        z-index: 1001;
+                    }
+                    .hamburger-bar {
+                        display: block;
+                        width: 20px;
+                        height: 3px;
+                        background: var(--accent);
+                        margin: 3px 0;
+                        border-radius: 2px;
+                        transition: all 0.3s;
+                    }
+                    @media (max-width: 900px) {
+                        .hamburger {
+                            display: flex;
+                        }
+                        header {
+                            position: relative;
+                            padding-left: 56px;
+                            min-height: 72px;
+                        }
+                    }
+                </style>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -20,7 +59,25 @@
         @endif
     </head>
     <body class="bg-[#FDFDFC] dark:bg-[#0a0a0a] text-[#1b1b18] flex p-6 lg:p-8 items-center lg:justify-center min-h-screen flex-col">
-        <header class="w-full lg:max-w-4xl max-w-[335px] text-sm mb-6 not-has-[nav]:hidden">
+        <header class="w-full lg:max-w-4xl max-w-[335px] text-sm mb-6 not-has-[nav]:hidden" style="position:relative;">
+            <button class="hamburger" onclick="toggleSidebar()" aria-label="Menu">
+                <span class="hamburger-bar"></span>
+                <span class="hamburger-bar"></span>
+                <span class="hamburger-bar"></span>
+            </button>
+                <div class="sidebar-backdrop" id="sidebarBackdrop" style="display:none;"></div>
+                    function toggleSidebar() {
+                        var sidebar = document.getElementById('appSidebar');
+                        if(sidebar) sidebar.classList.toggle('open');
+                        var backdrop = document.getElementById('sidebarBackdrop');
+                        if (backdrop) backdrop.style.display = backdrop.style.display === 'block' ? 'none' : 'block';
+                    }
+                    document.addEventListener('DOMContentLoaded', function(){
+                        var backdrop = document.getElementById('sidebarBackdrop');
+                        if (backdrop) {
+                            backdrop.addEventListener('click', toggleSidebar);
+                        }
+                    });
             @if (Route::has('login'))
                 <nav class="flex items-center justify-end gap-4">
                     @auth
