@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Electronic Medical Record - Hanglekiu</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -1182,30 +1183,35 @@
             </button>
             <div class="emr-header-left">
                 <div class="emr-header-search">
-                    <input type="text" placeholder="Cari Pasien / No MR / No Ktp / No Asuransi..">
-                    <button class="advance-btn">Advance Search</button>
+                    <form action="{{ route('emr') }}" method="GET" style="display: flex; width: 100%; gap: 10px;">
+                        <input type="text" name="search" placeholder="Cari Pasien / No MR / No Hp.." value="{{ request('search') }}">
+                        <button type="submit" class="advance-btn">Search</button>
+                    </form>
                 </div>
             </div>
             <div class="emr-header-right">
                 <div class="emr-header-user">
                     <div class="user-btn">
                         <div class="user-avatar"><i class="fas fa-user"></i></div>
-                        <span>User</span>
+                        <span>{{ Auth::user()->name }}</span>
                         <i class="fas fa-chevron-down"></i>
                     </div>
                     <div class="dropdown-menu">
                         <a href="/profile" class="dropdown-item">
                             <i class="fas fa-user" style="margin-right:8px;color:#6b7280;"></i> Profile
                         </a>
-                        <a href="#" onclick="alert('Logout')" class="dropdown-item" style="color:#e11d48;">
-                            <i class="fas fa-sign-out-alt" style="margin-right:8px;color:#e11d48;"></i> Logout
-                        </a>
+                        <form action="{{ route('logout') }}" method="POST">
+                            @csrf
+                            <button type="submit" class="dropdown-item" style="color:#e11d48; width: 100%; border: none; background: none; cursor: pointer;">
+                                <i class="fas fa-sign-out-alt" style="margin-right:8px;color:#e11d48;"></i> Logout
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
             <div class="floating-actions">
-                <button title="Print"><i class="fas fa-print" style="color:var(--accent)"></i></button>
-                <button title="Refresh"><i class="fas fa-sync" style="color:var(--accent)"></i></button>
+                <button title="Print" onclick="window.print()"><i class="fas fa-print" style="color:var(--accent)"></i></button>
+                <button title="Refresh" onclick="location.reload()"><i class="fas fa-sync" style="color:var(--accent)"></i></button>
             </div>
         </div>
 
@@ -1226,716 +1232,337 @@
             <div class="content-grid">
                 <div class="patient-card">
                     <div class="patient-filter">
-                        <select class="patient-select">
-                            <option>Semua</option>
-                        </select>
+                        <form action="{{ route('emr') }}" method="GET">
+                            <select name="status" class="patient-select" onchange="this.form.submit()">
+                                <option value="Semua" {{ request('status') == 'Semua' ? 'selected' : '' }}>Semua</option>
+                                <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
+                                <option value="confirmed" {{ request('status') == 'confirmed' ? 'selected' : '' }}>Confirmed</option>
+                                <option value="waiting" {{ request('status') == 'waiting' ? 'selected' : '' }}>Waiting</option>
+                                <option value="engaged" {{ request('status') == 'engaged' ? 'selected' : '' }}>Engaged</option>
+                                <option value="succeed" {{ request('status') == 'succeed' ? 'selected' : '' }}>Succeed</option>
+                            </select>
+                        </form>
                     </div>
                     <ul class="patient-list">
-                        <li class="patient-item" data-patient="endang">Bu Endang Pamuncak</li>
-                        <li class="patient-item active" data-patient="anggie">Anggie dwi savitri</li>
-                        <li class="patient-item" data-patient="asfarina">Asfarina</li>
+                        @forelse($patients as $index => $patient)
+                            <li class="patient-item {{ $index === 0 ? 'active' : '' }}" data-patient="{{ $patient['id'] }}">
+                                {{ $patient['name'] }}
+                            </li>
+                        @empty
+                            <li style="padding: 20px; text-align: center; color: #999;">
+                                Tidak ada data pasien
+                            </li>
+                        @endforelse
                     </ul>
                 </div>
 
                 <div class="detail-area">
-                    <div class="patient-data" id="patient-anggie">
-                        <div class="profile-box">
-                            <div class="profile-header-row">
-                                <div>
-                                    <div class="profile-name">Anggie dwi savitri</div>
-                                    <div class="profile-meta">
-                                        MR000076 · Perempuan · 29 Tahun 2 Hari<br>
-                                        04 Januari 1997
+                    @foreach($patients as $index => $patient)
+                        @php
+                            $birthDate = \Carbon\Carbon::parse($patient['birth_date']);
+                            $age = $birthDate->age;
+                            $daysDiff = $birthDate->diffInDays(\Carbon\Carbon::now()->startOfDay()) % 365;
+                        @endphp
+                        <div class="patient-data {{ $index !== 0 ? 'hidden' : '' }}" id="patient-{{ $patient['id'] }}">
+                            <div class="profile-box">
+                                <div class="profile-header-row">
+                                    <div>
+                                        <div class="profile-name">{{ $patient['name'] }}</div>
+                                        <div class="profile-meta">
+                                            {{ $patient['medical_record_number'] }} · {{ $patient['gender'] }} · {{ $age }} Tahun {{ $daysDiff }} Hari<br>
+                                            {{ $birthDate->format('d F Y') }}
+                                        </div>
                                     </div>
+                                    <button class="edit-data-btn" onclick="openModal('{{ $patient['id'] }}')">EDIT DATA DIRI</button>
                                 </div>
-                                <button class="edit-data-btn" onclick="openModal('anggie')">EDIT DATA DIRI</button>
-                            </div>
 
-                            <div class="profile-body-row">
-                                <div class="profile-pic-container"></div>
-                                <div class="profile-details-area">
-                                    <div class="info-grid-3">
-                                        <div class="info-item">
-                                            <label>Alamat Rumah <i class="fas fa-eye-slash icon-hidden"></i></label>
-                                            <span>Solo, Jawa Tengah</span>
-                                        </div>
-                                        <div class="info-item">
-                                            <label>Nomor KTP <i class="fas fa-eye-slash icon-hidden"></i></label>
-                                            <span>3372000000000001</span>
-                                        </div>
-                                        <div class="info-item">
-                                            <label>Nomor HP <i class="fas fa-eye-slash icon-hidden"></i></label>
-                                            <span>08120000000</span>
-                                        </div>
-                                    </div>
-
-                                    <div class="expanded-content" id="expanded-anggie">
-                                        <div class="info-grid-4">
+                                <div class="profile-body-row">
+                                    <div class="profile-pic-container"></div>
+                                    <div class="profile-details-area">
+                                        <div class="info-grid-3">
                                             <div class="info-item">
-                                                <label>Pekerjaan</label>
-                                                <span>Swasta</span>
+                                                <label>Alamat Rumah <i class="fas fa-eye-slash icon-hidden"></i></label>
+                                                <span>-</span>
                                             </div>
                                             <div class="info-item">
-                                                <label>Status</label>
-                                                <span>Menikah</span>
+                                                <label>Nomor KTP <i class="fas fa-eye-slash icon-hidden"></i></label>
+                                                <span>-</span>
                                             </div>
                                             <div class="info-item">
-                                                <label>Gol. Darah</label>
-                                                <span>B</span>
-                                            </div>
-                                            <div class="info-item">
-                                                <label>Agama</label>
-                                                <span>Islam</span>
+                                                <label>Nomor HP <i class="fas fa-eye-slash icon-hidden"></i></label>
+                                                <span>{{ $patient['phone'] ?? '-' }}</span>
                                             </div>
                                         </div>
 
-                                        <div class="section-label">Anggota Keluarga</div>
-                                        <table class="detail-table">
-                                            <thead>
-                                                <tr>
-                                                    <th>Nama Lengkap</th>
-                                                    <th>Hubungan</th>
-                                                    <th>Tanggal Lahir</th>
-                                                    <th>Nomor HP <i class="fas fa-eye-slash"></i></th>
-                                                    <th>Alamat <i class="fas fa-eye-slash"></i></th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td>&nbsp;</td>
-                                                    <td>Lainnya</td>
-                                                    <td>&nbsp;</td>
-                                                    <td>&nbsp;</td>
-                                                    <td>&nbsp;</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-
-                                        <div class="section-label">Metode Pembayaran</div>
-                                        <table class="detail-table">
-                                            <thead>
-                                                <tr>
-                                                    <th>Metode</th>
-                                                    <th>Nomor <i class="fas fa-eye"></i></th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td>Lainnya</td>
-                                                    <td>&nbsp;</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-
-                                        <div class="section-label">Tags</div>
-                                        <div style="height:20px;"></div>
-                                    </div>
-
-                                    <a class="link-toggle" onclick="toggleProfileDetails('anggie')" id="btn-toggle-anggie">Lihat data lainnya ></a>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="main-tabs">
-                            <button class="main-tab-link active" data-tab="timeline" data-patient="anggie">TIMELINE</button>
-                            <button class="main-tab-link" data-tab="record" data-patient="anggie">RECORD</button>
-                            <button class="main-tab-link" data-tab="cppt" data-patient="anggie">CPPT</button>
-                        </div>
-
-                        <div class="sub-tabs" id="sub-tabs-anggie">
-                            <button class="sub-tab-btn active" data-subtab="vital">Tanda Vital</button>
-                            <button class="sub-tab-btn" data-subtab="diagnosa">Diagnosa</button>
-                            <button class="sub-tab-btn" data-subtab="dokter">Catatan Dokter</button>
-                            <button class="sub-tab-btn" data-subtab="prosedur">Prosedur</button>
-                            <button class="sub-tab-btn" data-subtab="resep">Resep</button>
-                            <button class="sub-tab-btn" data-subtab="racikan">Racikan</button>
-                            <button class="sub-tab-btn" data-subtab="odontogram">Odontogram</button>
-                            <button class="sub-tab-btn" data-subtab="more">...</button>
-                        </div>
-
-                        <div class="tab-content-area active" id="timeline-anggie">
-                            <div class="clinical-layout">
-                                <div class="timeline-container">
-                                    <div class="timeline-date">
-                                        <div class="timeline-dot"></div>
-                                        25 Nov 2025
-                                    </div>
-
-                                    <div class="med-card">
-                                        <div class="card-header">
-                                            <div>
-                                                <div style="font-size:13px; margin-bottom:5px; color:#333;">
-                                                    Poli Gigi dengan <a href="#" style="color:#2196F3; font-weight:500;">drg. Ria Budiati Sp. Ortho</a>
+                                        <div class="expanded-content" id="expanded-{{ $patient['id'] }}">
+                                            <div class="info-grid-4">
+                                                <div class="info-item">
+                                                    <label>Pekerjaan</label>
+                                                    <span>-</span>
                                                 </div>
-                                                <div class="payment-badge">Metode Pembayaran: Langsung</div>
-                                                <div style="font-size:11px; color:#999; margin-top:5px;">13:22 WIB selama 33 menit</div>
-                                                <a href="#" style="font-size:11px; font-weight:600; color:#2196F3; display:block; margin-top:5px;">CPPT</a>
+                                                <div class="info-item">
+                                                    <label>Status</label>
+                                                    <span>-</span>
+                                                </div>
+                                                <div class="info-item">
+                                                    <label>Gol. Darah</label>
+                                                    <span>-</span>
+                                                </div>
+                                                <div class="info-item">
+                                                    <label>Agama</label>
+                                                    <span>-</span>
+                                                </div>
                                             </div>
-                                            <div style="display:flex; gap:10px; align-items:center;">
-                                                <i class="fas fa-print" style="color:#999; font-size:14px;"></i>
-                                                <i class="fas fa-eye" style="color:#999; font-size:14px;"></i>
-                                                <button class="btn-done">DONE <i class="fas fa-chevron-down"></i></button>
-                                            </div>
-                                        </div>
 
-                                        <div class="proc-section">
-                                            <div class="proc-title">
-                                                <span>PROSEDUR</span>
-                                                <span style="font-size:10px; color:#999; font-weight:400;">oleh <a href="#" style="color:#2196F3;">Sonia Noritasari</a></span>
-                                            </div>
-                                            <table class="proc-table">
+                                            <div class="section-label">Anggota Keluarga</div>
+                                            <table class="detail-table">
                                                 <thead>
                                                     <tr>
-                                                        <th>Prosedur</th>
-                                                        <th>Catatan</th>
-                                                        <th>Jumlah</th>
-                                                        <th>Harga</th>
-                                                        <th>Tenaga Medis Utama</th>
-                                                        <th>Tenaga Medis Bantu</th>
-                                                        <th>Tanggal Input</th>
+                                                        <th>Nama Lengkap</th>
+                                                        <th>Hubungan</th>
+                                                        <th>Tanggal Lahir</th>
+                                                        <th>Nomor HP <i class="fas fa-eye-slash"></i></th>
+                                                        <th>Alamat <i class="fas fa-eye-slash"></i></th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     <tr>
-                                                        <td>Kontrol Ortho-Semua Iko Midwani</td>
-                                                        <td></td>
-                                                        <td>1</td>
-                                                        <td>Rp250.000</td>
-                                                        <td>drg. Ria Budiati Sp. Ortho</td>
-                                                        <td></td>
-                                                        <td>25-11-2025 13:55</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Ungual Button</td>
-                                                        <td></td>
-                                                        <td>2</td>
-                                                        <td>Rp200.000</td>
-                                                        <td>drg. Ria Budiati Sp. Ortho</td>
-                                                        <td></td>
-                                                        <td>25-11-2025 13:55</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Bizzle</td>
-                                                        <td></td>
-                                                        <td>1</td>
-                                                        <td>Rp100.000</td>
-                                                        <td>drg. Ria Budiati Sp. Ortho</td>
-                                                        <td></td>
-                                                        <td>25-11-2025 13:55</td>
+                                                        <td>&nbsp;</td>
+                                                        <td>Lainnya</td>
+                                                        <td>&nbsp;</td>
+                                                        <td>&nbsp;</td>
+                                                        <td>&nbsp;</td>
                                                     </tr>
                                                 </tbody>
                                             </table>
-                                        </div>
-                                    </div>
 
-                                    <div style="text-align:center; padding:20px; color:#999; font-size:12px;">
-                                        Page has reached maximum limit.
+                                            <div class="section-label">Metode Pembayaran</div>
+                                            <table class="detail-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Metode</th>
+                                                        <th>Nomor <i class="fas fa-eye"></i></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>{{ $patient['latest_appointment']['payment_method'] ?? 'Lainnya' }}</td>
+                                                        <td>&nbsp;</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+
+                                            <div class="section-label">Tags</div>
+                                            <div style="height:20px;"></div>
+                                        </div>
+
+                                        <a class="link-toggle" onclick="toggleProfileDetails('{{ $patient['id'] }}')" id="btn-toggle-{{ $patient['id'] }}">Lihat data lainnya ></a>
                                     </div>
                                 </div>
+                            </div>
 
-                                <div>
-                                    <button class="btn-block-gray">+TAMBAH DIAGNOSA</button>
-                                    <button class="btn-block-blue">PRINT REKAM MEDIS</button>
+                            <div class="main-tabs">
+                                <button class="main-tab-link active" data-tab="timeline" data-patient="{{ $patient['id'] }}">TIMELINE</button>
+                                <button class="main-tab-link" data-tab="record" data-patient="{{ $patient['id'] }}">RECORD</button>
+                                <button class="main-tab-link" data-tab="cppt" data-patient="{{ $patient['id'] }}">CPPT</button>
+                            </div>
 
-                                    <!-- RIWAYAT PENYAKIT -->
-                                    <div class="accordion-item">
-                                        <div class="accordion-header" onclick="toggleAcc(this)">
-                                            <span>RIWAYAT PENYAKIT</span>
-                                            <i class="fas fa-chevron-down"></i>
-                                        </div>
-                                        <div class="accordion-body">
-                                            <div class="subtitle-section">TAMBAH RIWAYAT PENYAKIT</div>
+                            <div class="sub-tabs" id="sub-tabs-{{ $patient['id'] }}">
+                                <button class="sub-tab-btn active" data-subtab="vital">Tanda Vital</button>
+                                <button class="sub-tab-btn" data-subtab="diagnosa">Diagnosa</button>
+                                <button class="sub-tab-btn" data-subtab="dokter">Catatan Dokter</button>
+                                <button class="sub-tab-btn" data-subtab="prosedur">Prosedur</button>
+                                <button class="sub-tab-btn" data-subtab="resep">Resep</button>
+                                <button class="sub-tab-btn" data-subtab="racikan">Racikan</button>
+                                <button class="sub-tab-btn" data-subtab="odontogram">Odontogram</button>
+                                <button class="sub-tab-btn" data-subtab="more">...</button>
+                            </div>
 
-                                            <div class="input-with-icon">
-                                                <input type="text" class="acc-input" placeholder="Nama Penyakit">
-                                                <i class="fas fa-plus-circle"></i>
+                            <div class="tab-content-area active" id="timeline-{{ $patient['id'] }}">
+                                <div class="clinical-layout">
+                                    <div class="timeline-container">
+                                        @foreach($patient['appointments']->groupBy(function($app) { return \Carbon\Carbon::parse($app->start_at)->format('Y-m-d'); }) as $date => $dayAppointments)
+                                            <div class="timeline-date">
+                                                <div class="timeline-dot"></div>
+                                                {{ \Carbon\Carbon::parse($date)->format('d M Y') }}
                                             </div>
 
-                                            <div class="subtitle-section" style="margin-top: 10px; margin-bottom: 8px; font-weight: 400;">Saran</div>
+                                            @foreach($dayAppointments as $appointment)
+                                                <div class="med-card">
+                                                    <div class="card-header">
+                                                        <div>
+                                                            <div style="font-size:13px; margin-bottom:5px; color:#333;">
+                                                                {{ $appointment->procedure }} dengan
+                                                                <a href="#" style="color:#2196F3; font-weight:500;">
+                                                                    {{ $appointment->doctor->name }} {{ $appointment->doctor->specialty }}
+                                                                </a>
+                                                            </div>
+                                                            <div class="payment-badge">Metode Pembayaran: {{ $appointment->payment_method }}</div>
+                                                            <div style="font-size:11px; color:#999; margin-top:5px;">
+                                                                {{ \Carbon\Carbon::parse($appointment->start_at)->format('H:i') }} WIB
+                                                                selama {{ $appointment->duration_minutes }} menit
+                                                            </div>
+                                                            <a href="#" style="font-size:11px; font-weight:600; color:#2196F3; display:block; margin-top:5px;">CPPT</a>
+                                                        </div>
+                                                        <div style="display:flex; gap:10px; align-items:center;">
+                                                            <i class="fas fa-print" style="color:#999; font-size:14px;"></i>
+                                                            <i class="fas fa-eye" style="color:#999; font-size:14px;"></i>
+                                                            <button class="btn-done">{{ strtoupper($appointment->status) }} <i class="fas fa-chevron-down"></i></button>
+                                                        </div>
+                                                    </div>
 
-                                            <div class="checkbox-list">
-                                                <div class="checkbox-item">
-                                                    <label for="diabetes">Diabetes</label>
-                                                    <i class="far fa-plus-square" style="margin-left: auto; font-size: 20px; color: #999; cursor: pointer;"></i>
+                                                    @if($appointment->procedure)
+                                                    <div class="proc-section">
+                                                        <div class="proc-title">
+                                                            <span>PROSEDUR</span>
+                                                            <span style="font-size:10px; color:#999; font-weight:400;">
+                                                                oleh <a href="#" style="color:#2196F3;">
+                                                                    {{ $appointment->createdByUser ? $appointment->createdByUser->name : 'System' }}
+                                                                </a>
+                                                            </span>
+                                                        </div>
+                                                        <table class="proc-table">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>Prosedur</th>
+                                                                    <th>Catatan</th>
+                                                                    <th>Tanggal Input</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td>{{ $appointment->procedure }}</td>
+                                                                    <td>-</td>
+                                                                    <td>{{ \Carbon\Carbon::parse($appointment->created_at)->format('d-m-Y H:i') }}</td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                    @endif
                                                 </div>
-                                                <div class="checkbox-item">
-                                                    <label for="asma">Asma</label>
-                                                    <i class="far fa-plus-square" style="margin-left: auto; font-size: 20px; color: #999; cursor: pointer;"></i>
-                                                </div>
-                                                <div class="checkbox-item">
-                                                    <label for="insomnia">Insomnia</label>
-                                                    <i class="far fa-plus-square" style="margin-left: auto; font-size: 20px; color: #999; cursor: pointer;"></i>
-                                                </div>
-                                                <div class="checkbox-item">
-                                                    <label for="menyusui">Menyusui</label>
-                                                    <i class="far fa-plus-square" style="margin-left: auto; font-size: 20px; color: #999; cursor: pointer;"></i>
-                                                </div>
-                                                <div class="checkbox-item">
-                                                    <label for="masa-hamil">Masa Hamil</label>
-                                                    <i class="far fa-plus-square" style="margin-left: auto; font-size: 20px; color: #999; cursor: pointer;"></i>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                            @endforeach
+                                        @endforeach
 
-                                    <!-- RIWAYAT PENYAKIT KELUARGA -->
-                                    <div class="accordion-item">
-                                        <div class="accordion-header" onclick="toggleAcc(this)">
-                                            <span>RIWAYAT PENYAKIT KELUARGA</span>
-                                            <i class="fas fa-chevron-down"></i>
-                                        </div>
-                                        <div class="accordion-body">
-                                            <div style="color: #999; font-size: 13px; margin-bottom: 15px;">
-                                                Pasien tidak memiliki riwayat penyakit keluarga.
-                                            </div>
-
-                                            <div class="subtitle-section">TAMBAH RIWAYAT PENYAKIT KELUARGA</div>
-
-                                            <div class="input-with-icon">
-                                                <input type="text" class="acc-input" placeholder="Nama Penyakit">
-                                                <i class="fas fa-plus-circle"></i>
-                                            </div>
-
-                                            <div class="subtitle-section" style="margin-top: 10px; margin-bottom: 8px; font-weight: 400;">Saran</div>
-
-                                            <div class="checkbox-list">
-                                                <div class="checkbox-item">
-                                                    <label for="kel-diabetes">Diabetes</label>
-                                                    <i class="far fa-plus-square" style="margin-left: auto; font-size: 20px; color: #999; cursor: pointer;"></i>
-                                                </div>
-                                                <div class="checkbox-item">
-                                                    <label for="kel-asma">Asma</label>
-                                                    <i class="far fa-plus-square" style="margin-left: auto; font-size: 20px; color: #999; cursor: pointer;"></i>
-                                                </div>
-                                                <div class="checkbox-item">
-                                                    <label for="kel-insomnia">Insomnia</label>
-                                                    <i class="far fa-plus-square" style="margin-left: auto; font-size: 20px; color: #999; cursor: pointer;"></i>
-                                                </div>
-                                                <div class="checkbox-item">
-                                                    <label for="kel-menyusui">Menyusui</label>
-                                                    <i class="far fa-plus-square" style="margin-left: auto; font-size: 20px; color: #999; cursor: pointer;"></i>
-                                                </div>
-                                                <div class="checkbox-item">
-                                                    <label for="kel-masa-hamil">Masa Hamil</label>
-                                                    <i class="far fa-plus-square" style="margin-left: auto; font-size: 20px; color: #999; cursor: pointer;"></i>
-                                                </div>
-                                            </div>
+                                        <div style="text-align:center; padding:20px; color:#999; font-size:12px;">
+                                            Page has reached maximum limit.
                                         </div>
                                     </div>
 
-                                    <!-- RIWAYAT ALERGI -->
-                                    <div class="accordion-item">
-                                        <div class="accordion-header" onclick="toggleAcc(this)">
-                                            <span>RIWAYAT ALERGI</span>
-                                            <i class="fas fa-chevron-down"></i>
-                                        </div>
-                                        <div class="accordion-body">
-                                            <div style="color: #999; font-size: 13px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
-                                                <span>Pasien tidak memiliki riwayat alergi</span>
-                                                <i class="fas fa-info-circle" style="color: #999; font-size: 18px;"></i>
+                                    <div>
+                                        <button class="btn-block-gray">+TAMBAH DIAGNOSA</button>
+                                        <button class="btn-block-blue">PRINT REKAM MEDIS</button>
+
+                                        <!-- RIWAYAT PENYAKIT -->
+                                        <div class="accordion-item">
+                                            <div class="accordion-header" onclick="toggleAcc(this)">
+                                                <span>RIWAYAT PENYAKIT</span>
+                                                <i class="fas fa-chevron-down"></i>
                                             </div>
-
-                                            <div class="subtitle-section">TAMBAH RIWAYAT ALERGI</div>
-
-                                            <div class="input-with-icon">
-                                                <input type="text" class="acc-input" placeholder="Nama Alergi">
-                                                <i class="fas fa-plus-circle"></i>
-                                            </div>
-
-                                            <div class="subtitle-section" style="margin-top: 10px; margin-bottom: 8px; font-weight: 400;">Cari Nama Alergi</div>
-
-                                            <div class="subtitle-section" style="margin-top: 10px; margin-bottom: 8px; font-weight: 400;">Saran</div>
-
-                                            <div class="checkbox-list">
-                                                <div class="checkbox-item">
-                                                    <label for="dingin">Dingin</label>
-                                                    <i class="far fa-plus-square" style="margin-left: auto; font-size: 20px; color: #999; cursor: pointer;"></i>
-                                                </div>
-                                                <div class="checkbox-item">
-                                                    <label for="antibiotik">Antibiotik</label>
-                                                    <i class="far fa-plus-square" style="margin-left: auto; font-size: 20px; color: #999; cursor: pointer;"></i>
-                                                </div>
-                                                <div class="checkbox-item">
-                                                    <label for="debu">Debu</label>
-                                                    <i class="far fa-plus-square" style="margin-left: auto; font-size: 20px; color: #999; cursor: pointer;"></i>
-                                                </div>
-                                                <div class="checkbox-item">
-                                                    <label for="susu">Susu</label>
-                                                    <i class="far fa-plus-square" style="margin-left: auto; font-size: 20px; color: #999; cursor: pointer;"></i>
+                                            <div class="accordion-body">
+                                                <div class="subtitle-section">TAMBAH RIWAYAT PENYAKIT</div>
+                                                <div class="input-with-icon">
+                                                    <input type="text" class="acc-input" placeholder="Nama Penyakit">
+                                                    <i class="fas fa-plus-circle"></i>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
 
-                                    <!-- RIWAYAT PENGGUNAAN OBAT -->
-                                    <div class="accordion-item">
-                                        <div class="accordion-header" onclick="toggleAcc(this)">
-                                            <span>RIWAYAT PENGGUNAAN OBAT</span>
-                                            <i class="fas fa-chevron-down"></i>
+                                        <!-- RIWAYAT PENYAKIT KELUARGA -->
+                                        <div class="accordion-item">
+                                            <div class="accordion-header" onclick="toggleAcc(this)">
+                                                <span>RIWAYAT PENYAKIT KELUARGA</span>
+                                                <i class="fas fa-chevron-down"></i>
+                                            </div>
+                                            <div class="accordion-body">
+                                                <div style="color: #999; font-size: 13px; margin-bottom: 15px;">
+                                                    Pasien tidak memiliki riwayat penyakit keluarga.
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div class="accordion-body">
-                                            <div style="color: #999; font-size: 13px; margin-bottom: 15px;">
-                                                Pasien tidak memiliki riwayat penggunaan obat
+
+                                        <!-- RIWAYAT ALERGI -->
+                                        <div class="accordion-item">
+                                            <div class="accordion-header" onclick="toggleAcc(this)">
+                                                <span>RIWAYAT ALERGI</span>
+                                                <i class="fas fa-chevron-down"></i>
                                             </div>
-
-                                            <div class="subtitle-section">TAMBAH DATA RIWAYAT PENGGUNAAN OBAT</div>
-
-                                            <div class="input-with-icon">
-                                                <input type="text" class="acc-input" placeholder="Nama Obat">
-                                                <i class="fas fa-plus-circle"></i>
+                                            <div class="accordion-body">
+                                                <div style="color: #999; font-size: 13px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
+                                                    <span>Pasien tidak memiliki riwayat alergi</span>
+                                                    <i class="fas fa-info-circle" style="color: #999; font-size: 18px;"></i>
+                                                </div>
                                             </div>
+                                        </div>
 
-                                            <div class="subtitle-section" style="margin-top: 10px; margin-bottom: 8px; font-weight: 400;">Saran</div>
-
-                                            <div class="checkbox-list">
-                                                <div class="checkbox-item">
-                                                    <label for="panadol">Panadol</label>
-                                                    <i class="far fa-plus-square" style="margin-left: auto; font-size: 20px; color: #999; cursor: pointer;"></i>
-                                                </div>
-                                                <div class="checkbox-item">
-                                                    <label for="konsistin">Konsistin</label>
-                                                    <i class="far fa-plus-square" style="margin-left: auto; font-size: 20px; color: #999; cursor: pointer;"></i>
-                                                </div>
-                                                <div class="checkbox-item">
-                                                    <label for="procol">Procol</label>
-                                                    <i class="far fa-plus-square" style="margin-left: auto; font-size: 20px; color: #999; cursor: pointer;"></i>
-                                                </div>
-                                                <div class="checkbox-item">
-                                                    <label for="mixagrip">Mixagrip</label>
-                                                    <i class="far fa-plus-square" style="margin-left: auto; font-size: 20px; color: #999; cursor: pointer;"></i>
+                                        <!-- RIWAYAT PENGGUNAAN OBAT -->
+                                        <div class="accordion-item">
+                                            <div class="accordion-header" onclick="toggleAcc(this)">
+                                                <span>RIWAYAT PENGGUNAAN OBAT</span>
+                                                <i class="fas fa-chevron-down"></i>
+                                            </div>
+                                            <div class="accordion-body">
+                                                <div style="color: #999; font-size: 13px; margin-bottom: 15px;">
+                                                    Pasien tidak memiliki riwayat penggunaan obat
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="tab-content-area" id="record-anggie">
-                            <div class="record-subtab-content active" data-subtab="vital">
-                                <div class="record-content-box">
-                                    <div class="record-header">
-                                        <span>VITAL SIGNS</span>
-                                        <div class="record-toolbar">
-                                            <button class="toolbar-btn" title="Print"><i class="fas fa-print"></i></button>
-                                            <button class="toolbar-btn" style="background:#2196F3; border-radius:4px; padding:8px 15px;">+ Tambah</button>
+                            <div class="tab-content-area" id="record-{{ $patient['id'] }}">
+                                <div class="record-subtab-content active" data-subtab="prosedur">
+                                    <div class="record-content-box">
+                                        <div class="record-header">
+                                            <span>PROSEDUR</span>
+                                            <div class="record-toolbar">
+                                                <button class="toolbar-btn" title="Print"><i class="fas fa-print"></i></button>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="record-table-container">
-                                        <table class="record-table">
-                                            <thead>
-                                                <tr>
-                                                    <th>Tanggal</th>
-                                                    <th>Weight</th>
-                                                    <th>Height</th>
-                                                    <th>Blood Pulse</th>
-                                                    <th>Pulse</th>
-                                                    <th>Temperature</th>
-                                                    <th>Resp. Rate</th>
-                                                    <th>Blood Sugar</th>
-                                                    <th>Oxygen Saturation</th>
-                                                    <th>Lingkar Perut</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td colspan="10" style="text-align:center; padding:40px; color:#999;">No data available</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    <div class="pagination-info">
-                                        <div>
-                                            <span>Rows per page: </span>
-                                            <select class="rows-selector">
-                                                <option>5</option>
-                                                <option>10</option>
-                                                <option>20</option>
-                                            </select>
+                                        <div class="record-table-container">
+                                            <table class="record-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Tanggal</th>
+                                                        <th>Prosedur</th>
+                                                        <th>Dokter</th>
+                                                        <th>Status</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @forelse($patient['appointments'] as $appointment)
+                                                        <tr>
+                                                            <td style="color:#2196F3;">
+                                                                {{ strtoupper(\Carbon\Carbon::parse($appointment->start_at)->format('M d Y')) }}
+                                                            </td>
+                                                            <td>{{ $appointment->procedure }}</td>
+                                                            <td>{{ $appointment->doctor->name }}</td>
+                                                            <td>{{ ucfirst($appointment->status) }}</td>
+                                                        </tr>
+                                                    @empty
+                                                        <tr>
+                                                            <td colspan="4" style="text-align:center; padding:40px; color:#999;">No data available</td>
+                                                        </tr>
+                                                    @endforelse
+                                                </tbody>
+                                            </table>
                                         </div>
-                                        <div class="pagination-controls">
-                                            <span>0-0 of 0</span>
-                                            <button class="page-btn"><i class="fas fa-chevron-left"></i></button>
-                                            <button class="page-btn"><i class="fas fa-chevron-right"></i></button>
+                                        <div class="pagination-info">
+                                            <div>
+                                                <span>Total: {{ $patient['appointments']->count() }} records</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="record-subtab-content" data-subtab="diagnosa">
-                                <div class="record-content-box">
-                                    <div class="record-header">
-                                        <span>DIAGNOSA</span>
-                                        <div class="record-toolbar">
-                                            <button class="toolbar-btn" title="Print"><i class="fas fa-print"></i></button>
-                                            <button class="toolbar-btn" style="background:#2196F3; border-radius:4px; padding:8px 15px;">+ Tambah</button>
-                                        </div>
-                                    </div>
-                                    <div class="record-table-container">
-                                        <table class="record-table">
-                                            <thead>
-                                                <tr>
-                                                    <th>Tanggal</th>
-                                                    <th>Diagnosa</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td colspan="2" style="text-align:center; padding:40px; color:#999;">No data available</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    <div class="pagination-info">
-                                        <div>
-                                            <span>Rows per page: </span>
-                                            <select class="rows-selector">
-                                                <option>5</option>
-                                            </select>
-                                        </div>
-                                        <div class="pagination-controls">
-                                            <span>0-0 of 0</span>
-                                            <button class="page-btn"><i class="fas fa-chevron-left"></i></button>
-                                            <button class="page-btn"><i class="fas fa-chevron-right"></i></button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="record-subtab-content" data-subtab="dokter">
-                                <div class="record-content-box">
-                                    <div class="record-header">
-                                        <span>CATATAN DOKTER</span>
-                                        <div class="record-toolbar">
-                                            <button class="toolbar-btn" title="Print"><i class="fas fa-print"></i></button>
-                                            <button class="toolbar-btn" style="background:#2196F3; border-radius:4px; padding:8px 15px;">+ Tambah</button>
-                                        </div>
-                                    </div>
-                                    <div class="record-table-container">
-                                        <table class="record-table">
-                                            <thead>
-                                                <tr>
-                                                    <th>Tanggal</th>
-                                                    <th>Catatan</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td colspan="2" style="text-align:center; padding:40px; color:#999;">No data available</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    <div class="pagination-info">
-                                        <div>
-                                            <span>Rows per page: </span>
-                                            <select class="rows-selector">
-                                                <option>5</option>
-                                            </select>
-                                        </div>
-                                        <div class="pagination-controls">
-                                            <span>0-0 of 0</span>
-                                            <button class="page-btn"><i class="fas fa-chevron-left"></i></button>
-                                            <button class="page-btn"><i class="fas fa-chevron-right"></i></button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="record-subtab-content" data-subtab="prosedur">
-                                <div class="record-content-box">
-                                    <div class="record-header">
-                                        <span>PROSEDUR</span>
-                                        <div class="record-toolbar">
-                                            <button class="toolbar-btn" title="Print"><i class="fas fa-print"></i></button>
-                                            <button class="toolbar-btn" style="background:#2196F3; border-radius:4px; padding:8px 15px;">+ Tambah</button>
-                                        </div>
-                                    </div>
-                                    <div class="record-table-container">
-                                        <table class="record-table">
-                                            <thead>
-                                                <tr>
-                                                    <th>Tanggal</th>
-                                                    <th>Prosedur</th>
-                                                    <th>Jumlah</th>
-                                                    <th>Notes</th>
-                                                    <th>Harga Jual</th>
-                                                    <th>Diskon</th>
-                                                    <th>Tenaga Medis Utama</th>
-                                                    <th>Tenaga Medis Bantu</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td style="color:#2196F3;">NOV 25 2025</td>
-                                                    <td>Kontrol Ortho-Semua Iko Midwani</td>
-                                                    <td>1</td>
-                                                    <td></td>
-                                                    <td>Rp250.000</td>
-                                                    <td>Rp0</td>
-                                                    <td>drg. Ria Budiati Sp. Ortho</td>
-                                                    <td></td>
-                                                </tr>
-                                                <tr>
-                                                    <td style="color:#2196F3;">NOV 25 2025</td>
-                                                    <td>Ungual Button</td>
-                                                    <td>2</td>
-                                                    <td></td>
-                                                    <td>Rp200.000</td>
-                                                    <td>Rp0</td>
-                                                    <td>drg. Ria Budiati Sp. Ortho</td>
-                                                    <td></td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    <div class="pagination-info">
-                                        <div>
-                                            <span>Rows per page: </span>
-                                            <select class="rows-selector">
-                                                <option selected>5</option>
-                                            </select>
-                                        </div>
-                                        <div class="pagination-controls">
-                                            <span>1-2 of 2</span>
-                                            <button class="page-btn"><i class="fas fa-chevron-left"></i></button>
-                                            <button class="page-btn"><i class="fas fa-chevron-right"></i></button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="record-subtab-content" data-subtab="resep">
-                                <div class="record-content-box">
-                                    <div class="record-header">
-                                        <span>RESEP</span>
-                                        <div class="record-toolbar">
-                                            <button class="toolbar-btn" title="Print"><i class="fas fa-print"></i></button>
-                                            <button class="toolbar-btn" style="background:#2196F3; border-radius:4px; padding:8px 15px;">+ Tambah</button>
-                                        </div>
-                                    </div>
-                                    <div class="record-table-container">
-                                        <table class="record-table">
-                                            <thead>
-                                                <tr>
-                                                    <th>Tanggal</th>
-                                                    <th>Nama Obat</th>
-                                                    <th>Jumlah</th>
-                                                    <th>Satuan</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td colspan="4" style="text-align:center; padding:40px; color:#999;">No data available</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    <div class="pagination-info">
-                                        <div>
-                                            <span>Rows per page: </span>
-                                            <select class="rows-selector">
-                                                <option>5</option>
-                                            </select>
-                                        </div>
-                                        <div class="pagination-controls">
-                                            <span>0-0 of 0</span>
-                                            <button class="page-btn"><i class="fas fa-chevron-left"></i></button>
-                                            <button class="page-btn"><i class="fas fa-chevron-right"></i></button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="record-subtab-content" data-subtab="racikan">
-                                <div class="record-content-box">
-                                    <div class="record-header">
-                                        <span>RACIKAN</span>
-                                        <div class="record-toolbar">
-                                            <button class="toolbar-btn" title="Print"><i class="fas fa-print"></i></button>
-                                            <button class="toolbar-btn" style="background:#2196F3; border-radius:4px; padding:8px 15px;">+ Tambah</button>
-                                        </div>
-                                    </div>
-                                    <div class="record-table-container">
-                                        <table class="record-table">
-                                            <thead>
-                                                <tr>
-                                                    <th>Tanggal</th>
-                                                    <th>Nama Racikan</th>
-                                                    <th>Jumlah</th>
-                                                    <th>Satuan</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td colspan="4" style="text-align:center; padding:40px; color:#999;">No data available</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    <div class="pagination-info">
-                                        <div>
-                                            <span>Rows per page: </span>
-                                            <select class="rows-selector">
-                                                <option>5</option>
-                                            </select>
-                                        </div>
-                                        <div class="pagination-controls">
-                                            <span>0-0 of 0</span>
-                                            <button class="page-btn"><i class="fas fa-chevron-left"></i></button>
-                                            <button class="page-btn"><i class="fas fa-chevron-right"></i></button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="record-subtab-content" data-subtab="odontogram">
-                                <div class="record-content-box">
-                                    <div class="record-header">
-                                        <span>ODONTOGRAM</span>
-                                        <div class="record-toolbar">
-                                            <button class="toolbar-btn" title="Print"><i class="fas fa-print"></i></button>
-                                            <button class="toolbar-btn" style="background:#2196F3; border-radius:4px; padding:8px 15px;">+ Tambah</button>
-                                        </div>
-                                    </div>
-                                    <div class="record-table-container">
-                                        <table class="record-table">
-                                            <thead>
-                                                <tr>
-                                                    <th>Tanggal</th>
-                                                    <th>Catatan</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td colspan="2" style="text-align:center; padding:40px; color:#999;">No data available</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    <div class="pagination-info">
-                                        <div>
-                                            <span>Rows per page: </span>
-                                            <select class="rows-selector">
-                                                <option>5</option>
-                                            </select>
-                                        </div>
-                                        <div class="pagination-controls">
-                                            <span>0-0 of 0</span>
-                                            <button class="page-btn"><i class="fas fa-chevron-left"></i></button>
-                                            <button class="page-btn"><i class="fas fa-chevron-right"></i></button>
-                                        </div>
-                                    </div>
+                            <div class="tab-content-area" id="cppt-{{ $patient['id'] }}">
+                                <div style="background:#fff; padding:40px; text-align:center; margin-top:20px; border-radius:4px;">
+                                    <p style="color:#999;">CPPT content will be displayed here</p>
                                 </div>
                             </div>
                         </div>
-
-                        <div class="tab-content-area" id="cppt-anggie">
-                            <div style="background:#fff; padding:40px; text-align:center; margin-top:20px; border-radius:4px;">
-                                <p style="color:#999;">CPPT content will be displayed here</p>
-                            </div>
-                        </div>
-                    </div>
+                    @endforeach
                 </div>
             </div>
         </div>
@@ -1951,164 +1578,56 @@
                     <div class="modal-title">Edit Data Pasien</div>
                     <button class="modal-close" onclick="closeModal()">&times;</button>
                 </div>
-                <div class="modal-body">
-                    <!-- Informasi Dasar -->
-                    <div class="form-section">Informasi Dasar</div>
+                <form id="editPatientForm">
+                    @csrf
+                    @method('PUT')
+                    <div class="modal-body">
+                        <div class="form-section">Informasi Dasar</div>
 
-                    <div class="modal-photo-section">
-                        <div class="photo-upload-box">
-                            <i class="far fa-image"></i>
-                            <span>Pilih Foto</span>
+                        <div class="modal-photo-section">
+                            <div class="photo-upload-box">
+                                <i class="far fa-image"></i>
+                                <span>Pilih Foto</span>
+                            </div>
+
+                            <div class="modal-form-grid">
+                                <div class="form-group">
+                                    <label>Nama Lengkap *</label>
+                                    <input type="text" name="patient_name" id="modal-nama" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Nomor Medical Record</label>
+                                    <input type="text" name="medical_record_number" id="modal-mr" readonly>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Tanggal Lahir *</label>
+                                    <input type="date" name="patient_birth_date" id="modal-tgl" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Jenis Kelamin *</label>
+                                    <select name="patient_gender" id="modal-gender" required>
+                                        <option value="Perempuan">Perempuan</option>
+                                        <option value="Laki-laki">Laki-laki</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="modal-form-grid">
                             <div class="form-group">
-                                <label>Nama Lengkap *</label>
-                                <input type="text" id="modal-nama" value="Bu Endang Pamuncak">
-                            </div>
-
-                            <div class="form-group">
-                                <label>Nomor Medical Record</label>
-                                <input type="text" id="modal-mr" value="MR000077" readonly>
-                                <div class="mr-info">Nomor RM tersebut yang dipakaikan MR000077</div>
-                            </div>
-
-                            <div class="form-group">
-                                <label>Kota Tempat Lahir</label>
-                                <input type="text" id="modal-kota" placeholder="Kota Lahir">
-                            </div>
-
-                            <div class="form-group">
-                                <label>Tanggal Lahir *</label>
-                                <input type="date" id="modal-tgl" value="1987-12-17">
+                                <label>Nomor HP</label>
+                                <input type="tel" name="patient_phone" id="modal-hp" placeholder="Nomor HP">
                             </div>
                         </div>
                     </div>
 
-                    <div class="modal-form-grid">
-                        <div class="form-group">
-                            <label>Jenis Kelamin *</label>
-                            <select id="modal-gender">
-                                <option>Perempuan</option>
-                                <option>Laki-laki</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Jenis Klaim *</label>
-                            <select id="modal-klaim">
-                                <option>Tidak Tahu</option>
-                                <option>Lainnya</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Golongan Darah *</label>
-                            <select id="modal-goldarah">
-                                <option>Tidak Tahu</option>
-                                <option>A</option>
-                                <option>B</option>
-                                <option>AB</option>
-                                <option>O</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Agama *</label>
-                            <select id="modal-agama">
-                                <option>Lainnya</option>
-                                <option>Islam</option>
-                                <option>Kristen</option>
-                                <option>Katolik</option>
-                                <option>Hindu</option>
-                                <option>Buddha</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Nomor HP</label>
-                            <input type="tel" id="modal-hp" placeholder="Nomor HP">
-                        </div>
-
-                        <div class="form-group">
-                            <label>Email</label>
-                            <input type="email" id="modal-email" placeholder="Email">
-                        </div>
-
-                        <div class="form-group">
-                            <label>Tanggal Meninggal Dunia</label>
-                            <input type="date" id="modal-tgl-meninggal">
-                        </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn-simpan">Simpan</button>
                     </div>
-
-                    <!-- Metode Pembayaran -->
-                    <div class="form-section">Metode Pembayaran</div>
-
-                    <div class="modal-form-grid">
-                        <div class="form-group">
-                            <label>Metode Pembayaran *</label>
-                            <select id="modal-payment">
-                                <option>Lainnya</option>
-                                <option>Langsung</option>
-                                <option>Asuransi</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label>+ TAMBAH METODE</label>
-                            <input type="text" placeholder="Tambah Metode Pembayaran">
-                        </div>
-                    </div>
-
-                    <!-- Tempat Tinggal -->
-                    <div class="form-section">Tempat Tinggal</div>
-
-                    <div class="modal-form-grid">
-                        <div class="form-group">
-                            <label>Alamat Rumah *</label>
-                            <input type="text" id="modal-alamat" placeholder="Alamat">
-                        </div>
-
-                        <div class="form-group">
-                            <label>Provinsi</label>
-                            <select id="modal-provinsi">
-                                <option>Provinsi</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Kota / Kabupaten</label>
-                            <select id="modal-kota-kab">
-                                <option>Kecamatan</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Kecamatan</label>
-                            <select id="modal-kecamatan">
-                                <option>Kelurahan</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Kode Pos</label>
-                            <input type="text" id="modal-kodepos" placeholder="Kode Pos">
-                        </div>
-                    </div>
-
-                    <!-- Anggota Keluarga / Penanggung Jawab -->
-                    <div class="form-section">Anggota Keluarga / Penanggung Jawab</div>
-
-                    <div style="margin-bottom: 15px;">
-                        <button style="background:#2196F3; color:#fff; border:none; padding:8px 16px; border-radius:4px; font-size:12px; cursor:pointer;">
-                            + TAMBAH
-                        </button>
-                    </div>
-                </div>
-
-                <div class="modal-footer">
-                    <button class="btn-simpan" onclick="closeModal()">Simpan</button>
-                </div>
+                </form>
             </div>
         </div>
 
@@ -2118,6 +1637,7 @@
                 if(sidebar) sidebar.classList.toggle('open');
             }
 
+            // User dropdown
             (function(){
                 const userBtn = document.querySelector('.user-btn');
                 const dropdownMenu = document.querySelector('.dropdown-menu');
@@ -2133,12 +1653,10 @@
                 });
             })();
 
-            let currentPatient = 'anggie';
-            const patientData = {
-                anggie: { nama: 'Anggie dwi savitri', mr: 'MR000076', tgl: '1997-01-04', kota: 'Surakarta' },
-                endang: { nama: 'Bu Endang Pamuncak', mr: 'MR000077', tgl: '1987-12-17', kota: '' }
-            };
+            let currentPatient = null;
+            const patientData = {};
 
+            // Patient item click
             document.querySelectorAll('.patient-item').forEach(item => {
                 item.addEventListener('click', function() {
                     document.querySelectorAll('.patient-item').forEach(i => i.classList.remove('active'));
@@ -2151,6 +1669,7 @@
                 });
             });
 
+            // Main tabs
             document.querySelectorAll('.main-tab-link').forEach(tab => {
                 tab.addEventListener('click', function() {
                     const targetTab = this.getAttribute('data-tab');
@@ -2173,6 +1692,7 @@
                 });
             });
 
+            // Sub tabs
             document.querySelectorAll('.sub-tab-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
                     const targetSubTab = this.getAttribute('data-subtab');
@@ -2208,7 +1728,6 @@
                 const allHeaders = document.querySelectorAll('.accordion-header');
                 const allBodies = document.querySelectorAll('.accordion-body');
 
-                // Close all other accordions
                 allHeaders.forEach(h => {
                     if(h !== header) {
                         h.classList.remove('active');
@@ -2220,29 +1739,74 @@
                     }
                 });
 
-                // Toggle current accordion
                 header.classList.toggle('active');
                 body.classList.toggle('open');
             }
 
             function openModal(patientId) {
-                const patient = patientData[patientId || currentPatient];
-                document.getElementById('modal-nama').value = patient.nama;
-                document.getElementById('modal-mr').value = patient.mr;
-                document.getElementById('modal-tgl').value = patient.tgl;
-                document.getElementById('modal-kota').value = patient.kota;
-                document.getElementById('editModal').style.display = 'flex';
+                currentPatient = patientId;
+                fetch(`/emr/patient/${patientId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('modal-nama').value = data.name || '';
+                        document.getElementById('modal-mr').value = data.medical_record_number || '';
+                        document.getElementById('modal-tgl').value = data.birth_date || '';
+                        document.getElementById('modal-gender').value = data.gender || 'Perempuan';
+                        document.getElementById('modal-hp').value = data.phone || '';
+                        document.getElementById('editModal').style.display = 'flex';
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Gagal memuat data pasien');
+                    });
             }
 
             function closeModal() {
                 document.getElementById('editModal').style.display = 'none';
             }
 
+            // Handle form submission
+            document.getElementById('editPatientForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                const formData = new FormData(this);
+                const data = Object.fromEntries(formData);
+
+                fetch(`/emr/patient/${currentPatient}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        alert('Data pasien berhasil diperbarui');
+                        closeModal();
+                        location.reload();
+                    } else {
+                        alert('Gagal memperbarui data pasien');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Terjadi kesalahan saat memperbarui data');
+                });
+            });
+
             window.onclick = function(event) {
                 var modal = document.getElementById('editModal');
                 if (event.target == modal) {
                     modal.style.display = "none";
                 }
+            }
+
+            // Set first patient as current on load
+            const firstPatient = document.querySelector('.patient-item');
+            if (firstPatient) {
+                currentPatient = firstPatient.getAttribute('data-patient');
             }
         </script>
     </main>
