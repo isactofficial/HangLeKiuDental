@@ -40,5 +40,11 @@ return [
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),
         'redirect' => env('GOOGLE_REDIRECT_URI', rtrim(env('APP_URL', ''), '/') . '/auth/google/callback'),
     ],
+        'whatsapp' => [
+            // Optional: set WHATSAPP_URL/WHATSAPP_TOKEN to use a provider/webhook.
+            // If empty, messages are logged as a dummy notification.
+            'url' => env('WHATSAPP_URL'),
+            'token' => env('WHATSAPP_TOKEN'),
+        ],
 
 ];

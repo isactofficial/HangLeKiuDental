@@ -1198,7 +1198,7 @@
                     </div>
                     <div class="dropdown-menu">
                         <a href="/profile" class="dropdown-item">
-                            <i class="fas fa-user" style="margin-right:8px;color:#6b7280;"></i> Profile
+                            <i class="fas fa-user" style="margin-right:8px;color:var(--muted);"></i> Profile
                         </a>
                         <form action="{{ route('logout') }}" method="POST">
                             @csrf
@@ -1220,7 +1220,7 @@
             <p>hanglekiu dental specialist</p>
         </section>
 
-        <div class="legend">
+            <div class="legend">
             <div class="item"><span class="dot" style="background:#f87171"></span> Pending</div>
             <div class="item"><span class="dot" style="background:#fbbf24"></span> Confirmed</div>
             <div class="item"><span class="dot" style="background:#a78bfa"></span> Waiting</div>

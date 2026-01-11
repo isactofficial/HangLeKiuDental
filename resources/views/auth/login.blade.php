@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Login - Hanglekiu Dental Clinic</title>
+    <title>Login - HangLeKiu Dental Specialist</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/responsive.css">
     <style>
@@ -15,7 +15,7 @@
             --accent: #B08D70; /* wood tone */
             --action: #5F6F65; /* button / action color */
             --text: #484848;
-            --muted: #94a3b8;
+            --muted: #6b7280;
         }
 
         * {
@@ -79,7 +79,7 @@
 
         .left-side p {
             font-size: 14px;
-            color: #6b7280;
+            color: var(--muted);
             line-height: 1.6;
             margin-bottom: 15px;
         }
@@ -122,7 +122,16 @@
         .logo-icon {
             width: 50px;
             height: 50px;
-            color: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
         }
 
         .logo-icon svg {
@@ -134,6 +143,9 @@
             font-size: 32px;
             font-weight: 700;
             color: var(--accent);
+            line-height: 1.05;
+            display: inline-block;
+            text-align: left;
         }
 
         .form-group {
@@ -265,7 +277,7 @@
 
         .forgot-password {
             text-align: center;
-            margin-top: 25px;
+            margin-top: 8px;
         }
 
         .forgot-password a {
@@ -283,6 +295,11 @@
             margin-top: 20px;
             font-size: 12px;
             color: #bbb;
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 12px;
         }
 
         /* Error Messages */
@@ -341,9 +358,6 @@
             <div class="illustration">
                 <img src="{{ asset('assets/dokter.png') }}" alt="Dokter" class="illustration-img">
             </div>
-            <!-- <h2>Pilih Hanya Yang Terbaik</h2>
-            <p>Assist.id adalah sistem informasi kesehatan terbaik untuk klinik, praktek pribadi Anda. Berbagai fitur tersedia untuk Anda.</p>
-            <a href="#">Pelajari lebih lanjut ></a> -->
         </div>
 
         <!-- Right Side - Login Form -->
@@ -352,15 +366,9 @@
                 <div class="logo">
                     <div class="logo-container">
                         <div class="logo-icon">
-                            <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                                <!-- Shield background inherits currentColor so it matches theme -->
-                                <path d="M30 5 L50 12 L50 30 Q50 50 30 55 Q10 50 10 30 L10 12 Z" fill="currentColor"/>
-                                <!-- White cross -->
-                                <rect x="26" y="18" width="8" height="24" rx="2" fill="white"/>
-                                <rect x="18" y="26" width="24" height="8" rx="2" fill="white"/>
-                            </svg>
+                            <img src="{{ asset('assets/logo2.jpeg') }}" alt="HangLeKiu">
                         </div>
-                        <span class="logo-text">Hanglekiu Dental Clinic</span>
+                        <span class="logo-text">HangLeKiu<br>Dental<br>Specialist</span>
                     </div>
                 </div>
 
@@ -375,11 +383,11 @@
                 <form method="POST" action="{{ route('login') }}">
                     @csrf
                     <div class="form-group">
-                        <input 
-                            type="text" 
-                            name="email" 
-                            id="email" 
-                            placeholder="Username/Email" 
+                        <input
+                            type="text"
+                            name="email"
+                            id="email"
+                            placeholder="Username/Email"
                             value="{{ old('email') }}"
                             required
                             autocomplete="email"
@@ -387,11 +395,11 @@
                     </div>
 
                     <div class="form-group">
-                        <input 
-                            type="password" 
-                            name="password" 
-                            id="password" 
-                            placeholder="Password" 
+                        <input
+                            type="password"
+                            name="password"
+                            id="password"
+                            placeholder="Password"
                             required
                             autocomplete="current-password"
                         >
@@ -418,15 +426,13 @@
                     Login dengan Google
                 </a>
 
-                <div class="register-link" style="text-align:center;margin-top:12px;">
+                <div class="register-link">
                     <a href="{{ route('register') }}" class="register-btn">Belum punya akun?</a>
                 </div>
 
-                <div class="forgot-password" style="text-align:center;margin-top:8px;">
+                <div class="forgot-password">
                     <a href="{{ route('password.request') }}">Lupa password?</a>
                 </div>
-
-                <!-- <div class="version">V.3.37.0</div> -->
             </div>
         </div>
     </div>

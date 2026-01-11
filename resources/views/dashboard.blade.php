@@ -1234,14 +1234,13 @@
     <script>
                 // Redirect to login after logout
                 document.addEventListener('DOMContentLoaded', function() {
-                    var logoutForm = document.querySelector('form[action*="logout"]');
-                    if (logoutForm) {
-                        logoutForm.addEventListener('submit', function() {
-                            setTimeout(function() {
-                                window.location.href = '/login';
-                            }, 300);
-                        });
-                    }
+                    var logoutForm = document.getElementById('logout-form');
+                    if (!logoutForm) return;
+                    logoutForm.addEventListener('submit', function() {
+                        setTimeout(function() {
+                            window.location.href = '/login';
+                        }, 300);
+                    });
                 });
         // Visit Chart
         const visitCtx = document.getElementById('visitChart').getContext('2d');

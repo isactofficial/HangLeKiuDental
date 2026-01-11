@@ -48,12 +48,14 @@ Route::middleware('guest')->group(function () {
     Route::get('/auth/google', [GoogleAuthController::class, 'redirect'])->name('auth.google.redirect');
     Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->name('auth.google.callback');
 
+    
     Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
     Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
 
     Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
     Route::post('/reset-password', [ResetPasswordController::class, 'reset'])->name('password.update');
 
+    
     // Registration (guest)
     Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
     Route::post('/register', [RegisterController::class, 'register'])->name('register.post');
@@ -289,6 +291,7 @@ Route::middleware('auth')->group(function () {
         // Appointments API for schedule (returns JSON)
         Route::get('/appointments', [BookingController::class, 'index'])->name('appointments.index');
 
+        
         // Update appointment status
         Route::post('/appointments/{id}/status', [BookingController::class, 'updateStatus'])->name('appointments.updateStatus');
     });
@@ -328,6 +331,7 @@ Route::middleware('auth')->group(function () {
         return back();
     })->name('doctor.reset');
 
+    
     // Admin-only user management
     Route::middleware(\App\Http\Middleware\IsAdmin::class)->group(function () {
         Route::get('/admin/users', [\App\Http\Controllers\AdminUserController::class, 'index'])->name('admin.users.index');
