@@ -10,6 +10,7 @@ use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\LayananController;
 use App\Http\Controllers\PublicPageController;
+use App\Http\Controllers\EMRController;
 
 Route::get('/', function () {
     return view('index');
@@ -46,12 +47,14 @@ Route::middleware('guest')->group(function () {
     // Google OAuth
     Route::get('/auth/google', [GoogleAuthController::class, 'redirect'])->name('auth.google.redirect');
     Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->name('auth.google.callback');
+
     
     Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
     Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
 
     Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
     Route::post('/reset-password', [ResetPasswordController::class, 'reset'])->name('password.update');
+
     
     // Registration (guest)
     Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
@@ -60,7 +63,7 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout')->middleware('auth');
-    
+
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard')->middleware(\App\Http\Middleware\IsAdmin::class);
@@ -267,9 +270,12 @@ Route::middleware('auth')->group(function () {
         })->name('procedures.index');
 
         // Electronic Medical Record page
-        Route::get('/emr', function () {
-            return view('emr');
-        })->name('emr');
+        Route::middleware(['auth', \App\Http\Middleware\IsAdmin::class])->group(function () {
+        Route::get('/emr', [EMRController::class, 'index'])->name('emr');
+        Route::get('/emr/patient/{patientId}', [EMRController::class, 'show'])->name('emr.show');
+        Route::put('/emr/patient/{patientId}', [EMRController::class, 'update'])->name('emr.update');
+    });
+
 
         // Halaman Kasir
         Route::get('/cashier', function() {
@@ -284,6 +290,7 @@ Route::middleware('auth')->group(function () {
 
         // Appointments API for schedule (returns JSON)
         Route::get('/appointments', [BookingController::class, 'index'])->name('appointments.index');
+
         
         // Update appointment status
         Route::post('/appointments/{id}/status', [BookingController::class, 'updateStatus'])->name('appointments.updateStatus');
@@ -323,6 +330,7 @@ Route::middleware('auth')->group(function () {
         session()->forget('doctor_allowed');
         return back();
     })->name('doctor.reset');
+
     
     // Admin-only user management
     Route::middleware(\App\Http\Middleware\IsAdmin::class)->group(function () {
