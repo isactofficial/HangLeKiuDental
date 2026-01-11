@@ -278,8 +278,43 @@ Route::middleware('auth')->group(function () {
 
 
         // Halaman Kasir
-        Route::get('/cashier', function() {
-            return view('cashier');
+        Route::get('/cashier', function (Request $request) {
+            $dateFrom = $request->query('date_from');
+            $dateTo = $request->query('date_to');
+            $q = trim((string) $request->query('q', ''));
+
+            $appointments = \App\Models\Appointment::with('doctor')
+                ->when($dateFrom || $dateTo, function ($query) use ($dateFrom, $dateTo) {
+                    $from = $dateFrom ?: $dateTo;
+                    $to = $dateTo ?: $dateFrom;
+
+                    if ($from && $to && $from > $to) {
+                        [$from, $to] = [$to, $from];
+                    }
+
+                    return $query
+                        ->when($from, fn($q) => $q->whereDate('start_at', '>=', $from))
+                        ->when($to, fn($q) => $q->whereDate('start_at', '<=', $to));
+                }, function ($query) {
+                    return $query->whereDate('start_at', now()->toDateString());
+                })
+                ->when($q !== '', function ($query) use ($q) {
+                    $like = "%" . str_replace(["%", "_"], ["\\%", "\\_"], $q) . "%";
+                    return $query->where(function ($sub) use ($like) {
+                        $sub->where('patient_name', 'like', $like)
+                            ->orWhere('code', 'like', $like)
+                            ->orWhere('medical_record_number', 'like', $like)
+                            ->orWhere('procedure', 'like', $like)
+                            ->orWhereHas('doctor', function ($dq) use ($like) {
+                                $dq->where('name', 'like', $like);
+                            });
+                    });
+                })
+                ->orderByDesc('start_at')
+                ->limit(200)
+                ->get();
+
+            return view('cashier', compact('appointments', 'dateFrom', 'dateTo', 'q'));
         })->name('cashier');
 
         // Rawat Jalan schedule page

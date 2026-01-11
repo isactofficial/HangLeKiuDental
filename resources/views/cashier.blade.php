@@ -1225,26 +1225,29 @@
                 <div id="pembayaran-section">
                     <div class="filter-box">
                         <div class="toolbar-row">
-                            <div class="search-wrap">
-                                <input type="text" placeholder="Cari nama pasien, dokter atau invoice">
-                                <button type="button" class="search-icon-btn" aria-label="Search">
+                            <form class="search-wrap" method="GET" action="{{ route('cashier') }}">
+                                <input type="hidden" name="date_from" value="{{ $dateFrom ?? now()->toDateString() }}">
+                                <input type="hidden" name="date_to" value="{{ $dateTo ?? now()->toDateString() }}">
+                                <input type="text" name="q" value="{{ $q ?? '' }}" placeholder="Cari nama pasien, dokter atau invoice">
+                                <button type="submit" class="search-icon-btn" aria-label="Search">
                                     <i class="fas fa-search"></i>
                                 </button>
-                            </div>
+                            </form>
                             <div class="action-btns">
                                 <button class="add" id="addBtn"><i class="fas fa-plus"></i> Pembayaran</button>
                                 <button class="export" id="exportBtn"><i class="fas fa-file-export"></i> Export</button>
                             </div>
                         </div>
 
-                        <form class="filter-row" onsubmit="event.preventDefault(); alert('Filter diklik!');">
+                        <form class="filter-row" method="GET" action="{{ route('cashier') }}">
+                            <input type="hidden" name="q" value="{{ $q ?? '' }}">
                             <div class="filter-field">
                                 <label for="from_date">Dari Tanggal</label>
-                                <input type="date" id="from_date" value="2026-01-09">
+                                <input type="date" id="from_date" name="date_from" value="{{ $dateFrom ?? now()->toDateString() }}">
                             </div>
                             <div class="filter-field">
                                 <label for="to_date">Sampai Tanggal</label>
-                                <input type="date" id="to_date" value="2026-01-09">
+                                <input type="date" id="to_date" name="date_to" value="{{ $dateTo ?? now()->toDateString() }}">
                             </div>
                             <button type="submit" class="filter-btn">FILTER</button>
                         </form>
@@ -1260,67 +1263,45 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>
-                                        <div style="font-weight:600;color:#111827;margin-bottom:4px">20 Oktober 2025
-                                        </div>
-                                        <div style="color:#64748b;font-size:12px">INV000189</div>
-                                    </td>
-                                    <td>
-                                        <div style="font-weight:600;color:#111827">Andita</div>
-                                    </td>
-                                    <td>
-                                        <div class="detail-item">
-                                            <span class="detail-label">Tenaga Medis</span>
-                                            <span class="detail-value">drg. Dinda Tegar Jelita Sp.Ortho</span>
-                                        </div>
-                                        <div class="detail-item">
-                                            <span class="detail-label">Tindakan</span>
-                                            <span class="detail-value">Kontrol Ortho Self Ligating<br>Ganti Bracket
-                                                metal/ MBT</span>
-                                        </div>
-                                        <div class="detail-item">
-                                            <span class="detail-label">Metode Bayar</span>
-                                            <span class="detail-value">Tunai</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="action-cell">
-                                            <button class="btn-bayar">Bayar</button>
-                                            <i class="fas fa-volume-up sound-icon" title="Play Audio"></i>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div style="font-weight:600;color:#111827;margin-bottom:4px">20 Oktober 2025
-                                        </div>
-                                        <div style="color:#64748b;font-size:12px">INV000190</div>
-                                    </td>
-                                    <td>
-                                        <div style="font-weight:600;color:#111827">Annisa ayu carolina</div>
-                                    </td>
-                                    <td>
-                                        <div class="detail-item">
-                                            <span class="detail-label">Tenaga Medis</span>
-                                            <span class="detail-value">drg. Dinda Tegar Jelita Sp.Ortho</span>
-                                        </div>
-                                        <div class="detail-item">
-                                            <span class="detail-label">Tindakan</span>
-                                            <span class="detail-value">Kontrol Ortho mbt<br>TAD</span>
-                                        </div>
-                                        <div class="detail-item">
-                                            <span class="detail-label">Metode Bayar</span>
-                                            <span class="detail-value">Tunai</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="action-cell">
-                                            <button class="btn-bayar">Bayar</button>
-                                            <i class="fas fa-volume-up sound-icon" title="Play Audio"></i>
-                                        </div>
-                                    </td>
-                                </tr>
+                                @forelse(($appointments ?? collect()) as $a)
+                                    <tr>
+                                        <td>
+                                            <div style="font-weight:600;color:#111827;margin-bottom:4px">
+                                                {{ \Carbon\Carbon::parse($a->start_at)->format('d/m/Y') }}
+                                            </div>
+                                            <div style="color:#64748b;font-size:12px">
+                                                {{ $a->code ?: ('INV' . str_pad((string)$a->id, 6, '0', STR_PAD_LEFT)) }}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div style="font-weight:600;color:#111827">{{ $a->patient_name }}</div>
+                                        </td>
+                                        <td>
+                                            <div class="detail-item">
+                                                <span class="detail-label">Tenaga Medis</span>
+                                                <span class="detail-value">{{ optional($a->doctor)->name ?? '-' }}</span>
+                                            </div>
+                                            <div class="detail-item">
+                                                <span class="detail-label">Tindakan</span>
+                                                <span class="detail-value">{{ $a->procedure ?: '-' }}</span>
+                                            </div>
+                                            <div class="detail-item">
+                                                <span class="detail-label">Metode Bayar</span>
+                                                <span class="detail-value">{{ $a->payment_method ?: '-' }}</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="action-cell">
+                                                <button class="btn-bayar">Bayar</button>
+                                                <i class="fas fa-volume-up sound-icon" title="Play Audio"></i>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="4" class="empty-row">Tidak ada data yang bisa ditampilkan.</td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>

@@ -555,6 +555,21 @@
             font-size: 18px;
         }
 
+        .btn-filter {
+            height: 40px;
+            padding: 0 18px;
+            border: none;
+            border-radius: 8px;
+            background: #e9eef5;
+            color: #111827;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            cursor: pointer;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+        }
+
+        .btn-filter:hover { filter: brightness(.99); }
+
         .search-patient {
             display: flex;
             align-items: center;
@@ -947,46 +962,26 @@
 
                 <!-- Filters -->
                 <div class="filters">
+                    {{-- Keep a hidden single-date fallback (used only when date range is empty) --}}
+                    <input id="visitDate" type="hidden" value="{{ $date ?? now()->toDateString() }}">
+
                     <div class="filter-group">
-                        <span class="filter-label">Tanggal Kunjungan</span>
-                        <div class="filter-input">
-                            <input
-                                id="visitDate"
-                                class="filter-date"
-                                type="date"
-                                value="{{ $date ?? now()->toDateString() }}"
-                                style="border:none;outline:none;background:transparent;font-size:13px;color:var(--text);width:100%"
-                            >
+                        <span class="filter-label">Dari Tanggal</span>
+                        <div class="date-range-input">
+                            <input id="dateFrom" type="date" value="{{ ($dateFrom ?: ($date ?? now()->toDateString())) }}">
                             <i class="fas fa-calendar"></i>
                         </div>
                     </div>
-                    <div class="date-range-container">
-                        <button id="dateRangeBtn" class="btn-add" type="button" aria-label="Pilih rentang tanggal">
-                            <i class="fas fa-plus"></i>
-                        </button>
-                        <div id="dateRangePopover" class="date-range-popover" aria-hidden="true">
-                            <div class="date-range-row">
-                                <div class="date-range-field">
-                                    <div class="date-range-input">
-                                        <input id="dateFrom" type="date" value="{{ $dateFrom ?? '' }}">
-                                        <i class="fas fa-calendar"></i>
-                                    </div>
-                                    <div class="date-range-label">Dari tanggal</div>
-                                </div>
-                                <div class="date-range-sep">-</div>
-                                <div class="date-range-field">
-                                    <div class="date-range-input">
-                                        <input id="dateTo" type="date" value="{{ $dateTo ?? '' }}">
-                                        <i class="fas fa-calendar"></i>
-                                    </div>
-                                    <div class="date-range-label">Hingga tanggal</div>
-                                </div>
-                                <button id="dateRangeClear" class="date-range-clear" type="button" aria-label="Tutup">
-                                    <i class="fas fa-xmark"></i>
-                                </button>
-                            </div>
+
+                    <div class="filter-group">
+                        <span class="filter-label">Sampai Tanggal</span>
+                        <div class="date-range-input">
+                            <input id="dateTo" type="date" value="{{ ($dateTo ?: ($date ?? now()->toDateString())) }}">
+                            <i class="fas fa-calendar"></i>
                         </div>
                     </div>
+
+                    <button id="filterBtn" class="btn-filter" type="button">FILTER</button>
                     <div class="filter-group">
                         <span class="filter-label">Tenaga Medis *</span>
                         <select id="doctorFilter" class="filter-select">
@@ -1199,8 +1194,8 @@
                 const q = document.getElementById('searchFilter')?.value || '';
                 const poli = document.getElementById('poliFilter')?.value || '';
 
-                // Prefer date range only when BOTH are set; otherwise keep single-date filter
-                if (dateFrom && dateTo) {
+                // Use date range when either side is set (backend supports one-sided ranges)
+                if (dateFrom || dateTo) {
                     url.searchParams.set('date_from', dateFrom);
                     url.searchParams.set('date_to', dateTo);
                     url.searchParams.delete('date');
@@ -1217,78 +1212,16 @@
                 window.location.href = url.toString();
             }
 
-            const dateEl = document.getElementById('visitDate');
-            if(dateEl){
-                dateEl.addEventListener('change', function(){
-                    const fromEl = document.getElementById('dateFrom');
-                    const toEl = document.getElementById('dateTo');
-                    if(fromEl) fromEl.value = '';
-                    if(toEl) toEl.value = '';
-                    applyFilters();
-                });
+            // Date range: apply only when user clicks FILTER (matches requested UI)
+            const filterBtn = document.getElementById('filterBtn');
+            if(filterBtn){
+                filterBtn.addEventListener('click', applyFilters);
             }
-
-            // Date range popover
-            (function(){
-                const btn = document.getElementById('dateRangeBtn');
-                const popover = document.getElementById('dateRangePopover');
-                const clearBtn = document.getElementById('dateRangeClear');
-                const fromEl = document.getElementById('dateFrom');
-                const toEl = document.getElementById('dateTo');
-                const singleDateEl = document.getElementById('visitDate');
-                if(!btn || !popover) return;
-
-                function openPopover(){
-                    popover.classList.add('open');
-                    popover.setAttribute('aria-hidden', 'false');
-                }
-                function closePopover(){
-                    popover.classList.remove('open');
-                    popover.setAttribute('aria-hidden', 'true');
-                }
-
-                btn.addEventListener('click', function(ev){
-                    ev.stopPropagation();
-                    if (popover.classList.contains('open')) {
-                        closePopover();
-                        return;
-                    }
-
-                    // Prefill "Dari tanggal" from the single date picker for convenience
-                    if (fromEl && !fromEl.value && singleDateEl && singleDateEl.value) {
-                        fromEl.value = singleDateEl.value;
-                    }
-
-                    openPopover();
-                });
-
-                popover.addEventListener('click', function(ev){
-                    ev.stopPropagation();
-                });
-
-                document.addEventListener('click', function(){
-                    if (popover.classList.contains('open')) closePopover();
-                });
-
-                document.addEventListener('keydown', function(ev){
-                    if(ev.key === 'Escape' && popover.classList.contains('open')) closePopover();
-                });
-
-                if(clearBtn){
-                    clearBtn.addEventListener('click', function(){
-                        if(fromEl) fromEl.value = '';
-                        if(toEl) toEl.value = '';
-                        closePopover();
-                        applyFilters();
-                    });
-                }
-
-                function onRangeChange(){
-                    applyFilters();
-                }
-                if(fromEl) fromEl.addEventListener('change', onRangeChange);
-                if(toEl) toEl.addEventListener('change', onRangeChange);
-            })();
+            const fromEl = document.getElementById('dateFrom');
+            const toEl = document.getElementById('dateTo');
+            function onDateKeydown(ev){ if(ev.key === 'Enter') applyFilters(); }
+            if(fromEl) fromEl.addEventListener('keydown', onDateKeydown);
+            if(toEl) toEl.addEventListener('keydown', onDateKeydown);
             const doctorEl = document.getElementById('doctorFilter');
             if(doctorEl){
                 doctorEl.addEventListener('change', applyFilters);
@@ -1325,7 +1258,7 @@
                     const q = document.getElementById('searchFilter')?.value || '';
                     const poli = document.getElementById('poliFilter')?.value || '';
 
-                    if (dateFrom && dateTo) {
+                    if (dateFrom || dateTo) {
                         url.searchParams.set('date_from', dateFrom);
                         url.searchParams.set('date_to', dateTo);
                     } else {
