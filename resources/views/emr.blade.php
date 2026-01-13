@@ -252,6 +252,10 @@
             border: 1px solid rgba(0,0,0,0.08);
             border-radius: 4px;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            max-height: calc(100vh - 240px);
+            min-height: 220px;
         }
 
         .patient-filter {
@@ -272,6 +276,9 @@
             list-style: none;
             padding: 0;
             margin: 0;
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
         }
 
         .patient-item {
@@ -281,6 +288,20 @@
             font-size: 14px;
             color: #666;
             transition: 0.2s;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .patient-item .patient-item-name {
+            font-size: 14px;
+            line-height: 1.2;
+        }
+
+        .patient-item .patient-item-meta {
+            font-size: 11px;
+            color: #9ca3af;
+            line-height: 1.2;
         }
 
         .patient-item:hover {
@@ -292,6 +313,10 @@
             color: #fff;
             border-left: 4px solid #1565C0;
             font-weight: 500;
+        }
+
+        .patient-item.active .patient-item-meta {
+            color: rgba(255, 255, 255, 0.85);
         }
 
         .detail-area {
@@ -578,6 +603,8 @@
 
         .record-table-container {
             padding: 20px;
+            max-height: 55vh;
+            overflow: auto;
         }
 
         .record-table {
@@ -651,9 +678,242 @@
             display: block;
         }
 
+        .record-form {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 14px;
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: 220px 1fr;
+            gap: 10px;
+            align-items: start;
+        }
+
+        .record-form .row {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .proc-form-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        @media (max-width: 900px) {
+            .proc-form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .prosedur-topbar {
+            background: #fff;
+            border-bottom: 1px solid #eee;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .prosedur-topbar .title {
+            font-size: 22px;
+            font-weight: 800;
+            color: #2196F3;
+            letter-spacing: 0.2px;
+        }
+
+        .prosedur-topbar .actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .prosedur-print {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            color: #374151;
+            padding: 8px 10px;
+        }
+
+        .prosedur-add {
+            background: #1976D2;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 12px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .record-form label {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            color: #444;
+            margin-bottom: 6px;
+        }
+
+        .record-form input,
+        .record-form select,
+        .record-form textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 13px;
+            background: #fff;
+        }
+
+        .record-form textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        .record-form .actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 10px;
+        }
+
+        .record-form .btn {
+            background: #2196F3;
+            color: #fff;
+            border: none;
+            padding: 10px 14px;
+            border-radius: 4px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .odo-toolbar {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .odo-toolbar .left {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .odo-btn {
+            background: #2196F3;
+            color: #fff;
+            border: none;
+            padding: 10px 14px;
+            border-radius: 4px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .odo-btn.secondary {
+            background: #111827;
+        }
+
+        .odo-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 34px);
+            gap: 8px;
+            justify-content: center;
+            margin: 14px 0 8px;
+        }
+
+        .odo-tooth {
+            width: 34px;
+            height: 34px;
+            border: 2px solid #111827;
+            border-radius: 4px;
+            background: #fff;
+            cursor: pointer;
+            position: relative;
+            display: grid;
+            place-items: center;
+            font-size: 10px;
+            font-weight: 800;
+            color: #111827;
+            user-select: none;
+        }
+
+        .odo-tooth.selected {
+            outline: 3px solid #2196F3;
+            outline-offset: 2px;
+        }
+
+        .odo-tooth .badge {
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #111827;
+            color: #fff;
+            border-radius: 10px;
+            padding: 1px 6px;
+            font-size: 9px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .odo-tooth[data-state="normal"] .badge { display: none; }
+        .odo-tooth[data-state="caries"] { background: #fee2e2; }
+        .odo-tooth[data-state="filling"] { background: #e0f2fe; }
+        .odo-tooth[data-state="missing"] { background: #f3f4f6; border-style: dashed; }
+        .odo-tooth[data-state="crown"] { background: #fef9c3; }
+
+        .odo-meta {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .odo-meta .field label {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            color: #444;
+            margin-bottom: 6px;
+        }
+
+        .odo-meta .field input,
+        .odo-meta .field select,
+        .odo-meta .field textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 13px;
+            background: #fff;
+        }
+
+        .odo-meta .field textarea {
+            min-height: 84px;
+            resize: vertical;
+        }
+
+        .odo-help {
+            color: #6b7280;
+            font-size: 12px;
+            margin-top: 6px;
+        }
+
         .clinical-layout {
             display: grid;
-            grid-template-columns: 1fr 300px;
+            grid-template-columns: 1fr;
             gap: 20px;
             margin-top: 20px;
         }
@@ -662,6 +922,9 @@
             position: relative;
             padding-left: 0;
             border-left: none;
+            max-height: 70vh;
+            overflow-y: auto;
+            padding-right: 6px;
         }
 
         .timeline-date {
@@ -1246,7 +1509,10 @@
                     <ul class="patient-list">
                         @forelse($patients as $index => $patient)
                             <li class="patient-item {{ $index === 0 ? 'active' : '' }}" data-patient="{{ $patient['id'] }}">
-                                {{ $patient['name'] }}
+                                <div class="patient-item-name">{{ $patient['name'] }}</div>
+                                <div class="patient-item-meta">
+                                    {{ $patient['medical_record_number'] ?: '—' }} · {{ $patient['phone'] ?: '—' }}
+                                </div>
                             </li>
                         @empty
                             <li style="padding: 20px; text-align: center; color: #999;">
@@ -1259,9 +1525,27 @@
                 <div class="detail-area">
                     @foreach($patients as $index => $patient)
                         @php
-                            $birthDate = \Carbon\Carbon::parse($patient['birth_date']);
-                            $age = $birthDate->age;
-                            $daysDiff = $birthDate->diffInDays(\Carbon\Carbon::now()->startOfDay()) % 365;
+                            $birthDate = null;
+                            $age = null;
+                            $daysDiff = null;
+                            if (!empty($patient['birth_date'])) {
+                                try {
+                                    $birthDate = \Carbon\Carbon::parse($patient['birth_date']);
+                                    $age = $birthDate->age;
+                                    $daysDiff = $birthDate->diffInDays(\Carbon\Carbon::now()->startOfDay()) % 365;
+                                } catch (\Throwable $e) {
+                                    $birthDate = null;
+                                }
+                            }
+
+                            $metaParts = [];
+                            $metaParts[] = $patient['medical_record_number'] ?: '—';
+                            if (!empty($patient['gender'])) {
+                                $metaParts[] = $patient['gender'];
+                            }
+                            if ($birthDate) {
+                                $metaParts[] = $age . ' Tahun ' . $daysDiff . ' Hari';
+                            }
                         @endphp
                         <div class="patient-data {{ $index !== 0 ? 'hidden' : '' }}" id="patient-{{ $patient['id'] }}">
                             <div class="profile-box">
@@ -1269,8 +1553,8 @@
                                     <div>
                                         <div class="profile-name">{{ $patient['name'] }}</div>
                                         <div class="profile-meta">
-                                            {{ $patient['medical_record_number'] }} · {{ $patient['gender'] }} · {{ $age }} Tahun {{ $daysDiff }} Hari<br>
-                                            {{ $birthDate->format('d F Y') }}
+                                            {{ implode(' · ', array_filter($metaParts)) }}<br>
+                                            {{ $birthDate ? $birthDate->format('d F Y') : '—' }}
                                         </div>
                                     </div>
                                     <button class="edit-data-btn" onclick="openModal('{{ $patient['id'] }}')">EDIT DATA DIRI</button>
@@ -1281,82 +1565,18 @@
                                     <div class="profile-details-area">
                                         <div class="info-grid-3">
                                             <div class="info-item">
-                                                <label>Alamat Rumah <i class="fas fa-eye-slash icon-hidden"></i></label>
-                                                <span>-</span>
+                                                <label>No. RM / Kode Booking</label>
+                                                <span>{{ $patient['medical_record_number'] ?: '—' }}</span>
                                             </div>
                                             <div class="info-item">
-                                                <label>Nomor KTP <i class="fas fa-eye-slash icon-hidden"></i></label>
-                                                <span>-</span>
+                                                <label>Nomor HP</label>
+                                                <span>{{ $patient['phone'] ?: '—' }}</span>
                                             </div>
                                             <div class="info-item">
-                                                <label>Nomor HP <i class="fas fa-eye-slash icon-hidden"></i></label>
-                                                <span>{{ $patient['phone'] ?? '-' }}</span>
+                                                <label>Metode Pembayaran</label>
+                                                <span>{{ $patient['latest_appointment']['payment_method'] ?? '—' }}</span>
                                             </div>
                                         </div>
-
-                                        <div class="expanded-content" id="expanded-{{ $patient['id'] }}">
-                                            <div class="info-grid-4">
-                                                <div class="info-item">
-                                                    <label>Pekerjaan</label>
-                                                    <span>-</span>
-                                                </div>
-                                                <div class="info-item">
-                                                    <label>Status</label>
-                                                    <span>-</span>
-                                                </div>
-                                                <div class="info-item">
-                                                    <label>Gol. Darah</label>
-                                                    <span>-</span>
-                                                </div>
-                                                <div class="info-item">
-                                                    <label>Agama</label>
-                                                    <span>-</span>
-                                                </div>
-                                            </div>
-
-                                            <div class="section-label">Anggota Keluarga</div>
-                                            <table class="detail-table">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Nama Lengkap</th>
-                                                        <th>Hubungan</th>
-                                                        <th>Tanggal Lahir</th>
-                                                        <th>Nomor HP <i class="fas fa-eye-slash"></i></th>
-                                                        <th>Alamat <i class="fas fa-eye-slash"></i></th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td>&nbsp;</td>
-                                                        <td>Lainnya</td>
-                                                        <td>&nbsp;</td>
-                                                        <td>&nbsp;</td>
-                                                        <td>&nbsp;</td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-
-                                            <div class="section-label">Metode Pembayaran</div>
-                                            <table class="detail-table">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Metode</th>
-                                                        <th>Nomor <i class="fas fa-eye"></i></th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td>{{ $patient['latest_appointment']['payment_method'] ?? 'Lainnya' }}</td>
-                                                        <td>&nbsp;</td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-
-                                            <div class="section-label">Tags</div>
-                                            <div style="height:20px;"></div>
-                                        </div>
-
-                                        <a class="link-toggle" onclick="toggleProfileDetails('{{ $patient['id'] }}')" id="btn-toggle-{{ $patient['id'] }}">Lihat data lainnya ></a>
                                     </div>
                                 </div>
                             </div>
@@ -1368,14 +1588,10 @@
                             </div>
 
                             <div class="sub-tabs" id="sub-tabs-{{ $patient['id'] }}">
-                                <button class="sub-tab-btn active" data-subtab="vital">Tanda Vital</button>
                                 <button class="sub-tab-btn" data-subtab="diagnosa">Diagnosa</button>
                                 <button class="sub-tab-btn" data-subtab="dokter">Catatan Dokter</button>
-                                <button class="sub-tab-btn" data-subtab="prosedur">Prosedur</button>
-                                <button class="sub-tab-btn" data-subtab="resep">Resep</button>
-                                <button class="sub-tab-btn" data-subtab="racikan">Racikan</button>
+                                <button class="sub-tab-btn active" data-subtab="prosedur">Prosedur</button>
                                 <button class="sub-tab-btn" data-subtab="odontogram">Odontogram</button>
-                                <button class="sub-tab-btn" data-subtab="more">...</button>
                             </div>
 
                             <div class="tab-content-area active" id="timeline-{{ $patient['id'] }}">
@@ -1447,76 +1663,198 @@
                                             Page has reached maximum limit.
                                         </div>
                                     </div>
-
-                                    <div>
-                                        <button class="btn-block-gray">+TAMBAH DIAGNOSA</button>
-                                        <button class="btn-block-blue">PRINT REKAM MEDIS</button>
-
-                                        <!-- RIWAYAT PENYAKIT -->
-                                        <div class="accordion-item">
-                                            <div class="accordion-header" onclick="toggleAcc(this)">
-                                                <span>RIWAYAT PENYAKIT</span>
-                                                <i class="fas fa-chevron-down"></i>
-                                            </div>
-                                            <div class="accordion-body">
-                                                <div class="subtitle-section">TAMBAH RIWAYAT PENYAKIT</div>
-                                                <div class="input-with-icon">
-                                                    <input type="text" class="acc-input" placeholder="Nama Penyakit">
-                                                    <i class="fas fa-plus-circle"></i>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- RIWAYAT PENYAKIT KELUARGA -->
-                                        <div class="accordion-item">
-                                            <div class="accordion-header" onclick="toggleAcc(this)">
-                                                <span>RIWAYAT PENYAKIT KELUARGA</span>
-                                                <i class="fas fa-chevron-down"></i>
-                                            </div>
-                                            <div class="accordion-body">
-                                                <div style="color: #999; font-size: 13px; margin-bottom: 15px;">
-                                                    Pasien tidak memiliki riwayat penyakit keluarga.
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- RIWAYAT ALERGI -->
-                                        <div class="accordion-item">
-                                            <div class="accordion-header" onclick="toggleAcc(this)">
-                                                <span>RIWAYAT ALERGI</span>
-                                                <i class="fas fa-chevron-down"></i>
-                                            </div>
-                                            <div class="accordion-body">
-                                                <div style="color: #999; font-size: 13px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
-                                                    <span>Pasien tidak memiliki riwayat alergi</span>
-                                                    <i class="fas fa-info-circle" style="color: #999; font-size: 18px;"></i>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- RIWAYAT PENGGUNAAN OBAT -->
-                                        <div class="accordion-item">
-                                            <div class="accordion-header" onclick="toggleAcc(this)">
-                                                <span>RIWAYAT PENGGUNAAN OBAT</span>
-                                                <i class="fas fa-chevron-down"></i>
-                                            </div>
-                                            <div class="accordion-body">
-                                                <div style="color: #999; font-size: 13px; margin-bottom: 15px;">
-                                                    Pasien tidak memiliki riwayat penggunaan obat
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
 
                             <div class="tab-content-area" id="record-{{ $patient['id'] }}">
-                                <div class="record-subtab-content active" data-subtab="prosedur">
+                                <div class="record-subtab-content" data-subtab="diagnosa">
+                                    <div class="record-form">
+                                        <div>
+                                            <label>Pilih Kunjungan</label>
+                                            <select id="diag-appt-{{ $patient['id'] }}">
+                                                @foreach($patient['appointments'] as $a)
+                                                    <option value="{{ $a->id }}">
+                                                        {{ \Carbon\Carbon::parse($a->start_at)->format('d M Y H:i') }} - {{ $a->doctor->name ?? 'Dokter' }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <div class="row">
+                                                <div>
+                                                    <label>Diagnosa</label>
+                                                    <input type="text" id="diag-name-{{ $patient['id'] }}" placeholder="Misal: Karies gigi">
+                                                </div>
+                                                <div>
+                                                    <label>Catatan (opsional)</label>
+                                                    <input type="text" id="diag-note-{{ $patient['id'] }}" placeholder="Catatan singkat">
+                                                </div>
+                                            </div>
+                                            <div class="actions">
+                                                <button class="btn" onclick="createDiagnosis('{{ $patient['id'] }}')">Tambah</button>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <div class="record-content-box">
                                         <div class="record-header">
-                                            <span>PROSEDUR</span>
-                                            <div class="record-toolbar">
-                                                <button class="toolbar-btn" title="Print"><i class="fas fa-print"></i></button>
+                                            <span>DIAGNOSA</span>
+                                        </div>
+                                        <div class="record-table-container">
+                                            <table class="record-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Tanggal</th>
+                                                        <th>Diagnosa</th>
+                                                        <th>Catatan</th>
+                                                        <th>Dokter</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @php $hasDiag = false; @endphp
+                                                    @foreach($patient['appointments'] as $appointment)
+                                                        @foreach($appointment->diagnoses as $d)
+                                                            @php $hasDiag = true; @endphp
+                                                            <tr>
+                                                                <td style="color:#2196F3;">{{ strtoupper(\Carbon\Carbon::parse($appointment->start_at)->format('M d Y')) }}</td>
+                                                                <td>{{ $d->name }}</td>
+                                                                <td>{{ $d->note ?: '-' }}</td>
+                                                                <td>{{ $appointment->doctor->name ?? '-' }}</td>
+                                                            </tr>
+                                                        @endforeach
+                                                    @endforeach
+                                                    @if(!$hasDiag)
+                                                        <tr>
+                                                            <td colspan="4" style="text-align:center; padding:30px; color:#999;">Belum ada diagnosa</td>
+                                                        </tr>
+                                                    @endif
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="record-subtab-content" data-subtab="dokter">
+                                    <div class="record-form">
+                                        <div>
+                                            <label>Pilih Kunjungan</label>
+                                            <select id="note-appt-{{ $patient['id'] }}">
+                                                @foreach($patient['appointments'] as $a)
+                                                    <option value="{{ $a->id }}">
+                                                        {{ \Carbon\Carbon::parse($a->start_at)->format('d M Y H:i') }} - {{ $a->doctor->name ?? 'Dokter' }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label>Catatan Dokter</label>
+                                            <textarea id="note-text-{{ $patient['id'] }}" placeholder="Tulis catatan dokter..."></textarea>
+                                            <div class="actions">
+                                                <button class="btn" onclick="createDoctorNote('{{ $patient['id'] }}')">Tambah</button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="record-content-box">
+                                        <div class="record-header">
+                                            <span>CATATAN DOKTER</span>
+                                        </div>
+                                        <div class="record-table-container">
+                                            <table class="record-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Tanggal</th>
+                                                        <th>Catatan</th>
+                                                        <th>Dokter</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @php $hasNote = false; @endphp
+                                                    @foreach($patient['appointments'] as $appointment)
+                                                        @foreach($appointment->doctorNotes as $n)
+                                                            @php $hasNote = true; @endphp
+                                                            <tr>
+                                                                <td style="color:#2196F3;">{{ strtoupper(\Carbon\Carbon::parse($appointment->start_at)->format('M d Y')) }}</td>
+                                                                <td style="white-space:pre-wrap;">{{ $n->note }}</td>
+                                                                <td>{{ $appointment->doctor->name ?? '-' }}</td>
+                                                            </tr>
+                                                        @endforeach
+                                                    @endforeach
+                                                    @if(!$hasNote)
+                                                        <tr>
+                                                            <td colspan="3" style="text-align:center; padding:30px; color:#999;">Belum ada catatan dokter</td>
+                                                        </tr>
+                                                    @endif
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="record-subtab-content active" data-subtab="prosedur">
+                                    <div class="record-form" id="proc-form-{{ $patient['id'] }}" style="display:none;">
+                                        <div>
+                                            <label>Pilih Kunjungan</label>
+                                            <select id="proc-appt-{{ $patient['id'] }}">
+                                                @foreach($patient['appointments'] as $a)
+                                                    <option value="{{ $a->id }}">
+                                                        {{ \Carbon\Carbon::parse($a->start_at)->format('d M Y H:i') }} - {{ $a->doctor->name ?? 'Dokter' }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <div class="proc-form-grid">
+                                                <div>
+                                                    <label>Prosedur (Katalog)</label>
+                                                    <select id="proc-procedure-id-{{ $patient['id'] }}" onchange="syncProcedureFromCatalog('{{ $patient['id'] }}')">
+                                                        <option value="">-- Pilih dari katalog --</option>
+                                                        @isset($procedures)
+                                                            @foreach($procedures as $proc)
+                                                                <option value="{{ $proc->id }}" data-name="{{ $proc->name }}" data-price="{{ (int) $proc->price }}">
+                                                                    {{ $proc->name }}
+                                                                </option>
+                                                            @endforeach
+                                                        @endisset
+                                                    </select>
+                                                </div>
+                                                <div>
+                                                    <label>Prosedur</label>
+                                                    <input type="text" id="proc-name-{{ $patient['id'] }}" placeholder="Misal: Scaling">
+                                                </div>
+                                                <div>
+                                                    <label>Jumlah</label>
+                                                    <input type="number" min="1" step="1" id="proc-qty-{{ $patient['id'] }}" value="1">
+                                                </div>
+                                                <div>
+                                                    <label>Harga Jual (Rp)</label>
+                                                    <input type="number" min="0" step="1" id="proc-price-{{ $patient['id'] }}" placeholder="Contoh: 200000">
+                                                </div>
+                                                <div>
+                                                    <label>Diskon (Rp)</label>
+                                                    <input type="number" min="0" step="1" id="proc-discount-{{ $patient['id'] }}" placeholder="Contoh: 30000" value="0">
+                                                </div>
+                                                <div>
+                                                    <label>Tenaga Medis Bantu</label>
+                                                    <input type="text" id="proc-assistant-{{ $patient['id'] }}" placeholder="Nama tenaga medis bantu (opsional)">
+                                                </div>
+                                                <div>
+                                                    <label>Notes</label>
+                                                    <input type="text" id="proc-note-{{ $patient['id'] }}" placeholder="Catatan singkat">
+                                                </div>
+                                            </div>
+                                            <div class="actions">
+                                                <button class="btn" onclick="createProcedureRecord('{{ $patient['id'] }}')">Tambah</button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="record-content-box">
+                                        <div class="prosedur-topbar">
+                                            <div class="title">PROSEDUR</div>
+                                            <div class="actions">
+                                                <button class="prosedur-print" title="Print" onclick="window.print()"><i class="fas fa-print"></i></button>
+                                                <button class="prosedur-add" onclick="toggleProcedureForm('{{ $patient['id'] }}')"><i class="fas fa-plus"></i> Tambah</button>
                                             </div>
                                         </div>
                                         <div class="record-table-container">
@@ -1525,32 +1863,169 @@
                                                     <tr>
                                                         <th>Tanggal</th>
                                                         <th>Prosedur</th>
-                                                        <th>Dokter</th>
-                                                        <th>Status</th>
+                                                        <th>Jumlah</th>
+                                                        <th>Notes</th>
+                                                        <th>Harga Jual</th>
+                                                        <th>Diskon</th>
+                                                        <th>Tenaga Medis Utama</th>
+                                                        <th>Tenaga Medis Bantu</th>
+                                                        <th>Total</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    @forelse($patient['appointments'] as $appointment)
+                                                    @php $hasProc = false; @endphp
+                                                    @foreach($patient['appointments'] as $appointment)
+                                                        @if(!empty($appointment->procedure))
+                                                            @php $hasProc = true; @endphp
+                                                            <tr>
+                                                                <td style="color:#2196F3;">{{ strtoupper(\Carbon\Carbon::parse($appointment->start_at)->format('M d Y')) }}</td>
+                                                                <td>{{ $appointment->procedure }}</td>
+                                                                <td>1</td>
+                                                                <td>-</td>
+                                                                <td>-</td>
+                                                                <td>-</td>
+                                                                <td>
+                                                                    {{ $appointment->doctor->name ?? '-' }}
+                                                                    @if(!empty($appointment->doctor?->specialty))
+                                                                        {{ ' ' . $appointment->doctor->specialty }}
+                                                                    @endif
+                                                                </td>
+                                                                <td>-</td>
+                                                                <td>-</td>
+                                                            </tr>
+                                                        @endif
+
+                                                        @foreach($appointment->procedureRecords as $pr)
+                                                            @php $hasProc = true; @endphp
+                                                            @php
+                                                                $qty = (int)($pr->quantity ?? 1);
+                                                                $price = $pr->selling_price;
+                                                                $discount = (int)($pr->discount_amount ?? 0);
+                                                                $total = null;
+                                                                if (!is_null($price)) {
+                                                                    $total = max(0, ((int)$price * $qty) - $discount);
+                                                                }
+                                                            @endphp
+                                                            <tr>
+                                                                <td style="color:#2196F3;">{{ strtoupper(\Carbon\Carbon::parse($appointment->start_at)->format('M d Y')) }}</td>
+                                                                <td>{{ $pr->name }}</td>
+                                                                <td>{{ $qty }}</td>
+                                                                <td>{{ $pr->note ?: '-' }}</td>
+                                                                <td>{{ is_null($price) ? '-' : ('Rp' . number_format((int)$price, 0, ',', '.')) }}</td>
+                                                                <td>{{ $discount ? ('Rp' . number_format((int)$discount, 0, ',', '.')) : '-' }}</td>
+                                                                <td>
+                                                                    {{ $appointment->doctor->name ?? '-' }}
+                                                                    @if(!empty($appointment->doctor?->specialty))
+                                                                        {{ ' ' . $appointment->doctor->specialty }}
+                                                                    @endif
+                                                                </td>
+                                                                <td>{{ $pr->assistant_name ?: '-' }}</td>
+                                                                <td>{{ is_null($total) ? '-' : ('Rp' . number_format((int)$total, 0, ',', '.')) }}</td>
+                                                            </tr>
+                                                        @endforeach
+                                                    @endforeach
+                                                    @if(!$hasProc)
                                                         <tr>
-                                                            <td style="color:#2196F3;">
-                                                                {{ strtoupper(\Carbon\Carbon::parse($appointment->start_at)->format('M d Y')) }}
-                                                            </td>
-                                                            <td>{{ $appointment->procedure }}</td>
-                                                            <td>{{ $appointment->doctor->name }}</td>
-                                                            <td>{{ ucfirst($appointment->status) }}</td>
+                                                            <td colspan="9" style="text-align:center; padding:40px; color:#999;">Belum ada prosedur</td>
                                                         </tr>
-                                                    @empty
-                                                        <tr>
-                                                            <td colspan="4" style="text-align:center; padding:40px; color:#999;">No data available</td>
-                                                        </tr>
-                                                    @endforelse
+                                                    @endif
                                                 </tbody>
                                             </table>
                                         </div>
                                         <div class="pagination-info">
                                             <div>
-                                                <span>Total: {{ $patient['appointments']->count() }} records</span>
+                                                <span>Total: {{ $patient['appointments']->count() }} kunjungan</span>
                                             </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="record-subtab-content" data-subtab="odontogram">
+                                    <div class="record-form">
+                                        <div>
+                                            <label>Pilih Kunjungan</label>
+                                            <select id="odo-appt-{{ $patient['id'] }}">
+                                                @foreach($patient['appointments'] as $a)
+                                                    <option value="{{ $a->id }}"
+                                                        data-patient="{{ $patient['name'] }}"
+                                                        data-mrn="{{ $patient['medical_record_number'] }}"
+                                                        data-gender="{{ $patient['gender'] }}"
+                                                        data-date="{{ \Carbon\Carbon::parse($a->start_at)->format('l, d F Y') }}">
+                                                        {{ \Carbon\Carbon::parse($a->start_at)->format('d M Y H:i') }} - {{ $a->doctor->name ?? 'Dokter' }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <div class="odo-toolbar">
+                                                <div class="left">
+                                                    <div>
+                                                        <label style="margin-bottom:6px; display:block; font-size:12px; font-weight:700; color:#444;">Kondisi</label>
+                                                        <select id="odo-state-{{ $patient['id'] }}">
+                                                            <option value="normal">Normal</option>
+                                                            <option value="caries">Caries</option>
+                                                            <option value="filling">Filling</option>
+                                                            <option value="crown">Crown</option>
+                                                            <option value="missing">Missing</option>
+                                                        </select>
+                                                    </div>
+                                                    <div>
+                                                        <label style="margin-bottom:6px; display:block; font-size:12px; font-weight:700; color:#444;">Catatan gigi</label>
+                                                        <input type="text" id="odo-tooth-note-{{ $patient['id'] }}" placeholder="Misal: nyeri saat dingin">
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <button class="odo-btn secondary" onclick="odoClearAll('{{ $patient['id'] }}')">Clear</button>
+                                                    <button class="odo-btn" onclick="openOdontogramModal('{{ $patient['id'] }}')">Tambah Odontogram</button>
+                                                </div>
+                                            </div>
+                                            <div class="odo-help">Klik gigi untuk pilih, lalu set kondisi & catatan. Data disimpan per kunjungan.</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="record-content-box">
+                                        <div class="record-header">
+                                            <span>ODONTOGRAM</span>
+                                        </div>
+                                        <div class="record-table-container">
+                                            <table class="record-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Tanggal</th>
+                                                        <th>Ringkasan</th>
+                                                        <th>Detail</th>
+                                                        <th>Dokter</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @php $hasOdo = false; @endphp
+                                                    @foreach($patient['appointments'] as $appointment)
+                                                        @foreach($appointment->odontograms as $o)
+                                                            @php $hasOdo = true; @endphp
+                                                            <tr>
+                                                                <td style="color:#2196F3;">{{ strtoupper(\Carbon\Carbon::parse($appointment->start_at)->format('M d Y')) }}</td>
+                                                                <td>{{ $o->summary ?: '-' }}</td>
+                                                                <td>
+                                                                    @if(!empty($o->data))
+                                                                        <details>
+                                                                            <summary style="cursor:pointer; color:#2196F3; font-weight:600;">Lihat</summary>
+                                                                            <pre style="white-space:pre-wrap; font-size:12px; color:#444; margin-top:8px;">{{ json_encode($o->data, JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE) }}</pre>
+                                                                        </details>
+                                                                    @else
+                                                                        -
+                                                                    @endif
+                                                                </td>
+                                                                <td>{{ $appointment->doctor->name ?? '-' }}</td>
+                                                            </tr>
+                                                        @endforeach
+                                                    @endforeach
+                                                    @if(!$hasOdo)
+                                                        <tr>
+                                                            <td colspan="4" style="text-align:center; padding:30px; color:#999;">Belum ada odontogram</td>
+                                                        </tr>
+                                                    @endif
+                                                </tbody>
+                                            </table>
                                         </div>
                                     </div>
                                 </div>
@@ -1631,6 +2106,106 @@
             </div>
         </div>
 
+        <!-- Modal Odontogram -->
+        <div class="modal-overlay" id="odontogramModal" style="display:none;">
+            <div class="modal-content" style="max-width:1100px; width: calc(100% - 40px);">
+                <div class="modal-header">
+                    <div>
+                        <div class="modal-title" style="margin-bottom:2px;">Tambah Odontogram</div>
+                        <div style="font-size:12px; color:#6b7280;" id="odo-modal-date"></div>
+                    </div>
+                    <button class="modal-close" onclick="closeOdontogramModal()">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:16px; flex-wrap:wrap;">
+                        <div>
+                            <div style="font-size:18px; font-weight:800; color:#111827;" id="odo-modal-patient"></div>
+                            <div style="font-size:12px; color:#6b7280; margin-top:4px;" id="odo-modal-meta"></div>
+                        </div>
+                        <div style="display:flex; gap:10px; align-items:center;">
+                            <button class="odo-btn secondary" onclick="odoClearAll(document.getElementById('odontogramModal').dataset.patient)">Clear all notes</button>
+                        </div>
+                    </div>
+
+                    <div style="margin-top:14px;">
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 18px;">
+                            <div>
+                                <div class="odo-grid" id="odo-grid-top-left"></div>
+                                <div class="odo-grid" id="odo-grid-bottom-left"></div>
+                            </div>
+                            <div>
+                                <div class="odo-grid" id="odo-grid-top-right"></div>
+                                <div class="odo-grid" id="odo-grid-bottom-right"></div>
+                            </div>
+                        </div>
+
+                        <div class="odo-meta">
+                            <div class="field">
+                                <label>Ringkasan</label>
+                                <input type="text" id="odo-meta-summary" placeholder="Contoh: Caries gigi 16">
+                            </div>
+                            <div class="field">
+                                <label>Occlusi</label>
+                                <select id="odo-meta-occlusi">
+                                    <option value="">-</option>
+                                    <option value="Normal">Normal</option>
+                                    <option value="Crossbite">Crossbite</option>
+                                    <option value="Open bite">Open bite</option>
+                                    <option value="Deep bite">Deep bite</option>
+                                </select>
+                            </div>
+                            <div class="field">
+                                <label>Torus Palatinus</label>
+                                <select id="odo-meta-tp">
+                                    <option value="">-</option>
+                                    <option value="Tidak">Tidak</option>
+                                    <option value="Kecil">Kecil</option>
+                                    <option value="Sedang">Sedang</option>
+                                    <option value="Besar">Besar</option>
+                                </select>
+                            </div>
+                            <div class="field">
+                                <label>Torus Mandibularis</label>
+                                <select id="odo-meta-tm">
+                                    <option value="">-</option>
+                                    <option value="Tidak">Tidak</option>
+                                    <option value="Kecil">Kecil</option>
+                                    <option value="Sedang">Sedang</option>
+                                    <option value="Besar">Besar</option>
+                                </select>
+                            </div>
+                            <div class="field">
+                                <label>Diastema</label>
+                                <select id="odo-meta-diastema">
+                                    <option value="">-</option>
+                                    <option value="Tidak">Tidak</option>
+                                    <option value="Ada">Ada</option>
+                                </select>
+                            </div>
+                            <div class="field">
+                                <label>Gigi Anomali</label>
+                                <select id="odo-meta-anomaly">
+                                    <option value="">-</option>
+                                    <option value="Tidak">Tidak</option>
+                                    <option value="Ada">Ada</option>
+                                </select>
+                            </div>
+                            <div class="field" style="grid-column: 1 / -1;">
+                                <label>Catatan Lainnya</label>
+                                <textarea id="odo-meta-other" placeholder="Catatan tambahan..."></textarea>
+                            </div>
+                        </div>
+
+                        <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:16px;">
+                            <button class="odo-btn secondary" onclick="closeOdontogramModal()">Batal</button>
+                            <button class="odo-btn" onclick="odoSaveModal()">Simpan</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <script>
             function toggleSidebar() {
                 const sidebar = document.getElementById('appSidebar');
@@ -1683,22 +2258,28 @@
                     });
                     const targetContent = document.getElementById(targetTab + '-' + patientId);
                     if(targetContent) targetContent.classList.add('active');
+
                     const subTabs = document.getElementById('sub-tabs-' + patientId);
-                    if(targetTab === 'record') {
-                        subTabs.classList.add('active');
-                    } else {
-                        subTabs.classList.remove('active');
+                    if (subTabs) {
+                        if(targetTab === 'record') {
+                            subTabs.classList.add('active');
+                        } else {
+                            subTabs.classList.remove('active');
+                        }
                     }
                 });
             });
 
-            // Sub tabs
+            // Sub tabs (Record)
             document.querySelectorAll('.sub-tab-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
                     const targetSubTab = this.getAttribute('data-subtab');
                     const parentSubTabs = this.closest('.sub-tabs');
+                    if (!parentSubTabs) return;
+
                     parentSubTabs.querySelectorAll('.sub-tab-btn').forEach(b => b.classList.remove('active'));
                     this.classList.add('active');
+
                     const patientId = parentSubTabs.id.replace('sub-tabs-', '');
                     const recordContent = document.getElementById('record-' + patientId);
                     if(recordContent) {
@@ -1711,36 +2292,277 @@
                 });
             });
 
-            function toggleProfileDetails(patientId) {
-                var expandedContent = document.getElementById('expanded-' + patientId);
-                var btn = document.getElementById('btn-toggle-' + patientId);
-                if (expandedContent.style.display === 'block') {
-                    expandedContent.style.display = 'none';
-                    btn.innerHTML = 'Lihat data lainnya >';
-                } else {
-                    expandedContent.style.display = 'block';
-                    btn.innerHTML = '< Sembunyikan data';
+            function csrfToken() {
+                return document.querySelector('meta[name="csrf-token"]').content;
+            }
+
+            async function postJson(url, payload) {
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken(),
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await res.json().catch(() => ({}));
+                if (!res.ok) {
+                    const msg = data.message || 'Gagal menyimpan data';
+                    throw new Error(msg);
+                }
+                return data;
+            }
+
+            window.createDiagnosis = async function(patientId) {
+                try {
+                    const appointmentId = document.getElementById('diag-appt-' + patientId).value;
+                    const name = document.getElementById('diag-name-' + patientId).value.trim();
+                    const note = document.getElementById('diag-note-' + patientId).value.trim();
+                    await postJson(`/emr/appointments/${appointmentId}/diagnoses`, { name, note: note || null });
+                    location.reload();
+                } catch (e) {
+                    alert(e.message);
                 }
             }
 
-            function toggleAcc(header) {
-                const body = header.nextElementSibling;
-                const allHeaders = document.querySelectorAll('.accordion-header');
-                const allBodies = document.querySelectorAll('.accordion-body');
+            window.createDoctorNote = async function(patientId) {
+                try {
+                    const appointmentId = document.getElementById('note-appt-' + patientId).value;
+                    const note = document.getElementById('note-text-' + patientId).value;
+                    await postJson(`/emr/appointments/${appointmentId}/doctor-notes`, { note });
+                    location.reload();
+                } catch (e) {
+                    alert(e.message);
+                }
+            }
 
-                allHeaders.forEach(h => {
-                    if(h !== header) {
-                        h.classList.remove('active');
-                    }
-                });
-                allBodies.forEach(b => {
-                    if(b !== body) {
-                        b.classList.remove('open');
-                    }
-                });
+            window.createProcedureRecord = async function(patientId) {
+                try {
+                    const appointmentId = document.getElementById('proc-appt-' + patientId).value;
+                    const procedureIdEl = document.getElementById('proc-procedure-id-' + patientId);
+                    const procedure_id = procedureIdEl && procedureIdEl.value !== '' ? parseInt(procedureIdEl.value, 10) : null;
+                    const name = document.getElementById('proc-name-' + patientId).value.trim();
+                    const note = document.getElementById('proc-note-' + patientId).value.trim();
+                    const quantity = parseInt(document.getElementById('proc-qty-' + patientId).value || '1', 10);
+                    const selling_price = document.getElementById('proc-price-' + patientId).value;
+                    const discount_amount = document.getElementById('proc-discount-' + patientId).value;
+                    const assistant_name = document.getElementById('proc-assistant-' + patientId).value.trim();
 
-                header.classList.toggle('active');
-                body.classList.toggle('open');
+                    await postJson(`/emr/appointments/${appointmentId}/procedure-records`, {
+                        procedure_id,
+                        name,
+                        note: note || null,
+                        quantity: Number.isFinite(quantity) && quantity > 0 ? quantity : 1,
+                        selling_price: selling_price === '' ? null : parseInt(selling_price, 10),
+                        discount_amount: discount_amount === '' ? 0 : parseInt(discount_amount, 10),
+                        assistant_name: assistant_name || null,
+                    });
+                    location.reload();
+                } catch (e) {
+                    alert(e.message);
+                }
+            }
+
+            window.syncProcedureFromCatalog = function(patientId) {
+                const select = document.getElementById('proc-procedure-id-' + patientId);
+                if (!select) return;
+
+                const selected = select.options[select.selectedIndex];
+                if (!selected || !selected.value) return;
+
+                const name = selected.getAttribute('data-name') || '';
+                const price = selected.getAttribute('data-price');
+
+                const nameInput = document.getElementById('proc-name-' + patientId);
+                const priceInput = document.getElementById('proc-price-' + patientId);
+
+                if (nameInput) nameInput.value = name;
+                if (priceInput && (priceInput.value === '' || priceInput.value === null)) {
+                    priceInput.value = price ?? '';
+                }
+            }
+
+            window.toggleProcedureForm = function(patientId) {
+                const form = document.getElementById('proc-form-' + patientId);
+                if (!form) return;
+                form.style.display = (form.style.display === 'none' || form.style.display === '') ? 'grid' : 'none';
+            }
+
+            window.createOdontogram = async function(patientId) {
+                try {
+                    const appointmentId = document.getElementById('odo-appt-' + patientId).value;
+                    const summary = (window.__odoSummary && window.__odoSummary[patientId]) ? window.__odoSummary[patientId] : null;
+                    const data = (window.__odoData && window.__odoData[patientId]) ? window.__odoData[patientId] : null;
+                    await postJson(`/emr/appointments/${appointmentId}/odontograms`, { summary: summary || null, data: data || null });
+                    location.reload();
+                } catch (e) {
+                    alert(e.message);
+                }
+            }
+
+            // Odontogram UI state (per patient view)
+            window.__odoData = window.__odoData || {};
+            window.__odoSummary = window.__odoSummary || {};
+            window.__odoSelectedTooth = window.__odoSelectedTooth || {};
+
+            function odoEnsure(patientId) {
+                if (!window.__odoData[patientId]) {
+                    window.__odoData[patientId] = {
+                        teeth: {},
+                        notes: {},
+                        meta: {
+                            occlusi: null,
+                            torus_palatinus: null,
+                            torus_mandibularis: null,
+                            diastema: null,
+                            anomaly: null,
+                            other_note: null,
+                        }
+                    };
+                }
+            }
+
+            window.odoClearAll = function(patientId) {
+                odoEnsure(patientId);
+                window.__odoData[patientId].teeth = {};
+                window.__odoData[patientId].notes = {};
+                window.__odoSelectedTooth[patientId] = null;
+                alert('Odontogram direset (belum disimpan).');
+            }
+
+            window.openOdontogramModal = function(patientId) {
+                odoEnsure(patientId);
+                const modal = document.getElementById('odontogramModal');
+                const apptSelect = document.getElementById('odo-appt-' + patientId);
+                const opt = apptSelect.options[apptSelect.selectedIndex];
+
+                document.getElementById('odo-modal-patient').textContent = (opt.dataset.patient || 'Pasien');
+                document.getElementById('odo-modal-meta').textContent = [opt.dataset.mrn, opt.dataset.gender].filter(Boolean).join(' · ');
+                document.getElementById('odo-modal-date').textContent = opt.dataset.date || '';
+
+                modal.dataset.patient = patientId;
+                modal.style.display = 'flex';
+
+                odoRenderGrid(patientId);
+            }
+
+            window.closeOdontogramModal = function() {
+                const modal = document.getElementById('odontogramModal');
+                modal.style.display = 'none';
+            }
+
+            function odoRenderGrid(patientId) {
+                odoEnsure(patientId);
+                const gridTopLeft = document.getElementById('odo-grid-top-left');
+                const gridTopRight = document.getElementById('odo-grid-top-right');
+                const gridBottomLeft = document.getElementById('odo-grid-bottom-left');
+                const gridBottomRight = document.getElementById('odo-grid-bottom-right');
+
+                const defs = {
+                    'top-left': ['18','17','16','15','14','13','12','11'],
+                    'top-right': ['21','22','23','24','25','26','27','28'],
+                    'bottom-left': ['48','47','46','45','44','43','42','41'],
+                    'bottom-right': ['31','32','33','34','35','36','37','38'],
+                };
+
+                function build(container, teeth) {
+                    container.innerHTML = '';
+                    teeth.forEach((t) => {
+                        const state = window.__odoData[patientId].teeth[t] || 'normal';
+                        const note = window.__odoData[patientId].notes[t] || '';
+                        const el = document.createElement('div');
+                        el.className = 'odo-tooth';
+                        el.dataset.tooth = t;
+                        el.dataset.state = state;
+                        el.innerHTML = `<div>${t}</div><div class="badge">${state}</div>`;
+                        if (window.__odoSelectedTooth[patientId] === t) el.classList.add('selected');
+                        el.title = note ? `Catatan: ${note}` : `Gigi ${t}`;
+                        el.addEventListener('click', () => odoSelectTooth(patientId, t));
+                        container.appendChild(el);
+                    });
+                }
+
+                build(gridTopLeft, defs['top-left']);
+                build(gridTopRight, defs['top-right']);
+                build(gridBottomLeft, defs['bottom-left']);
+                build(gridBottomRight, defs['bottom-right']);
+
+                // sync meta fields
+                document.getElementById('odo-meta-summary').value = window.__odoSummary[patientId] || '';
+                document.getElementById('odo-meta-occlusi').value = window.__odoData[patientId].meta.occlusi || '';
+                document.getElementById('odo-meta-tp').value = window.__odoData[patientId].meta.torus_palatinus || '';
+                document.getElementById('odo-meta-tm').value = window.__odoData[patientId].meta.torus_mandibularis || '';
+                document.getElementById('odo-meta-diastema').value = window.__odoData[patientId].meta.diastema || '';
+                document.getElementById('odo-meta-anomaly').value = window.__odoData[patientId].meta.anomaly || '';
+                document.getElementById('odo-meta-other').value = window.__odoData[patientId].meta.other_note || '';
+
+                odoSyncSelectionInputs(patientId);
+            }
+
+            function odoSelectTooth(patientId, tooth) {
+                window.__odoSelectedTooth[patientId] = tooth;
+                const noteInput = document.getElementById('odo-tooth-note-' + patientId);
+                noteInput.value = window.__odoData[patientId].notes[tooth] || '';
+                odoRenderGrid(patientId);
+            }
+
+            function odoSyncSelectionInputs(patientId) {
+                const tooth = window.__odoSelectedTooth[patientId];
+                const stateSelect = document.getElementById('odo-state-' + patientId);
+                const noteInput = document.getElementById('odo-tooth-note-' + patientId);
+
+                if (!tooth) {
+                    stateSelect.disabled = true;
+                    noteInput.disabled = true;
+                    noteInput.placeholder = 'Pilih gigi dulu';
+                    return;
+                }
+
+                stateSelect.disabled = false;
+                noteInput.disabled = false;
+                noteInput.placeholder = 'Misal: nyeri saat dingin';
+                stateSelect.value = window.__odoData[patientId].teeth[tooth] || 'normal';
+            }
+
+            // bind changing condition/note to current selected tooth
+            document.querySelectorAll('[id^="odo-state-"]').forEach(sel => {
+                sel.addEventListener('change', function() {
+                    const patientId = this.id.replace('odo-state-', '');
+                    odoEnsure(patientId);
+                    const tooth = window.__odoSelectedTooth[patientId];
+                    if (!tooth) return;
+                    window.__odoData[patientId].teeth[tooth] = this.value;
+                });
+            });
+
+            document.querySelectorAll('[id^="odo-tooth-note-"]').forEach(inp => {
+                inp.addEventListener('input', function() {
+                    const patientId = this.id.replace('odo-tooth-note-', '');
+                    odoEnsure(patientId);
+                    const tooth = window.__odoSelectedTooth[patientId];
+                    if (!tooth) return;
+                    window.__odoData[patientId].notes[tooth] = this.value;
+                });
+            });
+
+            window.odoSaveModal = async function() {
+                const modal = document.getElementById('odontogramModal');
+                const patientId = modal.dataset.patient;
+                if (!patientId) return;
+
+                odoEnsure(patientId);
+                window.__odoSummary[patientId] = document.getElementById('odo-meta-summary').value.trim() || null;
+                window.__odoData[patientId].meta.occlusi = document.getElementById('odo-meta-occlusi').value || null;
+                window.__odoData[patientId].meta.torus_palatinus = document.getElementById('odo-meta-tp').value || null;
+                window.__odoData[patientId].meta.torus_mandibularis = document.getElementById('odo-meta-tm').value || null;
+                window.__odoData[patientId].meta.diastema = document.getElementById('odo-meta-diastema').value || null;
+                window.__odoData[patientId].meta.anomaly = document.getElementById('odo-meta-anomaly').value || null;
+                window.__odoData[patientId].meta.other_note = document.getElementById('odo-meta-other').value || null;
+
+                // Use existing createOdontogram (posts to server)
+                await window.createOdontogram(patientId);
             }
 
             function openModal(patientId) {

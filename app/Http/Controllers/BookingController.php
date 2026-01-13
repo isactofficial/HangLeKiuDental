@@ -220,13 +220,23 @@ class BookingController extends Controller
 
         // create within transaction to reduce race conditions
         $appt = null;
-        \DB::transaction(function() use (&$appt, $request, $doctor, $startAt, $endAt){
+        $mrnInput = trim((string) $request->medical_record_number);
+        $mrn = $mrnInput !== '' ? $mrnInput : null;
+
+        $patientData = [
+            'patient_name' => $request->patient_name,
+            'patient_gender' => $request->patient_gender,
+            'patient_birth_date' => $request->patient_birth_date,
+            'patient_phone' => $request->patient_phone,
+        ];
+
+        \DB::transaction(function() use (&$appt, $request, $doctor, $startAt, $endAt, $mrn, $patientData){
             $appt = Appointment::create([
-                'patient_name' => $request->patient_name,
-                'medical_record_number' => $request->medical_record_number,
-                'patient_gender' => $request->patient_gender,
-                'patient_birth_date' => $request->patient_birth_date,
-                'patient_phone' => $request->patient_phone,
+                'patient_name' => $patientData['patient_name'],
+                'medical_record_number' => $mrn,
+                'patient_gender' => $patientData['patient_gender'],
+                'patient_birth_date' => $patientData['patient_birth_date'],
+                'patient_phone' => $patientData['patient_phone'],
                 'doctor_id' => $doctor->id,
                 'procedure' => $request->procedure,
                 'duration_minutes' => self::APPOINTMENT_DURATION_MINUTES,
@@ -236,6 +246,25 @@ class BookingController extends Controller
                 'status' => 'confirmed',
                 'created_by_user_id' => $request->user()?->id,
             ]);
+
+            // Keep EMR consistent with latest booking input:
+            // - If MRN is provided, update demographics for ALL appointments with same MRN
+            // - Also migrate older auto-generated booking MRN (BKxxxxxx) for the same patient
+            //   (match by phone + birth date) to this MRN.
+            if (!empty($mrn)) {
+                Appointment::where('patient_phone', $patientData['patient_phone'])
+                    ->whereDate('patient_birth_date', $patientData['patient_birth_date'])
+                    ->where(function ($q) {
+                        $q->whereNull('medical_record_number')
+                            ->orWhere('medical_record_number', 'like', 'BK%');
+                    })
+                    ->update(array_merge($patientData, [
+                        'medical_record_number' => $mrn,
+                    ]));
+
+                Appointment::where('medical_record_number', $mrn)
+                    ->update($patientData);
+            }
         });
 
         // schedule WA reminder 10 minutes before end (i.e. start + 10 for 20-minute actions)

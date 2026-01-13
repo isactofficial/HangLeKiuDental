@@ -11,6 +11,7 @@ use App\Http\Controllers\BookingController;
 use App\Http\Controllers\LayananController;
 use App\Http\Controllers\PublicPageController;
 use App\Http\Controllers\EMRController;
+use App\Http\Controllers\ProcedureController;
 
 Route::get('/', function () {
     return view('index');
@@ -239,41 +240,25 @@ Route::middleware('auth')->group(function () {
             ]);
         })->name('registration.export');
 
-        // Katalog Harga Prosedur (sederhana, sementara)
-        Route::get('/procedures', function (Request $request) {
-            $q = trim($request->query('q', ''));
-
-            $procedures = [
-                ['name' => 'Alveolectomy', 'note' => 'Operasi kecil', 'price' => 2500000],
-                ['name' => 'Cleaning (Scaling)', 'note' => 'Pembersihan karang', 'price' => 150000],
-                ['name' => 'Composite Filling', 'note' => 'Tambal komposit', 'price' => 200000],
-                ['name' => 'Crown', 'note' => 'Mahkota gigi', 'price' => 1200000],
-                ['name' => 'Extraction', 'note' => 'Pencabutan gigi', 'price' => 300000],
-                ['name' => 'Root Canal Treatment', 'note' => 'Perawatan saluran akar', 'price' => 900000],
-                ['name' => 'Teeth Whitening', 'note' => 'Pemutihan', 'price' => 800000],
-                ['name' => 'Veneer', 'note' => 'Lapisan tipis', 'price' => 1500000],
-            ];
-
-            // Filter by query
-            if ($q !== '') {
-                $procedures = array_values(array_filter($procedures, function ($p) use ($q) {
-                    return stripos($p['name'], $q) !== false || stripos($p['note'], $q) !== false;
-                }));
-            }
-
-            // Sort alphabetically by name
-            usort($procedures, function ($a, $b) {
-                return strcasecmp($a['name'], $b['name']);
-            });
-
-            return view('procedures.index', compact('procedures', 'q'));
-        })->name('procedures.index');
+        // Katalog Harga Prosedur
+        Route::get('/procedures', [ProcedureController::class, 'index'])->name('procedures.index');
+        Route::get('/procedures/create', [ProcedureController::class, 'create'])->name('procedures.create');
+        Route::post('/procedures', [ProcedureController::class, 'store'])->name('procedures.store');
+        Route::get('/procedures/export', [ProcedureController::class, 'export'])->name('procedures.export');
+        Route::get('/procedures/import', [ProcedureController::class, 'importForm'])->name('procedures.import.form');
+        Route::post('/procedures/import', [ProcedureController::class, 'import'])->name('procedures.import');
 
         // Electronic Medical Record page
         Route::middleware(['auth', \App\Http\Middleware\IsAdmin::class])->group(function () {
         Route::get('/emr', [EMRController::class, 'index'])->name('emr');
         Route::get('/emr/patient/{patientId}', [EMRController::class, 'show'])->name('emr.show');
         Route::put('/emr/patient/{patientId}', [EMRController::class, 'update'])->name('emr.update');
+
+        // Record inputs (by appointment)
+        Route::post('/emr/appointments/{appointment}/diagnoses', [EMRController::class, 'storeDiagnosis'])->name('emr.diagnoses.store');
+        Route::post('/emr/appointments/{appointment}/doctor-notes', [EMRController::class, 'storeDoctorNote'])->name('emr.doctorNotes.store');
+        Route::post('/emr/appointments/{appointment}/procedure-records', [EMRController::class, 'storeProcedureRecord'])->name('emr.procedureRecords.store');
+        Route::post('/emr/appointments/{appointment}/odontograms', [EMRController::class, 'storeOdontogram'])->name('emr.odontograms.store');
     });
 
 
@@ -316,6 +301,53 @@ Route::middleware('auth')->group(function () {
 
             return view('cashier', compact('appointments', 'dateFrom', 'dateTo', 'q'));
         })->name('cashier');
+
+        Route::get('/cashier/appointments/{appointment}/invoice', function (\App\Models\Appointment $appointment) {
+            $appointment->load(['doctor', 'procedureRecords']);
+
+            $age = null;
+            if ($appointment->patient_birth_date) {
+                $age = \Carbon\Carbon::parse($appointment->patient_birth_date)->age;
+            }
+
+            $items = $appointment->procedureRecords
+                ->sortBy('created_at')
+                ->values()
+                ->map(function (\App\Models\AppointmentProcedureRecord $r) {
+                    $qty = (int) ($r->quantity ?? 1);
+                    $price = (int) ($r->selling_price ?? 0);
+                    $discount = (int) ($r->discount_amount ?? 0);
+                    $lineTotal = max(0, ($qty * $price) - $discount);
+
+                    return [
+                        'id' => $r->id,
+                        'created_at' => optional($r->created_at)->toDateTimeString(),
+                        'name' => (string) ($r->name ?? ''),
+                        'quantity' => $qty,
+                        'selling_price' => $price,
+                        'discount_amount' => $discount,
+                        'line_total' => $lineTotal,
+                    ];
+                });
+
+            $total = (int) $items->sum('line_total');
+
+            return response()->json([
+                'appointment' => [
+                    'id' => $appointment->id,
+                    'code' => $appointment->code ?: ('INV' . str_pad((string) $appointment->id, 6, '0', STR_PAD_LEFT)),
+                    'start_at' => optional($appointment->start_at)->toDateTimeString(),
+                    'patient_name' => (string) ($appointment->patient_name ?? ''),
+                    'medical_record_number' => (string) ($appointment->medical_record_number ?? ''),
+                    'age' => $age,
+                    'patient_phone' => (string) ($appointment->patient_phone ?? ''),
+                    'doctor_name' => (string) (optional($appointment->doctor)->name ?? ''),
+                    'payment_method' => (string) ($appointment->payment_method ?? ''),
+                ],
+                'items' => $items,
+                'total' => $total,
+            ]);
+        })->name('cashier.invoice');
 
         // Rawat Jalan schedule page
         Route::get('/rawat-jalan', function () {

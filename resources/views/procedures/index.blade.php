@@ -12,7 +12,7 @@
         body{font-family:'Poppins',sans-serif;background:var(--main-bg);display:flex;min-height:100vh;color:var(--text)}
 
         /* Layout containers */
-        .main{margin-left:var(--sidebar-width);flex:1;padding:20px;padding-top:72px}
+        .main{margin-left:var(--sidebar-width);flex:1;padding:20px;padding-top:140px}
         .card{background:var(--surface);border-radius:12px;padding:22px 24px;box-shadow:0 6px 18px rgba(0,0,0,0.06);margin:12px 12px}
 
         /* Header and controls */
@@ -32,7 +32,7 @@
 
         /* Small/stacked card style for narrow viewports */
         @media (max-width: 768px){
-            .main{margin-left:0;padding:12px;padding-top:84px}
+            .main{margin-left:0;padding:12px;padding-top:170px}
             .card{margin:6px;padding:12px}
             .page-header{flex-direction:column;align-items:flex-start;gap:12px}
             .search-input{width:100%}
@@ -74,6 +74,12 @@
 
             <!-- page header and search moved to topbar -->
 
+            @if (session('success'))
+                <div style="background:#dcfce7;color:#166534;padding:10px 12px;border-radius:10px;margin:10px 0;">
+                    {{ session('success') }}
+                </div>
+            @endif
+
             <div style="overflow:auto">
                 <table class="table">
                     <thead>
@@ -88,9 +94,9 @@
                         @forelse($procedures as $p)
                         <tr>
                             <td data-label="Pilih"><input type="checkbox"></td>
-                            <td data-label="Nama Prosedur">{{ $p['name'] }}</td>
-                            <td data-label="Catatan">{{ $p['note'] }}</td>
-                            <td data-label="Total Harga" class="price">Rp{{ number_format($p['price'],0,',','.') }}</td>
+                            <td data-label="Nama Prosedur">{{ $p->name }}</td>
+                            <td data-label="Catatan">{{ $p->note }}</td>
+                            <td data-label="Total Harga" class="price">Rp{{ number_format((int) $p->price,0,',','.') }}</td>
                         </tr>
                         @empty
                         <tr>

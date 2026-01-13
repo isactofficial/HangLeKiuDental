@@ -5,6 +5,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Settings - Hanglekiu Dental Specialist</title>
+    <script>
+        tailwind = {
+            config: {
+                theme: {
+                    extend: {
+                        zIndex: {
+                            '400': '400'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -193,7 +206,7 @@
 
     <div class="flex flex-col h-screen ml-0 md:ml-[60px] transition-all duration-300">
 
-        <header class="bg-white px-4 md:px-8 pt-3 md:pt-4 pb-2 z-30 flex-shrink-0 shadow-sm border-b border-gray-100">
+        <header class="bg-white px-4 md:px-8 pt-3 md:pt-4 pb-2 z-30 shrink-0 shadow-sm border-b border-gray-100">
             <div class="flex justify-between md:justify-end items-center gap-3 md:gap-6 mb-2">
 
                 <button id="sidebarToggle" class="md:hidden text-gray-600 text-xl hover:bg-gray-100 p-1 rounded">
@@ -229,7 +242,7 @@
                     </button>
                 </div>
 
-                <div class="flex items-center gap-3 mt-3 md:mt-0 hidden md:flex">
+                <div class="hidden md:flex items-center gap-3 mt-3 md:mt-0">
                     <button class="w-8 h-8 md:w-9 md:h-9 rounded border border-blue-300 text-blue-500 flex items-center justify-center hover:bg-blue-50 transition bg-white">
                         <i class="fas fa-sync-alt text-sm"></i>
                     </button>
@@ -287,19 +300,19 @@
                             <label class="block text-[12px] md:text-[13px] font-bold text-gray-700 mb-2">Urutkan berdasarkan</label>
                             <div class="flex flex-col sm:flex-row gap-2 md:gap-3">
                                 <div class="w-full sm:w-[220px] relative">
-                                    <select class="w-full border border-gray-300 rounded px-3 py-2 text-[13px] md:text-[14px] text-gray-700 appearance-none focus:outline-none focus:border-blue-500 bg-white h-[38px] md:h-[40px]">
+                                    <select class="w-full border border-gray-300 rounded px-3 py-2 text-[13px] md:text-[14px] text-gray-700 appearance-none focus:outline-none focus:border-blue-500 bg-white h-[38px] md:h-10">
                                         <option>Nama</option>
                                     </select>
                                     <i class="fas fa-chevron-down absolute right-3 top-3 md:top-3.5 text-gray-400 text-xs pointer-events-none"></i>
                                 </div>
 
-                                <button class="border border-gray-300 rounded px-4 py-2 text-[13px] md:text-[14px] text-gray-600 flex items-center justify-center gap-2 bg-white hover:bg-gray-50 h-[38px] md:h-[40px]">
+                                <button class="border border-gray-300 rounded px-4 py-2 text-[13px] md:text-[14px] text-gray-600 flex items-center justify-center gap-2 bg-white hover:bg-gray-50 h-[38px] md:h-10">
                                     <i class="fas fa-filter text-gray-400"></i> Filter
                                 </button>
 
                                 <div class="flex-1 relative">
                                     <i class="fas fa-search absolute left-3 top-3 md:top-3.5 text-gray-400"></i>
-                                    <input type="text" placeholder="Cari staff" class="w-full border border-gray-300 rounded pl-10 pr-4 py-2 text-[13px] md:text-[14px] focus:outline-none focus:border-blue-500 h-[38px] md:h-[40px]">
+                                    <input type="text" placeholder="Cari staff" class="w-full border border-gray-300 rounded pl-10 pr-4 py-2 text-[13px] md:text-[14px] focus:outline-none focus:border-blue-500 h-[38px] md:h-10">
                                 </div>
                             </div>
                         </div>
@@ -397,15 +410,15 @@
 
                             <div class="bg-white p-3 md:p-4 rounded shadow-sm flex gap-3 md:gap-4 items-start">
                                 <div class="flex flex-col gap-2 w-[90px] md:w-[110px] shrink-0">
-                                    <div class="w-full h-[70px] md:h-[85px] bg-gray-50 rounded-[4px] flex items-center justify-center border border-gray-200 text-gray-300">
+                                    <div class="w-full h-[70px] md:h-[85px] bg-gray-50 rounded flex items-center justify-center border border-gray-200 text-gray-300">
                                         <i class="far fa-image text-2xl md:text-3xl"></i>
                                     </div>
-                                    <button onclick="openModal()" class="w-full border border-[#2196f3] text-[#2196f3] text-[9px] md:text-[10px] font-bold py-1.5 rounded-[4px] hover:bg-blue-50 transition uppercase">Edit Profil</button>
+                                    <button onclick="openModal()" class="w-full border border-[#2196f3] text-[#2196f3] text-[9px] md:text-[10px] font-bold py-1.5 rounded hover:bg-blue-50 transition uppercase">Edit Profil</button>
                                 </div>
                                 <div class="flex-1 pt-1">
                                     <h3 class="text-[13px] md:text-[14px] font-bold text-gray-700 leading-tight mb-1">drg. Dinda Tegar Jelita Sp.Ortho</h3>
                                     <p class="text-[11px] md:text-[12px] text-gray-600 mb-1">Dokter Gigi</p>
-                                    <div id="schedule-1" class="hidden mt-3 mb-2 text-[10px] md:text-[11px] text-gray-600 grid grid-cols-[50px_1fr] gap-y-1">
+                                    <div id="schedule-1" class="hidden mt-3 mb-2 text-[10px] md:text-[11px] text-gray-600 grid-cols-[50px_1fr] gap-y-1">
                                         <div>Senin</div>
                                         <div>12:00 - 20:00</div>
                                         <div>Selasa</div>
@@ -427,15 +440,15 @@
 
                             <div class="bg-white p-3 md:p-4 rounded shadow-sm flex gap-3 md:gap-4 items-start">
                                 <div class="flex flex-col gap-2 w-[90px] md:w-[110px] shrink-0">
-                                    <div class="w-full h-[70px] md:h-[85px] bg-gray-50 rounded-[4px] flex items-center justify-center border border-gray-200 text-gray-300">
+                                    <div class="w-full h-[70px] md:h-[85px] bg-gray-50 rounded flex items-center justify-center border border-gray-200 text-gray-300">
                                         <i class="far fa-image text-2xl md:text-3xl"></i>
                                     </div>
-                                    <button onclick="openModal()" class="w-full border border-[#2196f3] text-[#2196f3] text-[9px] md:text-[10px] font-bold py-1.5 rounded-[4px] hover:bg-blue-50 transition uppercase">Edit Profil</button>
+                                    <button onclick="openModal()" class="w-full border border-[#2196f3] text-[#2196f3] text-[9px] md:text-[10px] font-bold py-1.5 rounded hover:bg-blue-50 transition uppercase">Edit Profil</button>
                                 </div>
                                 <div class="flex-1 pt-1">
                                     <h3 class="text-[13px] md:text-[14px] font-bold text-gray-700 leading-tight mb-1">drg. Ria Budiati Sp. Ortho</h3>
                                     <p class="text-[11px] md:text-[12px] text-gray-600 mb-1">Dokter Gigi Spesialis Ortodonsia</p>
-                                    <div id="schedule-2" class="hidden mt-3 mb-2 text-[10px] md:text-[11px] text-gray-600 grid grid-cols-[50px_1fr] gap-y-1">
+                                    <div id="schedule-2" class="hidden mt-3 mb-2 text-[10px] md:text-[11px] text-gray-600 grid-cols-[50px_1fr] gap-y-1">
                                         <div>Senin</div>
                                         <div>09:00 - 21:00</div>
                                         <div>Selasa</div>
@@ -455,15 +468,15 @@
 
                             <div class="bg-white p-3 md:p-4 rounded shadow-sm flex gap-3 md:gap-4 items-start">
                                 <div class="flex flex-col gap-2 w-[90px] md:w-[110px] shrink-0">
-                                    <div class="w-full h-[70px] md:h-[85px] bg-gray-50 rounded-[4px] flex items-center justify-center border border-gray-200 text-gray-300">
+                                    <div class="w-full h-[70px] md:h-[85px] bg-gray-50 rounded flex items-center justify-center border border-gray-200 text-gray-300">
                                         <i class="far fa-image text-2xl md:text-3xl"></i>
                                     </div>
-                                    <button onclick="openModal()" class="w-full border border-[#2196f3] text-[#2196f3] text-[9px] md:text-[10px] font-bold py-1.5 rounded-[4px] hover:bg-blue-50 transition uppercase">Edit Profil</button>
+                                    <button onclick="openModal()" class="w-full border border-[#2196f3] text-[#2196f3] text-[9px] md:text-[10px] font-bold py-1.5 rounded hover:bg-blue-50 transition uppercase">Edit Profil</button>
                                 </div>
                                 <div class="flex-1 pt-1">
                                     <h3 class="text-[13px] md:text-[14px] font-bold text-gray-700 leading-tight mb-1">DR. drg. Wenny Yulvie Sp.BM</h3>
                                     <p class="text-[11px] md:text-[12px] text-gray-600 mb-1">Dokter Gigi Spesialis Bedah Mulut</p>
-                                    <div id="schedule-3" class="hidden mt-3 mb-2 text-[10px] md:text-[11px] text-gray-600 grid grid-cols-[50px_1fr] gap-y-1">
+                                    <div id="schedule-3" class="hidden mt-3 mb-2 text-[10px] md:text-[11px] text-gray-600 grid-cols-[50px_1fr] gap-y-1">
                                         <div>Senin</div>
                                         <div>09:00 - 21:00</div>
                                         <div>Selasa</div>
@@ -485,15 +498,15 @@
 
                             <div class="bg-white p-3 md:p-4 rounded shadow-sm flex gap-3 md:gap-4 items-start">
                                 <div class="flex flex-col gap-2 w-[90px] md:w-[110px] shrink-0">
-                                    <div class="w-full h-[70px] md:h-[85px] bg-gray-50 rounded-[4px] flex items-center justify-center border border-gray-200 text-gray-300">
+                                    <div class="w-full h-[70px] md:h-[85px] bg-gray-50 rounded flex items-center justify-center border border-gray-200 text-gray-300">
                                         <i class="far fa-image text-2xl md:text-3xl"></i>
                                     </div>
-                                    <button onclick="openModal()" class="w-full border border-[#2196f3] text-[#2196f3] text-[9px] md:text-[10px] font-bold py-1.5 rounded-[4px] hover:bg-blue-50 transition uppercase">Edit Profil</button>
+                                    <button onclick="openModal()" class="w-full border border-[#2196f3] text-[#2196f3] text-[9px] md:text-[10px] font-bold py-1.5 rounded hover:bg-blue-50 transition uppercase">Edit Profil</button>
                                 </div>
                                 <div class="flex-1 pt-1">
                                     <h3 class="text-[13px] md:text-[14px] font-bold text-gray-700 leading-tight mb-1">drg. Aditya Putra</h3>
                                     <p class="text-[11px] md:text-[12px] text-gray-600 mb-1">Dokter Gigi Umum</p>
-                                    <div id="schedule-4" class="hidden mt-3 mb-2 text-[10px] md:text-[11px] text-gray-600 grid grid-cols-[50px_1fr] gap-y-1">
+                                    <div id="schedule-4" class="hidden mt-3 mb-2 text-[10px] md:text-[11px] text-gray-600 grid-cols-[50px_1fr] gap-y-1">
                                         <div>Senin</div>
                                         <div>09:00 - 21:00</div>
                                         <div>Selasa</div>
@@ -513,15 +526,15 @@
 
                             <div class="bg-white p-3 md:p-4 rounded shadow-sm flex gap-3 md:gap-4 items-start">
                                 <div class="flex flex-col gap-2 w-[90px] md:w-[110px] shrink-0">
-                                    <div class="w-full h-[70px] md:h-[85px] bg-gray-50 rounded-[4px] flex items-center justify-center border border-gray-200 text-gray-300">
+                                    <div class="w-full h-[70px] md:h-[85px] bg-gray-50 rounded flex items-center justify-center border border-gray-200 text-gray-300">
                                         <i class="far fa-image text-2xl md:text-3xl"></i>
                                     </div>
-                                    <button onclick="openModal()" class="w-full border border-[#2196f3] text-[#2196f3] text-[9px] md:text-[10px] font-bold py-1.5 rounded-[4px] hover:bg-blue-50 transition uppercase">Edit Profil</button>
+                                    <button onclick="openModal()" class="w-full border border-[#2196f3] text-[#2196f3] text-[9px] md:text-[10px] font-bold py-1.5 rounded hover:bg-blue-50 transition uppercase">Edit Profil</button>
                                 </div>
                                 <div class="flex-1 pt-1">
                                     <h3 class="text-[13px] md:text-[14px] font-bold text-gray-700 leading-tight mb-1">drg. MAY Lewerissa Sp.Perio</h3>
                                     <p class="text-[11px] md:text-[12px] text-gray-600 mb-1">Dokter Gigi Spesialis Periodonsia</p>
-                                    <div id="schedule-5" class="hidden mt-3 mb-2 text-[10px] md:text-[11px] text-gray-600 grid grid-cols-[50px_1fr] gap-y-1">
+                                    <div id="schedule-5" class="hidden mt-3 mb-2 text-[10px] md:text-[11px] text-gray-600 grid-cols-[50px_1fr] gap-y-1">
                                         <div>Senin</div>
                                         <div>09:00 - 21:00</div>
                                         <div>Rabu</div>
@@ -537,15 +550,15 @@
 
                             <div class="bg-white p-3 md:p-4 rounded shadow-sm flex gap-3 md:gap-4 items-start">
                                 <div class="flex flex-col gap-2 w-[90px] md:w-[110px] shrink-0">
-                                    <div class="w-full h-[70px] md:h-[85px] bg-gray-50 rounded-[4px] flex items-center justify-center border border-gray-200 text-gray-300">
+                                    <div class="w-full h-[70px] md:h-[85px] bg-gray-50 rounded flex items-center justify-center border border-gray-200 text-gray-300">
                                         <i class="far fa-image text-2xl md:text-3xl"></i>
                                     </div>
-                                    <button onclick="openModal()" class="w-full border border-[#2196f3] text-[#2196f3] text-[9px] md:text-[10px] font-bold py-1.5 rounded-[4px] hover:bg-blue-50 transition uppercase">Edit Profil</button>
+                                    <button onclick="openModal()" class="w-full border border-[#2196f3] text-[#2196f3] text-[9px] md:text-[10px] font-bold py-1.5 rounded hover:bg-blue-50 transition uppercase">Edit Profil</button>
                                 </div>
                                 <div class="flex-1 pt-1">
                                     <h3 class="text-[13px] md:text-[14px] font-bold text-gray-700 leading-tight mb-1">drg. Fanny Arditya M. Sp.Prost</h3>
                                     <p class="text-[11px] md:text-[12px] text-gray-600 mb-1">Dokter Gigi Spesialis Prostodonsia</p>
-                                    <div id="schedule-6" class="hidden mt-3 mb-2 text-[10px] md:text-[11px] text-gray-600 grid grid-cols-[50px_1fr] gap-y-1">
+                                    <div id="schedule-6" class="hidden mt-3 mb-2 text-[10px] md:text-[11px] text-gray-600 grid-cols-[50px_1fr] gap-y-1">
                                         <div>Senin</div>
                                         <div>12:00 - 21:00</div>
                                         <div>Rabu</div>
@@ -563,7 +576,7 @@
                     </div>
                 </div>
 
-                <div id="modalEdit" class="fixed inset-0 bg-black bg-opacity-50 z-[400] hidden flex justify-center items-center p-2 md:p-4">
+                <div id="modalEdit" class="fixed inset-0 bg-black bg-opacity-50 z-400 hidden justify-center items-center p-2 md:p-4">
                     <div class="bg-white w-full max-w-[1000px] h-[95vh] rounded-lg shadow-xl flex flex-col relative">
                         <div class="p-4 md:p-6 pb-0 flex justify-between items-center border-b border-gray-100">
                             <h2 class="text-[#2196f3] text-lg md:text-xl font-bold">Edit Tenaga Medis</h2>
@@ -976,20 +989,26 @@
             var content = document.getElementById(id);
             if (content.classList.contains('hidden')) {
                 content.classList.remove('hidden');
+                content.classList.add('grid');
                 btn.innerText = 'Show Less';
             } else {
                 content.classList.add('hidden');
+                content.classList.remove('grid');
                 btn.innerText = 'Show More';
             }
         }
 
         function openModal() {
-            document.getElementById('modalEdit').classList.remove('hidden');
+            const modal = document.getElementById('modalEdit');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
             document.body.style.overflow = 'hidden';
         }
 
         function closeModal() {
-            document.getElementById('modalEdit').classList.add('hidden');
+            const modal = document.getElementById('modalEdit');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
             document.body.style.overflow = 'auto';
         }
     </script>

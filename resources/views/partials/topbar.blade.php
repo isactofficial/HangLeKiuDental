@@ -13,12 +13,6 @@
         </div>
 
         <div class="topbar-right">
-            <div class="actions">
-                <button class="btn btn-primary">Tambah Prosedur</button>
-                <button class="btn btn-ghost">Import Harga Prosedur</button>
-                <button class="btn btn-ghost">Export</button>
-            </div>
-
             <div class="header-icons">
                 <i class="fas fa-question-circle header-icon" title="Help"></i>
                 <i class="fas fa-bell header-icon" title="Notifications"></i>
@@ -52,6 +46,12 @@
                 </div>
             </div>
         </div>
+
+        <div class="topbar-actions">
+            <a class="btn btn-primary" href="{{ route('procedures.create') }}">Tambah Prosedur</a>
+            <a class="btn btn-ghost" href="{{ route('procedures.import.form') }}">Import Harga Prosedur</a>
+            <a class="btn btn-ghost" href="{{ route('procedures.export') }}">Export</a>
+        </div>
     </div>
 
     <style>
@@ -65,19 +65,34 @@
             z-index:140;
             pointer-events:none;
         }
-        .topbar-inner{pointer-events:auto;background:var(--surface);border-radius:14px;padding:14px 20px;display:flex;align-items:center;gap:16px;box-shadow:0 10px 30px rgba(11,16,19,0.06);flex-wrap:wrap}
-        .topbar-left{flex:0 0 auto;min-width:0}
+        .topbar-inner{
+            pointer-events:auto;
+            background:var(--surface);
+            border-radius:14px;
+            padding:14px 20px;
+            display:grid;
+            grid-template-columns:auto minmax(260px, 1fr) auto;
+            grid-template-areas:
+                "left center right"
+                "actions actions actions";
+            gap:12px 16px;
+            align-items:center;
+            box-shadow:0 10px 30px rgba(11,16,19,0.06);
+        }
+        .topbar-left{grid-area:left;min-width:0;display:flex;flex-direction:column;justify-content:center}
         .page-title{font-weight:800;font-size:20px;color:var(--text)}
         .last-update{font-size:12px;color:var(--muted);margin-top:4px}
-        .topbar-center{flex:1;min-width:260px}
-        .btn{padding:8px 12px;border-radius:999px;border:none;cursor:pointer;font-weight:600;display:inline-flex;align-items:center;gap:8px}
+        .topbar-center{grid-area:center;min-width:260px;align-self:center}
+        .topbar-right{grid-area:right;display:flex;align-items:center;gap:12px;min-width:0}
+        .topbar-actions{grid-area:actions;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+
+        .btn{padding:8px 12px;border-radius:999px;border:none;cursor:pointer;font-weight:600;display:inline-flex;align-items:center;gap:8px;text-decoration:none;white-space:nowrap}
         .btn-primary{background:var(--action);color:#fff;padding:8px 14px}
         .btn-ghost{background:var(--surface);border:1px solid rgba(0,0,0,0.06);color:var(--text);padding:8px 12px}
         .btn i{font-size:14px}
         .top-search{display:flex;gap:10px;align-items:center}
-        .top-search input{flex:1;padding:12px 16px;border:1px solid rgba(0,0,0,0.06);border-radius:999px;background:#fff;color:var(--text);box-shadow:inset 0 1px 0 rgba(0,0,0,0.02)}
-        .top-search button{padding:8px 12px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);background:var(--surface);cursor:pointer}
-        .topbar-right{display:flex;align-items:center;gap:12px;flex:0 0 auto;min-width:0}
+        .top-search input{flex:1;height:44px;padding:0 16px;border:1px solid rgba(0,0,0,0.06);border-radius:999px;background:#fff;color:var(--text);box-shadow:inset 0 1px 0 rgba(0,0,0,0.02)}
+        .top-search button{height:44px;padding:0 16px;border-radius:999px;border:1px solid rgba(0,0,0,0.06);background:var(--surface);cursor:pointer;white-space:nowrap}
         .header-icons{display:flex;gap:12px;align-items:center}
         .header-icon{color:var(--muted);font-size:16px;cursor:pointer}
         .user-dropdown{display:inline-flex;align-items:center;gap:12px;background:var(--action);padding:8px 14px;border-radius:12px;cursor:pointer;color:#fff;box-shadow:0 8px 20px rgba(0,0,0,0.06);min-height:44px}
@@ -99,21 +114,29 @@
             .topbar-inner{padding:10px 12px 10px 72px}
             .topbar{pointer-events:auto}
 
-            /* Stack and reflow topbar sections */
-            .topbar-left{width:100%;order:1;display:flex;align-items:center;justify-content:space-between}
+            .topbar-inner{
+                grid-template-columns:1fr;
+                grid-template-areas:
+                    "left"
+                    "center"
+                    "actions"
+                    "right";
+                gap:10px;
+            }
+
+            .topbar-left{display:flex;align-items:center;justify-content:space-between}
             .topbar-left .page-title{font-size:16px}
             .last-update{display:none}
 
-            .topbar-center{width:100%;order:2;margin-top:8px}
-            .top-search{width:100%;display:flex}
+            .top-search{width:100%}
             .top-search input{width:100%;max-width:100%}
 
-            .topbar-right{width:100%;order:3;margin-top:8px;justify-content:space-between}
-            .actions{display:flex;gap:8px;align-items:center}
+            .topbar-actions{justify-content:flex-start}
+            /* hide less important ghost actions on mobile */
+            .topbar-actions .btn.btn-ghost{display:none}
+            .topbar-actions .btn.btn-primary{padding:8px 10px}
 
-            /* hide less important ghost actions on mobile to prevent overflow */
-            .actions .btn.btn-ghost{display:none}
-            .actions .btn.btn-primary{padding:8px 10px}
+            .topbar-right{justify-content:space-between}
 
             /* simplify user box on mobile: show avatar only */
             .user-dropdown span{display:none}

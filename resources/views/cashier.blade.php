@@ -413,6 +413,13 @@
             gap: 8px
         }
 
+        .action-btns button:disabled,
+        .action-btns button[aria-disabled="true"] {
+            opacity: .6;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
         .action-btns .add {
             background: var(--action);
             color: #fff
@@ -1234,7 +1241,9 @@
                                 </button>
                             </form>
                             <div class="action-btns">
-                                <button class="add" id="addBtn"><i class="fas fa-plus"></i> Pembayaran</button>
+                                <button class="add" id="addBtn" type="button" title="Fitur ini belum aktif">
+                                    <i class="fas fa-plus"></i> Pembayaran
+                                </button>
                                 <button class="export" id="exportBtn"><i class="fas fa-file-export"></i> Export</button>
                             </div>
                         </div>
@@ -1292,7 +1301,7 @@
                                         </td>
                                         <td>
                                             <div class="action-cell">
-                                                <button class="btn-bayar">Bayar</button>
+                                                <button class="btn-bayar" type="button" data-invoice-url="{{ route('cashier.invoice', $a) }}">Bayar</button>
                                                 <i class="fas fa-volume-up sound-icon" title="Play Audio"></i>
                                             </div>
                                         </td>
@@ -1408,9 +1417,27 @@
             <div class="modal-scroll-body">
                 <div class="section-blue-header">Detail Pasien</div>
                 <div class="section-content">
-                    <div class="search-line">
-                        <i class="fas fa-search"></i>
-                        <input type="text" placeholder="Cari Nama Lengkap Pasien / Nomor MR...">
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;align-items:start">
+                        <div>
+                            <div style="font-size:12px;color:#64748b;margin-bottom:6px">Nama Lengkap</div>
+                            <div id="invPatientName" style="font-weight:600;color:#111827">-</div>
+                        </div>
+                        <div>
+                            <div style="font-size:12px;color:#64748b;margin-bottom:6px">ID</div>
+                            <div id="invPatientMr" style="font-weight:600;color:#111827">-</div>
+                        </div>
+                        <div>
+                            <div style="font-size:12px;color:#64748b;margin-bottom:6px">Usia</div>
+                            <div id="invPatientAge" style="font-weight:600;color:#111827">-</div>
+                        </div>
+                        <div>
+                            <div style="font-size:12px;color:#64748b;margin-bottom:6px">Nomor HP / Whatsapp</div>
+                            <div id="invPatientPhone" style="font-weight:600;color:#111827">-</div>
+                        </div>
+                        <div>
+                            <div style="font-size:12px;color:#64748b;margin-bottom:6px">Nama Dokter</div>
+                            <div id="invDoctorName" style="font-weight:600;color:#111827">-</div>
+                        </div>
                     </div>
                 </div>
 
@@ -1418,17 +1445,14 @@
                 <div class="section-content">
                     <div class="review-header">
                         <div class="review-title">
-                            <h3>INVOICE SUMMARY</h3>
-                            <p>Invoice (Nomor invoice akan diberikan secara otomatis)</p>
-                        </div>
-                        <div class="review-controls">
-                            <div style="font-size:12px; color:#666;">Pilih Depot Penjualan dan Resep</div>
-                            <select>
-                                <option>Apotek</option>
-                            </select>
-                            <input type="text" placeholder="Cari tindakan/obat/bahan habis pakai"
-                                style="width: 250px;">
-                            <button style="border:none; bg:none;"><i class="fas fa-search"></i></button>
+                            <h3>INVOICE</h3>
+                            <p style="margin-top:6px">
+                                <span style="color:#64748b">Nomor:</span>
+                                <strong id="invCode" style="color:#111827">-</strong>
+                                <span style="margin:0 10px;color:#e5e7eb">|</span>
+                                <span style="color:#64748b">Tanggal:</span>
+                                <strong id="invDate" style="color:#111827">-</strong>
+                            </p>
                         </div>
                     </div>
 
@@ -1436,23 +1460,19 @@
                         <table class="review-table">
                             <thead>
                                 <tr>
+                                    <th style="width:160px">Tanggal Input</th>
                                     <th>Tindakan / Obat / Bahan Habis Pakai</th>
-                                    <th>Depot</th>
-                                    <th>Jumlah</th>
-                                    <th>Harga</th>
-                                    <th>Diskon</th>
-                                    <th>Total Harga</th>
+                                    <th style="width:90px">Jumlah</th>
+                                    <th style="width:140px">Harga</th>
+                                    <th style="width:120px">Diskon</th>
+                                    <th style="width:160px">Total</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr>
-                                    <td colspan="6" style="height: 50px;"></td>
-                                </tr>
-                            </tbody>
+                            <tbody id="invoiceItemsBody"></tbody>
                         </table>
                     </div>
                     <div class="review-footer">
-                        <span>Total : &nbsp; <strong>Rp0</strong></span>
+                        <span>Total : &nbsp; <strong id="invoiceTotal">Rp0</strong></span>
                         <a href="#" class="print-link">PRINT</a>
                     </div>
                 </div>
@@ -1556,7 +1576,7 @@
         });
         // Button click handlers
         document.getElementById('addBtn').onclick = function() {
-            alert('Tambah Pembayaran diklik!');
+            alert('Pembayaran diklik!');
         };
         document.getElementById('exportBtn').onclick = function() {
             alert('Export diklik!');
@@ -1568,11 +1588,112 @@
             };
         });
 
-        // Bayar button handlers
+        // --- Invoice modal helpers ---
+        const modal = document.getElementById('modalPembayaran');
+        const invEls = {
+            patientName: document.getElementById('invPatientName'),
+            patientMr: document.getElementById('invPatientMr'),
+            patientAge: document.getElementById('invPatientAge'),
+            patientPhone: document.getElementById('invPatientPhone'),
+            doctorName: document.getElementById('invDoctorName'),
+            code: document.getElementById('invCode'),
+            date: document.getElementById('invDate'),
+            itemsBody: document.getElementById('invoiceItemsBody'),
+            total: document.getElementById('invoiceTotal'),
+        };
+
+        function formatRupiah(amount) {
+            const n = Number(amount || 0);
+            return 'Rp' + new Intl.NumberFormat('id-ID').format(Math.max(0, Math.trunc(n)));
+        }
+
+        function formatDateTime(dt) {
+            if (!dt) return '-';
+            const d = new Date(dt);
+            if (Number.isNaN(d.getTime())) return String(dt);
+            return new Intl.DateTimeFormat('id-ID', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+            }).format(d);
+        }
+
+        function openModal() {
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+        window.closeModal = closeModal;
+
+        function renderInvoice(data) {
+            const appt = (data && data.appointment) ? data.appointment : {};
+            const items = Array.isArray(data && data.items) ? data.items : [];
+
+            invEls.patientName.textContent = appt.patient_name || '-';
+            invEls.patientMr.textContent = appt.medical_record_number || '-';
+            invEls.patientAge.textContent = (appt.age === null || appt.age === undefined || appt.age === '') ? '-' : String(appt.age);
+            invEls.patientPhone.textContent = appt.patient_phone || '-';
+            invEls.doctorName.textContent = appt.doctor_name || '-';
+
+            invEls.code.textContent = appt.code || '-';
+            invEls.date.textContent = formatDateTime(appt.start_at);
+
+            invEls.itemsBody.innerHTML = '';
+            if (items.length === 0) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = '<td colspan="6" style="color:#64748b;text-align:center;padding:18px">Belum ada tindakan/obat.</td>';
+                invEls.itemsBody.appendChild(tr);
+            } else {
+                items.forEach(function (it) {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML =
+                        '<td style="color:#64748b;font-size:12px">' + formatDateTime(it.created_at) + '</td>' +
+                        '<td style="font-weight:600;color:#111827">' + (it.name || '-') + '</td>' +
+                        '<td>' + (it.quantity ?? 1) + '</td>' +
+                        '<td>' + formatRupiah(it.selling_price) + '</td>' +
+                        '<td>' + formatRupiah(it.discount_amount) + '</td>' +
+                        '<td style="font-weight:700">' + formatRupiah(it.line_total) + '</td>';
+                    invEls.itemsBody.appendChild(tr);
+                });
+            }
+
+            invEls.total.textContent = formatRupiah(data && data.total);
+        }
+
+        // Bayar button handlers (open invoice modal)
         document.querySelectorAll('.btn-bayar').forEach(function(btn) {
-            btn.onclick = function() {
-                alert('Proses pembayaran');
-            };
+            btn.addEventListener('click', async function() {
+                const url = btn.getAttribute('data-invoice-url');
+                if (!url) return;
+
+                try {
+                    btn.disabled = true;
+                    btn.textContent = 'Memuat...';
+
+                    const res = await fetch(url, {
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    });
+                    if (!res.ok) throw new Error('Gagal memuat invoice');
+
+                    const data = await res.json();
+                    renderInvoice(data);
+                    openModal();
+                } catch (e) {
+                    alert(e && e.message ? e.message : 'Terjadi kesalahan saat memuat invoice');
+                } finally {
+                    btn.disabled = false;
+                    btn.textContent = 'Bayar';
+                }
+            });
         });
 
         // Tab switch logic
@@ -1593,20 +1714,7 @@
             hutangSection.style.display = '';
         };
 
-        // --- Logic untuk Modal Pembayaran ---
-        const modal = document.getElementById('modalPembayaran');
-
-        // Buka Modal saat klik tombol Pembayaran
-        document.getElementById('addBtn').onclick = function() {
-            modal.style.display = 'flex';
-            document.body.style.overflow = 'hidden'; // Prevent background scrolling
-        };
-
-        // Fungsi Tutup Modal
-        window.closeModal = function() {
-            modal.style.display = 'none';
-            document.body.style.overflow = 'auto'; // Restore scrolling
-        };
+        // Tombol + Pembayaran belum diaktifkan
 
         // Tutup jika klik di luar area konten modal (overlay)
         window.onclick = function(event) {

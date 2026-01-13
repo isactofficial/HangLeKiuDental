@@ -68,4 +68,24 @@ class Appointment extends Model
     {
         return $this->belongsTo(User::class, 'created_by_user_id');
     }
+
+    public function diagnoses()
+    {
+        return $this->hasMany(AppointmentDiagnosis::class);
+    }
+
+    public function doctorNotes()
+    {
+        return $this->hasMany(AppointmentDoctorNote::class);
+    }
+
+    public function procedureRecords()
+    {
+        return $this->hasMany(AppointmentProcedureRecord::class);
+    }
+
+    public function odontograms()
+    {
+        return $this->hasMany(AppointmentOdontogram::class);
+    }
 }
