@@ -194,6 +194,59 @@
             transition: box-shadow 0.2s;
         }
 
+        .icon-action-btn {
+            background: transparent;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            line-height: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .icon-action-btn i {
+            pointer-events: none;
+        }
+
+        @media print {
+            #appSidebar,
+            .patient-card,
+            .floating-actions,
+            .hamburger,
+            .chat-float {
+                display: none !important;
+            }
+
+            body {
+                display: block;
+                background: #fff;
+            }
+
+            .main {
+                margin-left: 0 !important;
+                padding: 0 !important;
+            }
+        }
+
+        @media print {
+            body.print-mode * {
+                visibility: hidden !important;
+            }
+
+            body.print-mode .print-target,
+            body.print-mode .print-target * {
+                visibility: visible !important;
+            }
+
+            body.print-mode .print-target {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+            }
+        }
+
         .emr-title {
             padding: 18px 28px;
             background: var(--surface);
@@ -1472,10 +1525,6 @@
                     </div>
                 </div>
             </div>
-            <div class="floating-actions">
-                <button title="Print" onclick="window.print()"><i class="fas fa-print" style="color:var(--accent)"></i></button>
-                <button title="Refresh" onclick="location.reload()"><i class="fas fa-sync" style="color:var(--accent)"></i></button>
-            </div>
         </div>
 
         <section class="emr-title">
@@ -1604,7 +1653,7 @@
                                             </div>
 
                                             @foreach($dayAppointments as $appointment)
-                                                <div class="med-card">
+                                                <div class="med-card" id="appointment-card-{{ $appointment->id }}">
                                                     <div class="card-header">
                                                         <div>
                                                             <div style="font-size:13px; margin-bottom:5px; color:#333;">
@@ -1621,7 +1670,9 @@
                                                             <a href="#" style="font-size:11px; font-weight:600; color:#2196F3; display:block; margin-top:5px;">CPPT</a>
                                                         </div>
                                                         <div style="display:flex; gap:10px; align-items:center;">
-                                                            <i class="fas fa-print" style="color:#999; font-size:14px;"></i>
+                                                            <button type="button" class="icon-action-btn" title="Print" onclick="location.href='{{ route('emr.appointments.print', $appointment) }}'">
+                                                                <i class="fas fa-print" style="color:#999; font-size:14px;"></i>
+                                                            </button>
                                                             <i class="fas fa-eye" style="color:#999; font-size:14px;"></i>
                                                             <button class="btn-done">{{ strtoupper($appointment->status) }} <i class="fas fa-chevron-down"></i></button>
                                                         </div>
@@ -1849,11 +1900,11 @@
                                         </div>
                                     </div>
 
-                                    <div class="record-content-box">
+                                    <div class="record-content-box" id="record-prosedur-{{ $patient['id'] }}">
                                         <div class="prosedur-topbar">
                                             <div class="title">PROSEDUR</div>
                                             <div class="actions">
-                                                <button class="prosedur-print" title="Print" onclick="window.print()"><i class="fas fa-print"></i></button>
+                                                <button class="prosedur-print" title="Print" onclick="printElementById('record-prosedur-{{ $patient['id'] }}')"><i class="fas fa-print"></i></button>
                                                 <button class="prosedur-add" onclick="toggleProcedureForm('{{ $patient['id'] }}')"><i class="fas fa-plus"></i> Tambah</button>
                                             </div>
                                         </div>
@@ -2231,6 +2282,64 @@
             let currentPatient = null;
             const patientData = {};
 
+            let cleanupPrintMode = null;
+
+            function preparePrint(targetEl) {
+                if (!targetEl) return null;
+                document.body.classList.add('print-mode');
+                targetEl.classList.add('print-target');
+                return function() {
+                    document.body.classList.remove('print-mode');
+                    targetEl.classList.remove('print-target');
+                };
+            }
+
+            window.addEventListener('afterprint', function() {
+                if (typeof cleanupPrintMode === 'function') {
+                    cleanupPrintMode();
+                    cleanupPrintMode = null;
+                }
+            });
+
+            window.printElementById = function(elementId) {
+                const el = document.getElementById(elementId);
+                if (!el) {
+                    window.printActiveEmr();
+                    return;
+                }
+                cleanupPrintMode = preparePrint(el);
+                window.print();
+                // Fallback cleanup (some browsers don't fire afterprint reliably)
+                setTimeout(function(){
+                    if (typeof cleanupPrintMode === 'function') {
+                        cleanupPrintMode();
+                        cleanupPrintMode = null;
+                    }
+                }, 1500);
+            };
+
+            window.printActiveEmr = function() {
+                const patientId = currentPatient || (document.querySelector('.patient-item.active')?.getAttribute('data-patient'));
+                if (!patientId) {
+                    window.print();
+                    return;
+                }
+                const patientContainer = document.getElementById('patient-' + patientId);
+                const activeContent = patientContainer ? patientContainer.querySelector('.tab-content-area.active') : null;
+                if (!activeContent) {
+                    window.print();
+                    return;
+                }
+                cleanupPrintMode = preparePrint(activeContent);
+                window.print();
+                setTimeout(function(){
+                    if (typeof cleanupPrintMode === 'function') {
+                        cleanupPrintMode();
+                        cleanupPrintMode = null;
+                    }
+                }, 1500);
+            };
+
             // Patient item click
             document.querySelectorAll('.patient-item').forEach(item => {
                 item.addEventListener('click', function() {
@@ -2243,6 +2352,19 @@
                     if(targetPatient) targetPatient.classList.remove('hidden');
                 });
             });
+
+            // Deep-link: auto-open patient via ?patient=<id>
+            (function(){
+                const params = new URLSearchParams(window.location.search);
+                const target = params.get('patient');
+                if (!target) return;
+
+                const el = document.querySelector('.patient-item[data-patient="' + CSS.escape(target) + '"]');
+                if (!el) return;
+
+                el.click();
+                try { el.scrollIntoView({ block: 'nearest' }); } catch (e) {}
+            })();
 
             // Main tabs
             document.querySelectorAll('.main-tab-link').forEach(tab => {

@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cashier - hanglekiu dental specialist</title>
     <style>
@@ -591,6 +592,34 @@
             font-size: 13px;
             min-width: 80px;
             transition: background 0.2s
+        }
+
+        .btn-bayar.is-paid {
+            background: #16a34a;
+        }
+
+        .btn-bayar.is-paid:hover {
+            background: #15803d;
+        }
+
+        .btn-bayar.is-partial {
+            background: #f59e0b;
+        }
+
+        .btn-bayar.is-partial:hover {
+            background: #d97706;
+        }
+
+        .btn-bayar:disabled,
+        .btn-bayar[aria-disabled="true"] {
+            background: #9ca3af;
+            opacity: 0.75;
+            cursor: not-allowed;
+        }
+
+        .btn-bayar:disabled:hover,
+        .btn-bayar[aria-disabled="true"]:hover {
+            background: #9ca3af;
         }
 
         .btn-bayar:hover {
@@ -1218,9 +1247,6 @@
                         </form>
                     </div>
                 </div>
-                <button class="icon-btn" title="Help"><i class="fas fa-question-circle"></i></button>
-                <button class="icon-btn" title="Mute"><i class="fas fa-bell-slash"></i></button>
-                <button class="profile-btn" title="Profile"><i class="fas fa-user"></i></button>
             </div>
         </div>
         <div class="cashier-content">
@@ -1244,7 +1270,7 @@
                                 <button class="add" id="addBtn" type="button" title="Fitur ini belum aktif">
                                     <i class="fas fa-plus"></i> Pembayaran
                                 </button>
-                                <button class="export" id="exportBtn"><i class="fas fa-file-export"></i> Export</button>
+                                <button class="export" id="exportBtn" type="button" data-export-base="{{ route('cashier.export') }}"><i class="fas fa-file-export"></i> Export</button>
                             </div>
                         </div>
 
@@ -1265,7 +1291,8 @@
                         <table>
                             <thead>
                                 <tr>
-                                    <th>Invoice</th>
+                                    <th style="width:140px">Tanggal</th>
+                                    <th style="width:120px">Invoice</th>
                                     <th>Nama Lengkap Pasien</th>
                                     <th>Keterangan</th>
                                     <th>Actions</th>
@@ -1275,10 +1302,12 @@
                                 @forelse(($appointments ?? collect()) as $a)
                                     <tr>
                                         <td>
-                                            <div style="font-weight:600;color:#111827;margin-bottom:4px">
+                                            <div style="font-weight:600;color:#111827">
                                                 {{ \Carbon\Carbon::parse($a->start_at)->format('d/m/Y') }}
                                             </div>
-                                            <div style="color:#64748b;font-size:12px">
+                                        </td>
+                                        <td>
+                                            <div style="font-weight:600;color:#111827">
                                                 {{ $a->code ?: ('INV' . str_pad((string)$a->id, 6, '0', STR_PAD_LEFT)) }}
                                             </div>
                                         </td>
@@ -1301,14 +1330,19 @@
                                         </td>
                                         <td>
                                             <div class="action-cell">
-                                                <button class="btn-bayar" type="button" data-invoice-url="{{ route('cashier.invoice', $a) }}">Bayar</button>
-                                                <i class="fas fa-volume-up sound-icon" title="Play Audio"></i>
+                                                @php
+                                                    $paymentStatus = strtolower((string) ($a->payment_status ?? 'unpaid'));
+                                                    $isPaid = $paymentStatus === 'paid';
+                                                    $payLabel = $isPaid ? 'Lunas' : ($paymentStatus === 'partial' ? 'Bayar (Sisa)' : 'Bayar');
+                                                    $payClass = $isPaid ? 'is-paid' : ($paymentStatus === 'partial' ? 'is-partial' : '');
+                                                @endphp
+                                                <button class="btn-bayar {{ $payClass }}" type="button" data-invoice-url="{{ route('cashier.invoice', $a) }}">{{ $payLabel }}</button>
                                             </div>
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="4" class="empty-row">Tidak ada data yang bisa ditampilkan.</td>
+                                        <td colspan="5" class="empty-row">Tidak ada data yang bisa ditampilkan.</td>
                                     </tr>
                                 @endforelse
                             </tbody>
@@ -1415,6 +1449,53 @@
             </div>
 
             <div class="modal-scroll-body">
+                <div class="section-blue-header">Buat Invoice</div>
+                <div class="section-content">
+                    <div style="display:grid;grid-template-columns:1fr;gap:12px">
+                        <div>
+                            <div style="font-size:12px;color:#64748b;margin-bottom:6px">Cari Pasien / Kode / BK</div>
+                            <div class="search-line">
+                                <i class="fas fa-search"></i>
+                                <input id="createApptSearch" type="text" placeholder="Contoh: BK000123 / nama pasien / kode" autocomplete="off">
+                            </div>
+                        </div>
+                        <div id="createApptResults" style="border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;display:none"></div>
+                        <div style="display:grid;grid-template-columns:2fr 90px 140px 120px;gap:12px;align-items:end">
+                            <div>
+                                <div style="font-size:12px;color:#64748b;margin-bottom:6px">Tindakan (opsional)</div>
+                                <select id="createProcedure" class="full-select" style="padding:10px">
+                                    <option value="">-- Pilih dari katalog (opsional) --</option>
+                                    @foreach(($procedures ?? collect()) as $p)
+                                        <option value="{{ $p->id }}" data-name="{{ $p->name }}" data-price="{{ (int) $p->price }}">{{ $p->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div>
+                                <div style="font-size:12px;color:#64748b;margin-bottom:6px">Qty</div>
+                                <input id="createQty" type="number" min="1" value="1" class="input-underline-only" style="padding:8px 0">
+                            </div>
+                            <div>
+                                <div style="font-size:12px;color:#64748b;margin-bottom:6px">Harga</div>
+                                <input id="createPrice" type="number" min="0" value="0" class="input-underline-only" style="padding:8px 0">
+                            </div>
+                            <div>
+                                <div style="font-size:12px;color:#64748b;margin-bottom:6px">Diskon</div>
+                                <input id="createDiscount" type="number" min="0" value="0" class="input-underline-only" style="padding:8px 0">
+                            </div>
+                        </div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:end">
+                            <div>
+                                <div style="font-size:12px;color:#64748b;margin-bottom:6px">Nama Item (wajib)</div>
+                                <input id="createName" type="text" class="input-underline-only" placeholder="Contoh: Scaling / Tambal gigi" style="padding:8px 0">
+                            </div>
+                            <div style="display:flex;justify-content:flex-end">
+                                <button id="createAddItemBtn" type="button" class="filter-btn" style="height:40px">TAMBAH ITEM</button>
+                            </div>
+                        </div>
+                        <div id="createHint" style="font-size:12px;color:#64748b">Klik <b>+ Pembayaran</b> lalu cari pasien untuk mulai buat invoice.</div>
+                    </div>
+                </div>
+
                 <div class="section-blue-header">Detail Pasien</div>
                 <div class="section-content">
                     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;align-items:start">
@@ -1449,6 +1530,7 @@
                             <p style="margin-top:6px">
                                 <span style="color:#64748b">Nomor:</span>
                                 <strong id="invCode" style="color:#111827">-</strong>
+                                <a href="#" id="invEditToggle" style="margin-left:8px;color:#dc2626;text-decoration:none;font-weight:600">edit</a>
                                 <span style="margin:0 10px;color:#e5e7eb">|</span>
                                 <span style="color:#64748b">Tanggal:</span>
                                 <strong id="invDate" style="color:#111827">-</strong>
@@ -1487,8 +1569,13 @@
                     <div style="margin-bottom:15px;">
                         <label style="font-size:12px; color:#B08D70;; display:block; margin-bottom:4px;">Metode
                             Pembayaran</label>
-                        <select class="full-select">
-                            <option>Langsung</option>
+                        <select id="paymentMethodSelect" class="full-select">
+                            <option value="Langsung">Langsung</option>
+                            <option value="Tunai">Tunai</option>
+                            <option value="Transfer">Transfer</option>
+                            <option value="QRIS">QRIS</option>
+                            <option value="Kartu">Kartu</option>
+                            <option value="BPJS">BPJS</option>
                         </select>
                     </div>
 
@@ -1513,28 +1600,26 @@
                     <div class="payment-grid">
                         <div class="payment-input-group">
                             <label>Bayar <span>*</span></label>
-                            <input type="text" class="input-underline-only" placeholder="Rp0">
+                            <input id="payAmount" type="number" min="0" step="1" class="input-underline-only" placeholder="0">
                         </div>
                         <div class="payment-input-group">
                             <label>Dibayar Oleh <span>*</span></label>
-                            <input type="text" class="input-underline-only">
+                            <input id="paidByName" type="text" class="input-underline-only" placeholder="Nama pembayar">
                         </div>
                         <div class="payment-input-group">
                             <label style="color:#999;">Kembalian (Rp)</label>
-                            <input type="text" class="input-underline-only input-bg-grey" placeholder="Rp0"
-                                readonly>
+                            <input id="payChange" type="text" class="input-underline-only input-bg-grey" placeholder="Rp0" readonly>
                         </div>
                         <div class="payment-input-group">
                             <label style="color:#999;">Hutang</label>
-                            <input type="text" class="input-underline-only input-bg-grey" placeholder="Rp0"
-                                readonly>
+                            <input id="payDebt" type="text" class="input-underline-only input-bg-grey" placeholder="Rp0" readonly>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div class="modal-footer-action">
-                <button class="btn-pay-modal">Bayar</button>
+                <button id="paySubmitBtn" type="button" class="btn-pay-modal" disabled>Bayar</button>
             </div>
         </div>
     </div>
@@ -1574,19 +1659,83 @@
                 backdrop.addEventListener('click', toggleSidebar);
             }
         });
+        const csrfToken = (document.querySelector('meta[name="csrf-token"]') || {}).content;
+        const invoiceBaseUrl = @json(url('/cashier/appointments'));
+        const searchApptUrl = @json(route('cashier.appointments.search'));
+        const payUrlBase = @json(url('/cashier/appointments'));
+        const itemUrlBase = @json(url('/cashier/items'));
+        const paymentMethodUrlBase = @json(url('/cashier/appointments'));
+
+        let currentAppointmentId = null;
+        let currentInvoiceTotal = 0;
+        let currentPaymentStatus = 'unpaid';
+        let currentInvoiceData = null;
+        let invoiceEditMode = false;
+
+        function setCurrentAppointment(id) {
+            currentAppointmentId = id ? Number(id) : null;
+        }
+
+        function setInvoiceTotal(total) {
+            const n = Number(total || 0);
+            currentInvoiceTotal = Number.isFinite(n) && n > 0 ? Math.trunc(n) : 0;
+        }
+
+        function setPaymentStatus(status) {
+            const s = String(status || '').toLowerCase();
+            currentPaymentStatus = s || 'unpaid';
+        }
+
+        async function loadInvoiceByAppointmentId(appointmentId) {
+            const url = invoiceBaseUrl + '/' + appointmentId + '/invoice';
+            const res = await fetch(url, {
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            if (!res.ok) throw new Error('Gagal memuat invoice');
+            const data = await res.json();
+            setCurrentAppointment(data && data.appointment ? data.appointment.id : appointmentId);
+            renderInvoice(data);
+        }
+
         // Button click handlers
-        document.getElementById('addBtn').onclick = function() {
-            alert('Pembayaran diklik!');
+        document.getElementById('addBtn').onclick = async function() {
+            openModal();
+            const input = document.getElementById('createApptSearch');
+            if (input) {
+                input.value = '';
+                input.focus();
+            }
+            // clear invoice display until user selects appointment
+            renderInvoice({ appointment: {}, items: [], total: 0 });
+            setCurrentAppointment(null);
+            resetPaymentForm();
         };
         document.getElementById('exportBtn').onclick = function() {
-            alert('Export diklik!');
+            const btn = document.getElementById('exportBtn');
+            const base = btn ? btn.getAttribute('data-export-base') : null;
+            if (!base) {
+                alert('URL export tidak ditemukan');
+                return;
+            }
+
+            const qInput = document.querySelector('form.search-wrap input[name="q"]');
+            const fromInput = document.getElementById('from_date');
+            const toInput = document.getElementById('to_date');
+
+            const params = new URLSearchParams();
+            const q = qInput ? String(qInput.value || '').trim() : '';
+            const dateFrom = fromInput ? String(fromInput.value || '').trim() : '';
+            const dateTo = toInput ? String(toInput.value || '').trim() : '';
+            if (q) params.set('q', q);
+            if (dateFrom) params.set('date_from', dateFrom);
+            if (dateTo) params.set('date_to', dateTo);
+
+            const url = params.toString() ? (base + '?' + params.toString()) : base;
+            window.location.href = url;
         };
-        // Sound icon handlers
-        document.querySelectorAll('.sound-icon').forEach(function(icon) {
-            icon.onclick = function() {
-                alert('Play audio untuk invoice ini');
-            };
-        });
 
         // --- Invoice modal helpers ---
         const modal = document.getElementById('modalPembayaran');
@@ -1598,9 +1747,93 @@
             doctorName: document.getElementById('invDoctorName'),
             code: document.getElementById('invCode'),
             date: document.getElementById('invDate'),
+            editToggle: document.getElementById('invEditToggle'),
             itemsBody: document.getElementById('invoiceItemsBody'),
             total: document.getElementById('invoiceTotal'),
         };
+
+        const payEls = {
+            amount: document.getElementById('payAmount'),
+            paidBy: document.getElementById('paidByName'),
+            change: document.getElementById('payChange'),
+            debt: document.getElementById('payDebt'),
+            submit: document.getElementById('paySubmitBtn'),
+            method: document.getElementById('paymentMethodSelect'),
+        };
+
+        function safeInt(v, fallback = 0) {
+            const n = Number(v);
+            return Number.isFinite(n) ? Math.trunc(n) : fallback;
+        }
+
+        async function patchInvoiceItem(itemId, payload) {
+            const url = itemUrlBase + '/' + itemId;
+            const res = await fetch(url, {
+                method: 'PATCH',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    ...(csrfToken ? { 'X-CSRF-TOKEN': csrfToken } : {})
+                },
+                body: JSON.stringify(payload || {})
+            });
+            if (!res.ok) {
+                let msg = 'Gagal mengubah item invoice';
+                try {
+                    const j = await res.json();
+                    if (j && j.message) msg = j.message;
+                } catch (e) {}
+                throw new Error(msg);
+            }
+            return await res.json();
+        }
+
+        async function deleteInvoiceItem(itemId) {
+            const url = itemUrlBase + '/' + itemId;
+            const res = await fetch(url, {
+                method: 'DELETE',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    ...(csrfToken ? { 'X-CSRF-TOKEN': csrfToken } : {})
+                }
+            });
+            if (!res.ok) {
+                let msg = 'Gagal menghapus item invoice';
+                try {
+                    const j = await res.json();
+                    if (j && j.message) msg = j.message;
+                } catch (e) {}
+                throw new Error(msg);
+            }
+            return await res.json();
+        }
+
+        async function savePaymentMethod(method) {
+            if (!currentAppointmentId) return;
+            const url = paymentMethodUrlBase + '/' + currentAppointmentId + '/payment-method';
+            const res = await fetch(url, {
+                method: 'PATCH',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    ...(csrfToken ? { 'X-CSRF-TOKEN': csrfToken } : {})
+                },
+                body: JSON.stringify({ payment_method: String(method || '') })
+            });
+            if (!res.ok) {
+                // don't hard-fail UI; just inform
+                let msg = 'Gagal menyimpan metode pembayaran';
+                try {
+                    const j = await res.json();
+                    if (j && j.message) msg = j.message;
+                } catch (e) {}
+                throw new Error(msg);
+            }
+            return await res.json();
+        }
 
         function formatRupiah(amount) {
             const n = Number(amount || 0);
@@ -1623,6 +1856,7 @@
         function openModal() {
             modal.style.display = 'flex';
             document.body.style.overflow = 'hidden';
+            updatePaymentSummary();
         }
 
         function closeModal() {
@@ -1635,6 +1869,11 @@
             const appt = (data && data.appointment) ? data.appointment : {};
             const items = Array.isArray(data && data.items) ? data.items : [];
 
+            currentInvoiceData = data || null;
+
+            setInvoiceTotal(data && data.total);
+            setPaymentStatus(appt.payment_status);
+
             invEls.patientName.textContent = appt.patient_name || '-';
             invEls.patientMr.textContent = appt.medical_record_number || '-';
             invEls.patientAge.textContent = (appt.age === null || appt.age === undefined || appt.age === '') ? '-' : String(appt.age);
@@ -1644,6 +1883,18 @@
             invEls.code.textContent = appt.code || '-';
             invEls.date.textContent = formatDateTime(appt.start_at);
 
+            // payment method select
+            if (payEls.method) {
+                const val = String(appt.payment_method || '').trim();
+                if (val) payEls.method.value = val;
+            }
+
+            // default paid by: use last paid_by if exists, otherwise patient name
+            if (payEls.paidBy && !String(payEls.paidBy.value || '').trim()) {
+                const defaultPaidBy = String(appt.paid_by || '').trim() || String(appt.patient_name || '').trim();
+                payEls.paidBy.value = defaultPaidBy;
+            }
+
             invEls.itemsBody.innerHTML = '';
             if (items.length === 0) {
                 const tr = document.createElement('tr');
@@ -1652,25 +1903,206 @@
             } else {
                 items.forEach(function (it) {
                     const tr = document.createElement('tr');
-                    tr.innerHTML =
-                        '<td style="color:#64748b;font-size:12px">' + formatDateTime(it.created_at) + '</td>' +
-                        '<td style="font-weight:600;color:#111827">' + (it.name || '-') + '</td>' +
-                        '<td>' + (it.quantity ?? 1) + '</td>' +
-                        '<td>' + formatRupiah(it.selling_price) + '</td>' +
-                        '<td>' + formatRupiah(it.discount_amount) + '</td>' +
-                        '<td style="font-weight:700">' + formatRupiah(it.line_total) + '</td>';
+
+                    const tdDate = document.createElement('td');
+                    tdDate.style.color = '#64748b';
+                    tdDate.style.fontSize = '12px';
+                    tdDate.textContent = formatDateTime(it.created_at);
+
+                    const tdName = document.createElement('td');
+                    tdName.style.fontWeight = '600';
+                    tdName.style.color = '#111827';
+                    tdName.style.display = 'flex';
+                    tdName.style.alignItems = 'center';
+                    tdName.style.justifyContent = 'space-between';
+                    tdName.style.gap = '10px';
+
+                    const nameSpan = document.createElement('span');
+                    nameSpan.textContent = it.name || '-';
+                    tdName.appendChild(nameSpan);
+
+                    if (invoiceEditMode) {
+                        const delBtn = document.createElement('button');
+                        delBtn.type = 'button';
+                        delBtn.textContent = '×';
+                        delBtn.title = 'Hapus item';
+                        delBtn.style.border = 'none';
+                        delBtn.style.background = 'transparent';
+                        delBtn.style.cursor = 'pointer';
+                        delBtn.style.color = '#9ca3af';
+                        delBtn.style.fontSize = '18px';
+                        delBtn.addEventListener('click', async function () {
+                            if (!confirm('Hapus item ini?')) return;
+                            try {
+                                await deleteInvoiceItem(it.id);
+                                await loadInvoiceByAppointmentId(currentAppointmentId);
+                            } catch (e) {
+                                alert(e && e.message ? e.message : 'Gagal menghapus item');
+                            }
+                        });
+                        tdName.appendChild(delBtn);
+                    }
+
+                    const tdQty = document.createElement('td');
+                    const tdPrice = document.createElement('td');
+                    const tdDisc = document.createElement('td');
+                    const tdTotal = document.createElement('td');
+                    tdTotal.style.fontWeight = '700';
+                    tdTotal.textContent = formatRupiah(it.line_total);
+
+                    if (invoiceEditMode) {
+                        const qtyInput = document.createElement('input');
+                        qtyInput.type = 'number';
+                        qtyInput.min = '1';
+                        qtyInput.step = '1';
+                        qtyInput.value = String(it.quantity ?? 1);
+                        qtyInput.style.width = '70px';
+                        qtyInput.style.border = '1px solid #ddd';
+                        qtyInput.style.borderRadius = '4px';
+                        qtyInput.style.padding = '6px 8px';
+
+                        const priceInput = document.createElement('input');
+                        priceInput.type = 'number';
+                        priceInput.min = '0';
+                        priceInput.step = '1';
+                        priceInput.value = String(it.selling_price ?? 0);
+                        priceInput.style.width = '110px';
+                        priceInput.style.border = '1px solid #ddd';
+                        priceInput.style.borderRadius = '4px';
+                        priceInput.style.padding = '6px 8px';
+
+                        const discInput = document.createElement('input');
+                        discInput.type = 'number';
+                        discInput.min = '0';
+                        discInput.step = '1';
+                        discInput.value = String(it.discount_amount ?? 0);
+                        discInput.style.width = '90px';
+                        discInput.style.border = '1px solid #ddd';
+                        discInput.style.borderRadius = '4px';
+                        discInput.style.padding = '6px 8px';
+
+                        const saveOnBlur = async function () {
+                            try {
+                                await patchInvoiceItem(it.id, {
+                                    quantity: safeInt(qtyInput.value, 1),
+                                    selling_price: safeInt(priceInput.value, 0),
+                                    discount_amount: safeInt(discInput.value, 0),
+                                });
+                                await loadInvoiceByAppointmentId(currentAppointmentId);
+                            } catch (e) {
+                                alert(e && e.message ? e.message : 'Gagal menyimpan perubahan');
+                            }
+                        };
+
+                        qtyInput.addEventListener('blur', saveOnBlur);
+                        priceInput.addEventListener('blur', saveOnBlur);
+                        discInput.addEventListener('blur', saveOnBlur);
+
+                        tdQty.appendChild(qtyInput);
+                        tdPrice.appendChild(priceInput);
+                        tdDisc.appendChild(discInput);
+                    } else {
+                        tdQty.textContent = String(it.quantity ?? 1);
+                        tdPrice.textContent = formatRupiah(it.selling_price);
+                        tdDisc.textContent = formatRupiah(it.discount_amount);
+                    }
+
+                    tr.appendChild(tdDate);
+                    tr.appendChild(tdName);
+                    tr.appendChild(tdQty);
+                    tr.appendChild(tdPrice);
+                    tr.appendChild(tdDisc);
+                    tr.appendChild(tdTotal);
+
                     invEls.itemsBody.appendChild(tr);
                 });
             }
 
             invEls.total.textContent = formatRupiah(data && data.total);
+
+            // default bayar mengikuti referensi: awal 0 (atau outstanding jika partial)
+            if (currentPaymentStatus === 'paid') {
+                if (payEls.submit) payEls.submit.textContent = 'Lunas';
+                setPayButtonEnabled(false);
+            } else {
+                if (payEls.submit) payEls.submit.textContent = 'Bayar';
+                if (payEls.amount) {
+                    const paidAmount = safeInt(appt.paid_amount, 0);
+                    const outstanding = safeInt(appt.outstanding_amount, Math.max(0, currentInvoiceTotal - paidAmount));
+                    const defaultPay = (String(currentPaymentStatus) === 'partial') ? outstanding : 0;
+                    // only overwrite if empty / 0 (so user input isn't clobbered during refresh)
+                    const existing = safeInt(payEls.amount.value, 0);
+                    if (existing === 0) payEls.amount.value = String(defaultPay);
+                }
+                updatePaymentSummary();
+            }
         }
+
+        function setPayButtonEnabled(enabled) {
+            if (!payEls.submit) return;
+            payEls.submit.disabled = !enabled;
+            if (enabled) payEls.submit.classList.add('active');
+            else payEls.submit.classList.remove('active');
+        }
+
+        function resetPaymentForm() {
+            setInvoiceTotal(0);
+            setPaymentStatus('unpaid');
+            if (payEls.amount) payEls.amount.value = '0';
+            if (payEls.paidBy) payEls.paidBy.value = '';
+            if (payEls.change) payEls.change.value = 'Rp0';
+            if (payEls.debt) payEls.debt.value = 'Rp0';
+            setPayButtonEnabled(false);
+        }
+
+        function updatePaymentSummary() {
+            if (currentPaymentStatus === 'paid') {
+                setPayButtonEnabled(false);
+                return;
+            }
+            const amountPaid = Number(payEls.amount && payEls.amount.value ? payEls.amount.value : 0);
+            const paidBy = String(payEls.paidBy && payEls.paidBy.value ? payEls.paidBy.value : '').trim();
+            const safePaid = Number.isFinite(amountPaid) && amountPaid >= 0 ? Math.trunc(amountPaid) : 0;
+
+            const change = Math.max(0, safePaid - currentInvoiceTotal);
+            const debt = Math.max(0, currentInvoiceTotal - safePaid);
+
+            if (payEls.change) payEls.change.value = formatRupiah(change);
+            if (payEls.debt) payEls.debt.value = formatRupiah(debt);
+
+            const canPay = !!currentAppointmentId && currentInvoiceTotal > 0 && paidBy.length > 0 && safePaid > 0;
+            setPayButtonEnabled(canPay);
+        }
+
+        if (invEls.editToggle) {
+            invEls.editToggle.addEventListener('click', function (e) {
+                e.preventDefault();
+                invoiceEditMode = !invoiceEditMode;
+                if (invEls.editToggle) invEls.editToggle.textContent = invoiceEditMode ? 'selesai' : 'edit';
+                if (currentInvoiceData) renderInvoice(currentInvoiceData);
+            });
+        }
+
+        if (payEls.method) {
+            payEls.method.addEventListener('change', async function () {
+                try {
+                    await savePaymentMethod(payEls.method.value);
+                } catch (e) {
+                    alert(e && e.message ? e.message : 'Gagal menyimpan metode pembayaran');
+                }
+            });
+        }
+
+        if (payEls.amount) payEls.amount.addEventListener('input', updatePaymentSummary);
+        if (payEls.paidBy) payEls.paidBy.addEventListener('input', updatePaymentSummary);
 
         // Bayar button handlers (open invoice modal)
         document.querySelectorAll('.btn-bayar').forEach(function(btn) {
             btn.addEventListener('click', async function() {
                 const url = btn.getAttribute('data-invoice-url');
                 if (!url) return;
+
+                const originalLabel = btn.textContent;
 
                 try {
                     btn.disabled = true;
@@ -1685,16 +2117,220 @@
                     if (!res.ok) throw new Error('Gagal memuat invoice');
 
                     const data = await res.json();
+                    setCurrentAppointment(data && data.appointment ? data.appointment.id : null);
                     renderInvoice(data);
+                    // keep summary up to date
+                    updatePaymentSummary();
                     openModal();
                 } catch (e) {
                     alert(e && e.message ? e.message : 'Terjadi kesalahan saat memuat invoice');
                 } finally {
                     btn.disabled = false;
-                    btn.textContent = 'Bayar';
+                    btn.textContent = originalLabel;
                 }
             });
         });
+
+        async function submitPayment() {
+            if (!currentAppointmentId) throw new Error('Pilih invoice terlebih dahulu');
+            const amountPaid = Number(payEls.amount && payEls.amount.value ? payEls.amount.value : 0);
+            const paidBy = String(payEls.paidBy && payEls.paidBy.value ? payEls.paidBy.value : '').trim();
+            const safePaid = Number.isFinite(amountPaid) && amountPaid >= 0 ? Math.trunc(amountPaid) : 0;
+            const paymentMethod = String(payEls.method && payEls.method.value ? payEls.method.value : '').trim();
+
+            if (!paidBy) throw new Error('Nama pembayar wajib diisi');
+            if (currentInvoiceTotal <= 0) throw new Error('Total invoice masih Rp0');
+
+            const url = payUrlBase + '/' + currentAppointmentId + '/pay';
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    ...(csrfToken ? { 'X-CSRF-TOKEN': csrfToken } : {})
+                },
+                body: JSON.stringify({
+                    amount_paid: safePaid,
+                    paid_by: paidBy,
+                    payment_method: paymentMethod || null,
+                })
+            });
+
+            if (!res.ok) {
+                let msg = 'Gagal menyimpan pembayaran';
+                try {
+                    const j = await res.json();
+                    if (j && j.message) msg = j.message;
+                } catch (e) {}
+                throw new Error(msg);
+            }
+
+            return await res.json();
+        }
+
+        if (payEls.submit) {
+            payEls.submit.addEventListener('click', async function () {
+                try {
+                    payEls.submit.disabled = true;
+                    const result = await submitPayment();
+                    alert('Pembayaran tersimpan. Status: ' + (result.payment_status || '-'));
+                    // refresh list page to reflect changes
+                    window.location.reload();
+                } catch (e) {
+                    alert(e && e.message ? e.message : 'Terjadi kesalahan saat menyimpan pembayaran');
+                } finally {
+                    updatePaymentSummary();
+                }
+            });
+        }
+
+        // --- Create invoice: search appointment + add item ---
+        const createApptSearch = document.getElementById('createApptSearch');
+        const createApptResults = document.getElementById('createApptResults');
+        const createProcedure = document.getElementById('createProcedure');
+        const createName = document.getElementById('createName');
+        const createQty = document.getElementById('createQty');
+        const createPrice = document.getElementById('createPrice');
+        const createDiscount = document.getElementById('createDiscount');
+        const createAddItemBtn = document.getElementById('createAddItemBtn');
+
+        let searchDebounceTimer = null;
+
+        function showApptResults(items) {
+            if (!createApptResults) return;
+            if (!items || items.length === 0) {
+                createApptResults.style.display = 'none';
+                createApptResults.innerHTML = '';
+                return;
+            }
+
+            createApptResults.style.display = 'block';
+            createApptResults.innerHTML = items.map(function (it) {
+                return '<button type="button" class="appt-pick" data-id="' + it.id + '" style="width:100%;text-align:left;padding:10px 12px;border:none;background:#fff;border-bottom:1px solid #f1f5f9;cursor:pointer">' +
+                    '<span style="font-size:13px;color:#111827;font-weight:600">' + (it.label || '-') + '</span>' +
+                '</button>';
+            }).join('');
+
+            createApptResults.querySelectorAll('.appt-pick').forEach(function (b) {
+                b.addEventListener('click', async function () {
+                    const id = b.getAttribute('data-id');
+                    if (!id) return;
+
+                    try {
+                        await loadInvoiceByAppointmentId(id);
+                        if (createApptResults) {
+                            createApptResults.style.display = 'none';
+                            createApptResults.innerHTML = '';
+                        }
+                    } catch (e) {
+                        alert(e && e.message ? e.message : 'Gagal memilih appointment');
+                    }
+                });
+            });
+        }
+
+        async function searchAppointments(q) {
+            const u = new URL(searchApptUrl, window.location.origin);
+            u.searchParams.set('q', q);
+            const res = await fetch(u.toString(), {
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            if (!res.ok) throw new Error('Gagal mencari data');
+            return await res.json();
+        }
+
+        if (createApptSearch) {
+            createApptSearch.addEventListener('input', function () {
+                const q = String(createApptSearch.value || '').trim();
+                clearTimeout(searchDebounceTimer);
+
+                if (q.length < 2) {
+                    showApptResults([]);
+                    return;
+                }
+
+                searchDebounceTimer = setTimeout(async function () {
+                    try {
+                        const json = await searchAppointments(q);
+                        showApptResults(json && json.data ? json.data : []);
+                    } catch (e) {
+                        showApptResults([]);
+                    }
+                }, 250);
+            });
+        }
+
+        if (createProcedure) {
+            createProcedure.addEventListener('change', function () {
+                const opt = createProcedure.options[createProcedure.selectedIndex];
+                if (!opt) return;
+                const name = opt.getAttribute('data-name');
+                const price = opt.getAttribute('data-price');
+                if (name && createName && !String(createName.value || '').trim()) {
+                    createName.value = name;
+                }
+                if (price && createPrice) {
+                    createPrice.value = String(parseInt(price, 10) || 0);
+                }
+            });
+        }
+
+        async function addInvoiceItem() {
+            if (!currentAppointmentId) {
+                throw new Error('Pilih pasien/appointment dulu');
+            }
+            const payload = {
+                procedure_id: createProcedure && createProcedure.value ? Number(createProcedure.value) : null,
+                name: createName ? String(createName.value || '').trim() : '',
+                quantity: createQty ? Number(createQty.value || 1) : 1,
+                selling_price: createPrice ? Number(createPrice.value || 0) : 0,
+                discount_amount: createDiscount ? Number(createDiscount.value || 0) : 0,
+            };
+
+            const url = invoiceBaseUrl + '/' + currentAppointmentId + '/items';
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    ...(csrfToken ? { 'X-CSRF-TOKEN': csrfToken } : {})
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (!res.ok) {
+                let msg = 'Gagal menambah item';
+                try {
+                    const j = await res.json();
+                    if (j && j.message) msg = j.message;
+                } catch (e) {}
+                throw new Error(msg);
+            }
+        }
+
+        if (createAddItemBtn) {
+            createAddItemBtn.addEventListener('click', async function () {
+                try {
+                    createAddItemBtn.disabled = true;
+                    await addInvoiceItem();
+                    await loadInvoiceByAppointmentId(currentAppointmentId);
+                    if (createName) createName.value = '';
+                    if (createQty) createQty.value = '1';
+                    if (createDiscount) createDiscount.value = '0';
+                    if (payEls.amount) payEls.amount.value = String(currentInvoiceTotal);
+                    updatePaymentSummary();
+                } catch (e) {
+                    alert(e && e.message ? e.message : 'Terjadi kesalahan');
+                } finally {
+                    createAddItemBtn.disabled = false;
+                }
+            });
+        }
 
         // Tab switch logic
         const tabPembayaran = document.querySelector('.cashier-sidebar .tab:nth-child(1)');

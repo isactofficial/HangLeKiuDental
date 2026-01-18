@@ -22,6 +22,11 @@
         </div>
 
         <div class="panel-body">
+            @if(!empty($doctor_mapping_warning))
+                <div style="margin:0 0 12px 0;padding:10px 12px;border:1px solid #fde68a;background:#fffbeb;color:#92400e;border-radius:10px;font-size:13px;line-height:1.4">
+                    {{ $doctor_mapping_warning }}
+                </div>
+            @endif
             @include('doctor.partials.appointments', ['appointments' => $appointments])
         </div>
     </div>

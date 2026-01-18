@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Doctor;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -16,8 +17,9 @@ class AdminUserController extends Controller
 
     public function index()
     {
-        $users = User::orderBy('id')->get();
-        return view('admin.users.index', compact('users'));
+        $users = User::with('doctor')->orderBy('id')->get();
+        $doctors = Doctor::orderBy('name')->get();
+        return view('admin.users.index', compact('users', 'doctors'));
     }
 
     public function store(Request $request)
@@ -49,5 +51,17 @@ class AdminUserController extends Controller
         $user->save();
 
         return back()->with('status', 'Role user diperbarui.');
+    }
+
+    public function updateDoctor(Request $request, User $user)
+    {
+        $data = $request->validate([
+            'doctor_id' => ['nullable', 'integer', 'exists:doctors,id'],
+        ]);
+
+        $user->doctor_id = $data['doctor_id'] ?? null;
+        $user->save();
+
+        return back()->with('status', 'Dokter untuk user diperbarui.');
     }
 }

@@ -22,6 +22,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'doctor_id',
         'google_id',
     ];
 
@@ -61,5 +62,10 @@ class User extends Authenticatable
     public function isDoctor(): bool
     {
         return $this->role === self::ROLE_DOCTOR;
+    }
+
+    public function doctor()
+    {
+        return $this->belongsTo(Doctor::class);
     }
 }

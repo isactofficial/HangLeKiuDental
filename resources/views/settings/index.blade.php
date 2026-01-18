@@ -46,30 +46,44 @@
         }
 
         /* Styling khusus Tab Menu Kiri (Settings Menu) */
-        .settings-menu-item {
-            display: block;
-            padding: 12px 20px;
-            font-size: 14px;
-            border-bottom: 1px solid #e0e0e0;
-            cursor: pointer;
-            transition: all 0.2s;
-            position: relative;
-            text-decoration: none;
+        .settings-menu-box {
+            background: #fff;
+            border-radius: 8px;
+            padding: 0;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+            overflow: hidden;
+            border: 1px solid #e5e7eb;
         }
 
-        .settings-menu-item.default {
-            background-color: #fff;
-            color: #333;
+        .settings-menu-item {
+            display: block;
+            padding: 16px 18px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            outline: none;
+            text-align: left;
+            width: 100%;
+            background: #fff;
+            color: #222;
+            border-bottom: 1px solid #e5e7eb;
+            transition: background 0.2s;
+            position: relative;
+            text-decoration: none;
+            user-select: none;
         }
 
         .settings-menu-item.default:hover {
-            background-color: #f5f5f5;
+            background: #f5f5f5;
         }
 
         .settings-menu-item.active {
-            background-color: #2196f3;
-            color: white;
-            border-bottom: 1px solid #1976d2;
+            background: #B08D70;
+            color: #fff;
+        }
+
+        .settings-menu-item:last-child {
+            border-bottom: none;
         }
 
         /* Table Styles */
@@ -184,23 +198,35 @@
             <h2 class="font-bold text-lg text-[#1565c0]">Menu Opsi</h2>
             <button onclick="closeSettingsMenu()" class="text-gray-500 text-2xl hover:text-red-500">&times;</button>
         </div>
-        <div class="flex flex-col text-[14px]">
-            <a href="#" class="settings-menu-item default">General Settings</a>
+        <div class="flex flex-col text-[14px] settings-menu-box" style="margin:12px;">
+            <div onclick="switchTab('general-settings', this); closeSettingsMenu();" class="settings-menu-item default" id="mobile-tab-general-settings">
+                General Settings
+            </div>
             <div onclick="switchTab('manajemen-staff', this); closeSettingsMenu();" class="settings-menu-item active" id="mobile-tab-manajemen-staff">
                 Manajemen Staff
             </div>
-            <a href="#" class="settings-menu-item default">Hak Akses</a>
+            <div onclick="switchTab('hak-akses', this); closeSettingsMenu();" class="settings-menu-item default" id="mobile-tab-hak-akses">
+                Hak Akses
+            </div>
             <div onclick="switchTab('info-medis', this); closeSettingsMenu();" class="settings-menu-item default" id="mobile-tab-info-medis">
                 Info Tenaga Medis
             </div>
-            <a href="#" class="settings-menu-item default">Katalog Harga Prosedur</a>
-            <a href="#" class="settings-menu-item default">Printing Template</a>
-            <a href="#" class="settings-menu-item default flex justify-between items-center">
+            <div onclick="switchTab('katalog-harga-prosedur', this); closeSettingsMenu();" class="settings-menu-item default" id="mobile-tab-katalog-harga-prosedur">
+                Katalog Harga Prosedur
+            </div>
+            <div onclick="switchTab('printing-template', this); closeSettingsMenu();" class="settings-menu-item default" id="mobile-tab-printing-template">
+                Printing Template
+            </div>
+            <div onclick="switchTab('billing', this); closeSettingsMenu();" class="settings-menu-item default flex justify-between items-center" id="mobile-tab-billing">
                 Billing
                 <span class="bg-[#f50057] text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full">!</span>
-            </a>
-            <a href="#" class="settings-menu-item default">Surat Menyurat</a>
-            <a href="#" class="settings-menu-item default border-b-0">Data Entry</a>
+            </div>
+            <div onclick="switchTab('surat-menyurat', this); closeSettingsMenu();" class="settings-menu-item default" id="mobile-tab-surat-menyurat">
+                Surat Menyurat
+            </div>
+            <div onclick="switchTab('data-entry', this); closeSettingsMenu();" class="settings-menu-item default" id="mobile-tab-data-entry">
+                Data Entry
+            </div>
         </div>
     </div>
 
@@ -253,27 +279,88 @@
         <main class="flex-1 flex overflow-hidden relative">
 
             <div class="shrink-0 overflow-y-auto hidden md:block bg-[#f5f9fc]" style="flex-grow: 0; max-width: 260px; flex-basis: 260px; padding: 24px 24px 0 24px;">
-                <div class="bg-white border border-gray-200 flex flex-col text-[14px] overflow-hidden rounded-sm shadow-sm">
-                    <a href="#" class="settings-menu-item default">General Settings</a>
+                <div class="flex flex-col text-[14px] settings-menu-box">
+                    <div onclick="switchTab('general-settings', this)" class="settings-menu-item default" id="tab-general-settings">
+                        General Settings
+                    </div>
                     <div onclick="switchTab('manajemen-staff', this)" class="settings-menu-item active" id="tab-manajemen-staff">
                         Manajemen Staff
                     </div>
-                    <a href="#" class="settings-menu-item default">Hak Akses</a>
+                    <div onclick="switchTab('hak-akses', this)" class="settings-menu-item default" id="tab-hak-akses">
+                        Hak Akses
+                    </div>
                     <div onclick="switchTab('info-medis', this)" class="settings-menu-item default" id="tab-info-medis">
                         Info Tenaga Medis
                     </div>
-                    <a href="#" class="settings-menu-item default">Katalog Harga Prosedur</a>
-                    <a href="#" class="settings-menu-item default">Printing Template</a>
-                    <a href="#" class="settings-menu-item default flex justify-between items-center">
+                    <div onclick="switchTab('katalog-harga-prosedur', this)" class="settings-menu-item default" id="tab-katalog-harga-prosedur">
+                        Katalog Harga Prosedur
+                    </div>
+                    <div onclick="switchTab('printing-template', this)" class="settings-menu-item default" id="tab-printing-template">
+                        Printing Template
+                    </div>
+                    <div onclick="switchTab('billing', this)" class="settings-menu-item default flex justify-between items-center" id="tab-billing">
                         Billing
                         <span class="bg-[#f50057] text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full">!</span>
-                    </a>
-                    <a href="#" class="settings-menu-item default">Surat Menyurat</a>
-                    <a href="#" class="settings-menu-item default border-b-0">Data Entry</a>
+                    </div>
+                    <div onclick="switchTab('surat-menyurat', this)" class="settings-menu-item default" id="tab-surat-menyurat">
+                        Surat Menyurat
+                    </div>
+                    <div onclick="switchTab('data-entry', this)" class="settings-menu-item default" id="tab-data-entry">
+                        Data Entry
+                    </div>
                 </div>
             </div>
 
             <div class="flex-1 p-3 md:p-6 overflow-hidden flex flex-col bg-[#f5f9fc]">
+
+                <div id="content-general-settings" class="tab-content bg-white border border-gray-200 rounded-md shadow-sm flex flex-col h-full overflow-hidden">
+                    <div class="p-4 md:p-6">
+                        <h2 class="text-[18px] md:text-[20px] font-bold text-[#1565c0] mb-1">General Settings</h2>
+                        <p class="text-gray-500 text-[12px] md:text-[13px]">Halaman ini masih dalam pengembangan.</p>
+                    </div>
+                </div>
+
+                <div id="content-hak-akses" class="tab-content bg-white border border-gray-200 rounded-md shadow-sm flex flex-col h-full overflow-hidden">
+                    <div class="p-4 md:p-6">
+                        <h2 class="text-[18px] md:text-[20px] font-bold text-[#1565c0] mb-1">Hak Akses</h2>
+                        <p class="text-gray-500 text-[12px] md:text-[13px]">Halaman ini masih dalam pengembangan.</p>
+                    </div>
+                </div>
+
+                <div id="content-katalog-harga-prosedur" class="tab-content bg-white border border-gray-200 rounded-md shadow-sm flex flex-col h-full overflow-hidden">
+                    <div class="p-4 md:p-6">
+                        <h2 class="text-[18px] md:text-[20px] font-bold text-[#1565c0] mb-1">Katalog Harga Prosedur</h2>
+                        <p class="text-gray-500 text-[12px] md:text-[13px]">Halaman ini masih dalam pengembangan.</p>
+                    </div>
+                </div>
+
+                <div id="content-printing-template" class="tab-content bg-white border border-gray-200 rounded-md shadow-sm flex flex-col h-full overflow-hidden">
+                    <div class="p-4 md:p-6">
+                        <h2 class="text-[18px] md:text-[20px] font-bold text-[#1565c0] mb-1">Printing Template</h2>
+                        <p class="text-gray-500 text-[12px] md:text-[13px]">Halaman ini masih dalam pengembangan.</p>
+                    </div>
+                </div>
+
+                <div id="content-billing" class="tab-content bg-white border border-gray-200 rounded-md shadow-sm flex flex-col h-full overflow-hidden">
+                    <div class="p-4 md:p-6">
+                        <h2 class="text-[18px] md:text-[20px] font-bold text-[#1565c0] mb-1">Billing</h2>
+                        <p class="text-gray-500 text-[12px] md:text-[13px]">Halaman ini masih dalam pengembangan.</p>
+                    </div>
+                </div>
+
+                <div id="content-surat-menyurat" class="tab-content bg-white border border-gray-200 rounded-md shadow-sm flex flex-col h-full overflow-hidden">
+                    <div class="p-4 md:p-6">
+                        <h2 class="text-[18px] md:text-[20px] font-bold text-[#1565c0] mb-1">Surat Menyurat</h2>
+                        <p class="text-gray-500 text-[12px] md:text-[13px]">Halaman ini masih dalam pengembangan.</p>
+                    </div>
+                </div>
+
+                <div id="content-data-entry" class="tab-content bg-white border border-gray-200 rounded-md shadow-sm flex flex-col h-full overflow-hidden">
+                    <div class="p-4 md:p-6">
+                        <h2 class="text-[18px] md:text-[20px] font-bold text-[#1565c0] mb-1">Data Entry</h2>
+                        <p class="text-gray-500 text-[12px] md:text-[13px]">Halaman ini masih dalam pengembangan.</p>
+                    </div>
+                </div>
 
                 <div id="content-manajemen-staff" class="tab-content active bg-white border border-gray-200 rounded-md shadow-sm flex flex-col h-full overflow-hidden">
 
@@ -964,11 +1051,8 @@
                 i.classList.add('default');
             });
 
-            if (tabId === 'manajemen-staff') {
-                document.getElementById('content-manajemen-staff').classList.add('active');
-            } else if (tabId === 'info-medis') {
-                document.getElementById('content-info-medis').classList.add('active');
-            }
+            var content = document.getElementById('content-' + tabId);
+            if (content) content.classList.add('active');
 
             if(element) {
                 element.classList.add('active');

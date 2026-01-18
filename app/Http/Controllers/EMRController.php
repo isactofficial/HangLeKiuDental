@@ -227,4 +227,18 @@ class EMRController extends Controller
 
         return response()->json(['success' => true, 'odontogram' => $odo], 201);
     }
+
+    public function printAppointment(Appointment $appointment)
+    {
+        $appointment->load([
+            'doctor',
+            'createdByUser',
+            'diagnoses.createdByUser',
+            'doctorNotes.createdByUser',
+            'procedureRecords.createdByUser',
+            'odontograms.createdByUser',
+        ]);
+
+        return view('emr.print_resume', compact('appointment'));
+    }
 }

@@ -131,13 +131,67 @@
         .search-box {
             display: flex;
             align-items: center;
-            background: white;
+            background: #ffffff;
             border-radius: 25px;
             padding: 8px 16px;
             gap: 10px;
             min-width: 0;
             flex: 1 1 320px; /* allow it to grow/shrink */
             max-width: 720px;
+            position: relative;
+            border: 1px solid rgba(15, 23, 42, 0.10);
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+            min-height: 42px;
+        }
+
+        .search-box:focus-within {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.06);
+        }
+
+        .global-search-dropdown {
+            position: absolute;
+            top: calc(100% + 10px);
+            left: 0;
+            right: 0;
+            background: #fff;
+            border: 1px solid rgba(0,0,0,0.08);
+            border-radius: 14px;
+            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
+            overflow: hidden;
+            z-index: 999;
+            display: none;
+        }
+
+        .global-search-item {
+            padding: 10px 12px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .global-search-item:hover,
+        .global-search-item.active {
+            background: rgba(0,0,0,0.04);
+        }
+
+        .global-search-item .name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #0f172a;
+            line-height: 1.2;
+        }
+
+        .global-search-item .meta {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .global-search-empty {
+            padding: 12px;
+            color: #64748b;
+            font-size: 12px;
         }
 
         .search-box input {
@@ -209,9 +263,26 @@
             flex: 0 0 auto;
         }
 
-        .user-dropdown span {
+        .user-dropdown .user-avatar {
+            width: 26px;
+            height: 26px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 auto;
+        }
+
+        .user-dropdown .user-avatar i {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .user-dropdown .user-name {
             color: white;
             font-size: 14px;
+            white-space: nowrap;
         }
 
         .header-icons {
@@ -898,18 +969,15 @@
             <div class="header-left">
                 <div class="search-box">
                     <i class="fas fa-user"></i>
-                    <input type="text" placeholder="Cari Pasien / No MR / No Ktp / No Asuransi...">
+                    <input id="globalPatientSearch" type="text" autocomplete="off" placeholder="Cari Pasien / No MR ">
+                    <div id="globalSearchDropdown" class="global-search-dropdown" aria-label="Hasil pencarian pasien"></div>
                 </div>
-                <button class="btn-pendaftaran">
-                    Pendaftaran Baru
-                    <i class="fas fa-chevron-down"></i>
-                </button>
             </div>
             <div class="header-right">
-                <div class="header-logo">HDS</div>
                 <div class="user-dropdown-container">
                     <div class="user-dropdown" onclick="toggleUserMenu()">
-                        <span>{{ Auth::user()->name ?? 'hangleki' }}</span>
+                        <span class="user-avatar" aria-hidden="true"><i class="fas fa-user"></i></span>
+                        <span class="user-name">{{ Auth::user()->name ?? 'hangleki' }}</span>
                         <i class="fas fa-chevron-down" style="color: white; font-size: 12px;"></i>
                     </div>
                     <div class="user-dropdown-menu" id="userDropdownMenu">
@@ -1019,7 +1087,9 @@
                 <!-- Print Header (only visible when printing) -->
                 <div class="print-only print-header">
                     <div class="print-header-left">
-                        <div class="print-logo">HDS</div>
+                        <div class="print-logo">
+                            <img src="{{ asset('assets/logo2.jpeg') }}" alt="Logo" loading="eager">
+                        </div>
                     </div>
                     <div class="print-header-right">
                         <div class="print-clinic-name">Hanglekiu Dental Specialist</div>
@@ -1046,16 +1116,16 @@
                         <thead>
                             <tr>
                                 <th class="col-status">Status</th>
-                                <th class="col-visit">Tanggal Kunjungan</th>
+                                <th class="col-visit-date">Tanggal</th>
+                                <th class="col-visit-time">Jam</th>
                                 <th class="no-print col-created">Tanggal Dibuat</th>
                                 <th class="no-print col-poli">Poli</th>
-                                <th class="col-patient">Nama Pasien</th>
+                                <th class="col-patient-name">Nama</th>
+                                <th class="col-invoice">Invoice</th>
+                                <th class="col-age">Umur</th>
                                 <th class="col-procedure">Rencana Tindakan</th>
-                                <th class="col-package">Rencana Paket</th>
                                 <th class="col-doctor">Tenaga Medis</th>
                                 <th class="col-payment">Tipe Bayar</th>
-                                <th class="col-bpjs">Rujuk BPJS</th>
-                                <th class="print-cell-only col-bpjs-code">Kode Booking BPJS</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -1074,11 +1144,12 @@
                                         $statusClass = 'status-cancelled';
                                     }
 
-                                    $visitAt = $a->start_at ? \Carbon\Carbon::parse($a->start_at)->format('d/m/Y, H:i') : '-';
+                                    $visitDate = $a->start_at ? \Carbon\Carbon::parse($a->start_at)->format('d/m/Y') : '-';
+                                    $visitTime = $a->start_at ? \Carbon\Carbon::parse($a->start_at)->format('H:i') : '-';
                                     $createdAt = $a->created_at ? \Carbon\Carbon::parse($a->created_at)->format('d/m/Y') : '-';
 
                                     $patientName = \Illuminate\Support\Str::title(preg_replace('/\s+/', ' ', trim((string) ($a->patient_name ?? ''))));
-                                    $mr = $a->medical_record_number ?: '-';
+                                    $invoice = $a->medical_record_number ?: '-';
 
                                     $ageText = null;
                                     if (!empty($a->patient_birth_date)) {
@@ -1086,35 +1157,24 @@
                                         $ageText = $ageYears . ' Tahun';
                                     }
 
-                                    $patientPieces = array_filter([
-                                        $patientName,
-                                        $mr !== '-' ? $mr : null,
-                                        $ageText,
-                                    ]);
-                                    $patientCell = !empty($patientPieces) ? implode(', ', $patientPieces) : '-';
-
                                     $poli = 'Gigi';
                                     $procedure = $a->procedure ?: '-';
                                     $doctorName = $a->doctor?->name ?: '-';
                                     $payment = $a->payment_method ?: 'Langsung';
-                                    $isBpjs = strcasecmp((string) $payment, 'BPJS') === 0;
-                                    $bpjsCode = $isBpjs
-                                        ? ((string) ($a->code ?: ($a->medical_record_number ?: '-')))
-                                        : '-';
                                 @endphp
 
                                 <tr>
                                     <td class="col-status" data-label="Status"><span class="status-badge {{ $statusClass }}">{{ $statusText }}</span></td>
-                                    <td class="col-visit" data-label="Tanggal Kunjungan">{{ $visitAt }}</td>
+                                    <td class="col-visit-date" data-label="Tanggal">{{ $visitDate }}</td>
+                                    <td class="col-visit-time" data-label="Jam">{{ $visitTime }}</td>
                                     <td class="no-print col-created" data-label="Tanggal Dibuat">{{ $createdAt }}</td>
                                     <td class="no-print col-poli" data-label="Poli"><span class="poli-badge">{{ $poli }}</span></td>
-                                    <td class="col-patient" data-label="Nama Pasien">{{ $patientCell }}</td>
+                                    <td class="col-patient-name" data-label="Nama">{{ $patientName ?: '-' }}</td>
+                                    <td class="col-invoice" data-label="Invoice">{{ $invoice }}</td>
+                                    <td class="col-age" data-label="Umur">{{ $ageText ?? '-' }}</td>
                                     <td class="col-procedure" data-label="Rencana Tindakan">{{ $procedure }}</td>
-                                    <td class="col-package" data-label="Rencana Paket">-</td>
                                     <td class="col-doctor" data-label="Tenaga Medis">{{ $doctorName }}</td>
                                     <td class="col-payment" data-label="Tipe Bayar">{{ $payment }}</td>
-                                    <td class="col-bpjs" data-label="Rujuk BPJS">{{ $isBpjs ? 'Ya' : '-' }}</td>
-                                    <td class="print-cell-only col-bpjs-code" data-label="Kode Booking BPJS">{{ $bpjsCode }}</td>
                                 </tr>
                             @empty
                                 <tr>
@@ -1179,6 +1239,148 @@
                     // fallback: redirect anyway
                     window.location.href = '{{ route('login') }}';
                 });
+            });
+        })();
+
+        // Global patient search (header) -> jump to EMR
+        (function(){
+            const input = document.getElementById('globalPatientSearch');
+            const dropdown = document.getElementById('globalSearchDropdown');
+            const container = document.querySelector('.search-box');
+            if (!input || !dropdown || !container) return;
+
+            let timer = null;
+            let abortCtrl = null;
+            let results = [];
+            let activeIndex = -1;
+
+            function closeDropdown() {
+                dropdown.style.display = 'none';
+                dropdown.innerHTML = '';
+                results = [];
+                activeIndex = -1;
+            }
+
+            function openDropdown() {
+                dropdown.style.display = 'block';
+            }
+
+            function setActiveIndex(nextIndex) {
+                activeIndex = nextIndex;
+                const items = dropdown.querySelectorAll('.global-search-item');
+                items.forEach((el, idx) => {
+                    if (idx === activeIndex) el.classList.add('active');
+                    else el.classList.remove('active');
+                });
+            }
+
+            function render() {
+                dropdown.innerHTML = '';
+
+                if (!results.length) {
+                    const empty = document.createElement('div');
+                    empty.className = 'global-search-empty';
+                    empty.textContent = 'Tidak ada hasil.';
+                    dropdown.appendChild(empty);
+                    openDropdown();
+                    return;
+                }
+
+                results.forEach((row, idx) => {
+                    const item = document.createElement('div');
+                    item.className = 'global-search-item';
+                    item.setAttribute('role', 'button');
+                    item.tabIndex = 0;
+                    item.dataset.url = row.emr_url;
+
+                    const name = document.createElement('div');
+                    name.className = 'name';
+                    name.textContent = row.name || '-';
+
+                    const meta = document.createElement('div');
+                    meta.className = 'meta';
+                    const parts = [];
+                    if (row.mrn) parts.push('MR: ' + row.mrn);
+                    if (row.phone) parts.push('HP: ' + row.phone);
+                    if (row.last_visit) parts.push('Terakhir: ' + row.last_visit);
+                    meta.textContent = parts.join(' • ');
+
+                    item.appendChild(name);
+                    item.appendChild(meta);
+
+                    item.addEventListener('click', () => {
+                        if (row.emr_url) window.location.href = row.emr_url;
+                    });
+
+                    item.addEventListener('mouseenter', () => setActiveIndex(idx));
+                    dropdown.appendChild(item);
+                });
+
+                openDropdown();
+                setActiveIndex(0);
+            }
+
+            async function doSearch(q) {
+                if (abortCtrl) abortCtrl.abort();
+                abortCtrl = new AbortController();
+
+                const url = new URL('{{ route('patients.search') }}', window.location.origin);
+                url.searchParams.set('q', q);
+
+                try {
+                    const resp = await fetch(url.toString(), {
+                        headers: { 'Accept': 'application/json' },
+                        signal: abortCtrl.signal,
+                    });
+                    if (!resp.ok) throw new Error('Request failed');
+                    const data = await resp.json();
+                    results = Array.isArray(data) ? data : [];
+                    render();
+                } catch (e) {
+                    if (e.name === 'AbortError') return;
+                    closeDropdown();
+                }
+            }
+
+            input.addEventListener('input', function(){
+                const q = (this.value || '').trim();
+                if (timer) clearTimeout(timer);
+                if (q.length < 2) {
+                    closeDropdown();
+                    return;
+                }
+                timer = setTimeout(() => doSearch(q), 250);
+            });
+
+            input.addEventListener('keydown', function(e){
+                if (dropdown.style.display !== 'block') return;
+                const items = dropdown.querySelectorAll('.global-search-item');
+                if (!items.length) return;
+
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    setActiveIndex(Math.min(activeIndex + 1, items.length - 1));
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    setActiveIndex(Math.max(activeIndex - 1, 0));
+                } else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const el = items[activeIndex] || items[0];
+                    const url = el?.dataset?.url;
+                    if (url) window.location.href = url;
+                } else if (e.key === 'Escape') {
+                    closeDropdown();
+                }
+            });
+
+            input.addEventListener('focus', function(){
+                if (results.length) openDropdown();
+            });
+
+            document.addEventListener('click', function(e){
+                if (!container.contains(e.target)) {
+                    closeDropdown();
+                }
             });
         })();
 
@@ -1304,16 +1506,18 @@
         }
 
         .print-logo {
-            width: 54px;
-            height: 54px;
-            border-radius: 50%;
-            border: 2px solid #6b7280;
+            width: 64px;
+            height: 64px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 700;
-            color: #6b7280;
-            font-size: 14px;
+        }
+
+        .print-logo img {
+            width: 64px;
+            height: 64px;
+            object-fit: contain;
+            display: block;
         }
 
         .print-clinic-name {
@@ -1476,22 +1680,22 @@
             /* Column sizing hints (matches the sample print table) */
             .data-table th.col-status,
             .data-table td.col-status { width: 8%; }
-            .data-table th.col-visit,
-            .data-table td.col-visit { width: 12%; }
-            .data-table th.col-patient,
-            .data-table td.col-patient { width: 18%; }
+            .data-table th.col-visit-date,
+            .data-table td.col-visit-date { width: 10%; }
+            .data-table th.col-visit-time,
+            .data-table td.col-visit-time { width: 6%; }
+            .data-table th.col-patient-name,
+            .data-table td.col-patient-name { width: 14%; }
+            .data-table th.col-invoice,
+            .data-table td.col-invoice { width: 9%; }
+            .data-table th.col-age,
+            .data-table td.col-age { width: 5%; }
             .data-table th.col-procedure,
             .data-table td.col-procedure { width: 16%; }
-            .data-table th.col-package,
-            .data-table td.col-package { width: 8%; }
             .data-table th.col-doctor,
             .data-table td.col-doctor { width: 16%; }
             .data-table th.col-payment,
             .data-table td.col-payment { width: 8%; }
-            .data-table th.col-bpjs,
-            .data-table td.col-bpjs { width: 6%; }
-            .data-table th.col-bpjs-code,
-            .data-table td.col-bpjs-code { width: 8%; }
 
             .data-table th {
                 font-weight: 700;

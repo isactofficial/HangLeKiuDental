@@ -1025,12 +1025,13 @@
                         </select>
                     </div>
                     <div class="chart-value">
-                        <h2>262</h2>
-                        <span class="chart-badge up">
-                            <i class="fas fa-arrow-up"></i> 40.27%
+                        <h2>{{ (int) ($visitsThisMonth ?? 0) }}</h2>
+                        <span class="chart-badge {{ (($visitChangeDir ?? 'up') === 'down') ? 'down' : 'up' }}">
+                            <i class="fas {{ (($visitChangeDir ?? 'up') === 'down') ? 'fa-arrow-down' : 'fa-arrow-up' }}"></i>
+                            {{ number_format(abs((float) ($visitChangePct ?? 0)), 2) }}%
                         </span>
                     </div>
-                    <p class="chart-subtitle">dari Desember</p>
+                    <p class="chart-subtitle">dari {{ $prevMonthLabel ?? '-' }}</p>
                     <div class="chart-container">
                         <canvas id="visitChart"></canvas>
                     </div>
@@ -1040,16 +1041,17 @@
                 <div style="display: flex; flex-direction: column; gap: 20px;">
                     <div class="stat-card">
                         <div class="stat-icon blue">
-                            <i class="fas fa-clock"></i>
+                            <i class="fas fa-calendar-day"></i>
                         </div>
-                        <p class="stat-label">Rata-Rata<br>Waktu Tunggu Dokter</p>
+                        <p class="stat-label">Kunjungan Hari Ini</p>
                         <div class="stat-value">
-                            <h3>0 m 5 s</h3>
-                            <span class="stat-change down">
-                                <i class="fas fa-arrow-down"></i> 76.19%
+                            <h3>{{ (int) ($visitsToday ?? 0) }}</h3>
+                            <span class="stat-change {{ (($todayChangeDir ?? 'up') === 'down') ? 'down' : 'up' }}">
+                                <i class="fas {{ (($todayChangeDir ?? 'up') === 'down') ? 'fa-arrow-down' : 'fa-arrow-up' }}"></i>
+                                {{ number_format(abs((float) ($todayChangePct ?? 0)), 2) }}%
                             </span>
                         </div>
-                        <p class="stat-period">dari Desember</p>
+                        <p class="stat-period">dibanding kemarin</p>
                     </div>
                     <div class="stat-card">
                         <div class="stat-icon green">
@@ -1057,12 +1059,13 @@
                         </div>
                         <p class="stat-label">Pasien Terdaftar</p>
                         <div class="stat-value">
-                            <h3>364</h3>
-                            <span class="stat-change up">
-                                <i class="fas fa-arrow-up"></i> 0.27%
+                            <h3>{{ (int) ($patientsTotal ?? 0) }}</h3>
+                            <span class="stat-change {{ (($patientsTotalChangeDir ?? 'up') === 'down') ? 'down' : 'up' }}">
+                                <i class="fas {{ (($patientsTotalChangeDir ?? 'up') === 'down') ? 'fa-arrow-down' : 'fa-arrow-up' }}"></i>
+                                {{ number_format(abs((float) ($patientsTotalChangePct ?? 0)), 2) }}%
                             </span>
                         </div>
-                        <p class="stat-period">dari Desember</p>
+                        <p class="stat-period">dibanding bulan lalu</p>
                     </div>
                 </div>
 
@@ -1074,25 +1077,27 @@
                         </div>
                         <p class="stat-label">Pasien Baru</p>
                         <div class="stat-value">
-                            <h3>1</h3>
-                            <span class="stat-change down">
-                                <i class="fas fa-arrow-down"></i> 83.33%
+                            <h3>{{ (int) ($newPatientsThisMonth ?? 0) }}</h3>
+                            <span class="stat-change {{ (($newPatientsChangeDir ?? 'up') === 'down') ? 'down' : 'up' }}">
+                                <i class="fas {{ (($newPatientsChangeDir ?? 'up') === 'down') ? 'fa-arrow-down' : 'fa-arrow-up' }}"></i>
+                                {{ number_format(abs((float) ($newPatientsChangePct ?? 0)), 2) }}%
                             </span>
                         </div>
-                        <p class="stat-period">dari Desember</p>
+                        <p class="stat-period">dibanding bulan lalu</p>
                     </div>
                     <div class="stat-card">
                         <div class="stat-icon orange">
                             <i class="fas fa-stethoscope"></i>
                         </div>
-                        <p class="stat-label">Rata-Rata<br>Waktu Konsultasi</p>
+                        <p class="stat-label">Rata-Rata<br>Durasi Kunjungan</p>
                         <div class="stat-value">
-                            <h3>260 m 16 s</h3>
-                            <span class="stat-change up">
-                                <i class="fas fa-arrow-up"></i> 272.2%
+                            <h3>{{ $avgDurationLabel ?? '0 s' }}</h3>
+                            <span class="stat-change {{ (($avgDurationChangeDir ?? 'up') === 'down') ? 'down' : 'up' }}">
+                                <i class="fas {{ (($avgDurationChangeDir ?? 'up') === 'down') ? 'fa-arrow-down' : 'fa-arrow-up' }}"></i>
+                                {{ number_format(abs((float) ($avgDurationChangePct ?? 0)), 2) }}%
                             </span>
                         </div>
-                        <p class="stat-period">dari Desember</p>
+                        <p class="stat-period">dibanding bulan lalu</p>
                     </div>
                 </div>
             </section>
@@ -1102,38 +1107,38 @@
                 <!-- Donut Chart -->
                 <div class="donut-card">
                     <div class="donut-header">
-                        <h4>Total Kunjungan</h4>
+                        <h4>Status Pembayaran (Bulan Ini)</h4>
                         <i class="fas fa-info-circle"></i>
                     </div>
-                    <p style="font-size: 11px; color: #9ca3af; margin-bottom: 15px;">Total Terhitung BPJS</p>
+                    <p style="font-size: 11px; color: #9ca3af; margin-bottom: 15px;">Berdasarkan data pembayaran</p>
                     <div class="donut-content">
                         <div class="donut-chart">
                             <canvas id="donutChart"></canvas>
                             <div class="donut-center">
-                                <h3>285</h3>
-                                <span>Pasien</span>
+                                <h3>{{ (int) ($visitsThisMonth ?? 0) }}</h3>
+                                <span>Kunjungan</span>
                             </div>
                         </div>
                         <div class="donut-legend">
                             <div class="legend-item">
                                 <span class="legend-dot blue"></span>
-                                Rawat Jalan
-                                <span class="legend-value">285</span>
+                                Lunas
+                                <span class="legend-value">{{ (int) (($donutData ?? [0,0,0,0])[0] ?? 0) }}</span>
                             </div>
                             <div class="legend-item">
                                 <span class="legend-dot light-blue"></span>
-                                Rawat Inap
-                                <span class="legend-value">0</span>
+                                Cicilan
+                                <span class="legend-value">{{ (int) (($donutData ?? [0,0,0,0])[1] ?? 0) }}</span>
                             </div>
                             <div class="legend-item">
                                 <span class="legend-dot green"></span>
-                                Kunjungan Sehat
-                                <span class="legend-value">0</span>
+                                Belum Bayar
+                                <span class="legend-value">{{ (int) (($donutData ?? [0,0,0,0])[2] ?? 0) }}</span>
                             </div>
                             <div class="legend-item">
                                 <span class="legend-dot gray"></span>
-                                Apotek
-                                <span class="legend-value">0</span>
+                                Batal
+                                <span class="legend-value">{{ (int) (($donutData ?? [0,0,0,0])[3] ?? 0) }}</span>
                             </div>
                         </div>
                     </div>
@@ -1143,47 +1148,42 @@
                 <div class="revenue-card">
                     <p class="revenue-header">Pendapatan Bulan Ini</p>
                     <div class="revenue-value">
-                        <h3>Rp7.700.000</h3>
-                        <span class="stat-change down">
-                            <i class="fas fa-arrow-down"></i> 56.49%
+                        <h3>Rp{{ number_format((int) ($revenueThisMonth ?? 0), 0, ',', '.') }}</h3>
+                        <span class="stat-change {{ (($revenueChangeDir ?? 'up') === 'down') ? 'down' : 'up' }}">
+                            <i class="fas {{ (($revenueChangeDir ?? 'up') === 'down') ? 'fa-arrow-down' : 'fa-arrow-up' }}"></i>
+                            {{ number_format(abs((float) ($revenueChangePct ?? 0)), 2) }}%
                         </span>
                     </div>
-                    <p class="revenue-period">dari Desember</p>
+                    <p class="revenue-period">dari {{ $prevMonthLabel ?? '-' }}</p>
 
                     <div class="expense-section">
-                        <p class="revenue-header">Pengeluaran Bulan Ini</p>
+                        <p class="revenue-header">Piutang Bulan Ini</p>
                         <div class="revenue-value">
-                            <h3>Rp0</h3>
-                            <span class="stat-change down">
-                                <i class="fas fa-arrow-down"></i> 100%
-                            </span>
+                            <h3>Rp{{ number_format((int) ($outstandingThisMonth ?? 0), 0, ',', '.') }}</h3>
                         </div>
-                        <p class="revenue-period">dari Desember</p>
+                        <p class="revenue-period">(sisa tagihan)</p>
                     </div>
                 </div>
 
                 <!-- Stock -->
                 <div class="stock-card">
                     <div class="stock-icon">
-                        <i class="fas fa-exclamation-triangle"></i>
+                        <i class="fas fa-user-doctor"></i>
                     </div>
-                    <p class="stock-label">Stok Menipis</p>
+                    <p class="stock-label">Jumlah Dokter</p>
                     <div class="stock-value">
-                        <h3>0</h3>
+                        <h3>{{ (int) ($doctorCount ?? 0) }}</h3>
                     </div>
 
                     <div style="margin-top: 25px; padding-top: 15px; border-top: 1px solid #f3f4f6;">
                         <div class="stat-icon blue" style="margin-bottom: 12px;">
-                            <i class="fas fa-prescription-bottle-alt"></i>
+                            <i class="fas fa-tooth"></i>
                         </div>
-                        <p class="stat-label">Rata-Rata<br>Waktu Tunggu Apotek</p>
+                        <p class="stat-label">Prosedur Aktif</p>
                         <div class="stat-value">
-                            <h3>0 m 0 s</h3>
-                            <span class="stat-change down">
-                                <i class="fas fa-arrow-down"></i> 100%
-                            </span>
+                            <h3>{{ (int) ($procedureCount ?? 0) }}</h3>
                         </div>
-                        <p class="stat-period">dari Desember</p>
+                        <p class="stat-period">data master prosedur</p>
                     </div>
                 </div>
 
@@ -1191,7 +1191,7 @@
                 <div class="queue-card">
                     <div class="queue-header">
                         <h4>Pasien AntriCepat</h4>
-                        <span class="queue-update">Last Update -</span>
+                        <span class="queue-update">Last Update {{ $queueLastUpdate ?? '-' }}</span>
                     </div>
                     <div class="queue-actions">
                         <button class="queue-btn">
@@ -1213,11 +1213,19 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td data-label="Nama" colspan="3" class="queue-empty">
-                                    Tidak ada antrian
-                                </td>
-                            </tr>
+                            @if(!empty($todayQueue) && count($todayQueue) > 0)
+                                @foreach($todayQueue as $a)
+                                    <tr>
+                                        <td data-label="Nama">{{ $a->patient_name }}</td>
+                                        <td data-label="Tenaga Medis">{{ optional($a->doctor)->name ?? '-' }}</td>
+                                        <td data-label="Jadwal">{{ optional($a->start_at)->format('H:i') ?? '-' }}</td>
+                                    </tr>
+                                @endforeach
+                            @else
+                                <tr>
+                                    <td data-label="Nama" colspan="3" class="queue-empty">Tidak ada antrian</td>
+                                </tr>
+                            @endif
                         </tbody>
                     </table>
                 </div>
@@ -1247,10 +1255,10 @@
         new Chart(visitCtx, {
             type: 'bar',
             data: {
-                labels: ['-7H', '-6H', '-5H', '-4H', '-3H', '-2H', '-1H', '0', '1', '2', '3', '4', '5', '6', '7'],
+                labels: @json($visitChartLabels ?? []),
                 datasets: [{
-                    data: [2, 4, 8, 12, 8, 15, 18, 22, 35, 28, 42, 38, 32, 25, 20],
-                        backgroundColor: '#B08D70',
+                    data: @json($visitChartData ?? []),
+                    backgroundColor: '#B08D70',
                     borderRadius: 4,
                     barThickness: 12
                 }]
@@ -1279,10 +1287,10 @@
         new Chart(donutCtx, {
             type: 'doughnut',
             data: {
-                labels: ['Rawat Jalan', 'Rawat Inap', 'Kunjungan Sehat', 'Apotek'],
+                labels: {!! json_encode($donutLabels ?? ['Lunas','Cicilan','Belum Bayar','Batal']) !!},
                 datasets: [{
-                    data: [285, 0, 0, 0],
-                        backgroundColor: ['#B08D70', '#93c5fd', '#22c55e', '#d1d5db'],
+                    data: {!! json_encode($donutData ?? [0,0,0,0]) !!},
+                    backgroundColor: ['#B08D70', '#93c5fd', '#22c55e', '#d1d5db'],
                     borderWidth: 0
                 }]
             },
