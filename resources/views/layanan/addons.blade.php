@@ -95,7 +95,7 @@
         <div class="content">
             <div class="layout">
                 <aside class="left-nav card">
-                    <a href="{{ url('/layanan-tambahan') }}" class="nav-item">AntriCepat<br><span class="meta">Online Appointment</span></a>
+                    <a href="{{ url('/layanan-tambahan') }}" class="nav-item">Janji Temu Online<br><span class="meta">Online Appointment</span></a>
                     <a href="{{ url('/layanan/telekonsultasi') }}" class="nav-item">Telekonsultasi</a>
                     <a href="{{ url('/layanan/add-ons') }}" class="nav-item active">Add Ons</a>
                 </aside>

@@ -195,7 +195,7 @@ Route::middleware('auth')->group(function () {
 
         $avgDurationSeconds = (int) round((float) $durationThisMonth->avg(function ($a) {
             try {
-                return $a->end_at ? $a->end_at->diffInSeconds($a->start_at) : 0;
+                return ($a->start_at && $a->end_at) ? $a->start_at->diffInSeconds($a->end_at) : 0;
             } catch (\Throwable $e) {
                 return 0;
             }
@@ -210,7 +210,7 @@ Route::middleware('auth')->group(function () {
 
         $avgDurationPrevSeconds = (int) round((float) $durationPrevMonth->avg(function ($a) {
             try {
-                return $a->end_at ? $a->end_at->diffInSeconds($a->start_at) : 0;
+                return ($a->start_at && $a->end_at) ? $a->start_at->diffInSeconds($a->end_at) : 0;
             } catch (\Throwable $e) {
                 return 0;
             }
@@ -1147,7 +1147,7 @@ Route::middleware('auth')->group(function () {
         Route::patch('/admin/doctors/{doctor}', [\App\Http\Controllers\AdminDoctorController::class, 'update'])->name('admin.doctors.update');
     });
 
-    // Layanan Tambahan - AntriCepat (now as layanan.tambahan)
+    // Layanan Tambahan - Janji Temu Online (now as layanan.tambahan)
     Route::get('/layanan-tambahan', function () {
         return view('layanan.tambahan');
     })->name('layanan.tambahan');

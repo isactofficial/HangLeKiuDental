@@ -576,6 +576,7 @@
         .legend-dot.blue { background: var(--accent); }
         .legend-dot.light-blue { background: #93c5fd; }
         .legend-dot.green { background: #22c55e; }
+        .legend-dot.red { background: #ef4444; }
         .legend-dot.gray { background: #d1d5db; }
 
         .legend-value {
@@ -636,6 +637,23 @@
             padding: 20px;
         }
 
+        .stock-item {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .stock-item + .stock-item {
+            margin-top: 18px;
+            padding-top: 18px;
+            border-top: 1px solid #f3f4f6;
+        }
+
+        .stock-item-content {
+            flex: 1;
+            min-width: 0;
+        }
+
         .stock-icon {
             width: 40px;
             height: 40px;
@@ -646,6 +664,16 @@
             justify-content: center;
             color: #f59e0b;
             margin-bottom: 12px;
+        }
+
+        .stock-item .stock-icon {
+            margin-bottom: 0;
+            flex: 0 0 auto;
+        }
+
+        .stock-icon.blue {
+            background: #f1f2f4;
+            color: var(--accent);
         }
 
         .stock-label {
@@ -1121,7 +1149,7 @@
                         </div>
                         <div class="donut-legend">
                             <div class="legend-item">
-                                <span class="legend-dot blue"></span>
+                                <span class="legend-dot green"></span>
                                 Lunas
                                 <span class="legend-value">{{ (int) (($donutData ?? [0,0,0,0])[0] ?? 0) }}</span>
                             </div>
@@ -1131,7 +1159,7 @@
                                 <span class="legend-value">{{ (int) (($donutData ?? [0,0,0,0])[1] ?? 0) }}</span>
                             </div>
                             <div class="legend-item">
-                                <span class="legend-dot green"></span>
+                                <span class="legend-dot red"></span>
                                 Belum Bayar
                                 <span class="legend-value">{{ (int) (($donutData ?? [0,0,0,0])[2] ?? 0) }}</span>
                             </div>
@@ -1167,30 +1195,35 @@
 
                 <!-- Stock -->
                 <div class="stock-card">
-                    <div class="stock-icon">
-                        <i class="fas fa-user-doctor"></i>
-                    </div>
-                    <p class="stock-label">Jumlah Dokter</p>
-                    <div class="stock-value">
-                        <h3>{{ (int) ($doctorCount ?? 0) }}</h3>
+                    <div class="stock-item">
+                        <div class="stock-icon">
+                            <i class="fas fa-user-doctor"></i>
+                        </div>
+                        <div class="stock-item-content">
+                            <p class="stock-label">Jumlah Dokter</p>
+                            <div class="stock-value">
+                                <h3>{{ (int) ($doctorCount ?? 0) }}</h3>
+                            </div>
+                        </div>
                     </div>
 
-                    <div style="margin-top: 25px; padding-top: 15px; border-top: 1px solid #f3f4f6;">
-                        <div class="stat-icon blue" style="margin-bottom: 12px;">
+                    <div class="stock-item">
+                        <div class="stock-icon blue">
                             <i class="fas fa-tooth"></i>
                         </div>
-                        <p class="stat-label">Prosedur Aktif</p>
-                        <div class="stat-value">
-                            <h3>{{ (int) ($procedureCount ?? 0) }}</h3>
+                        <div class="stock-item-content">
+                            <p class="stock-label">Prosedur Aktif</p>
+                            <div class="stock-value">
+                                <h3>{{ (int) ($procedureCount ?? 0) }}</h3>
+                            </div>
                         </div>
-                        <p class="stat-period">data master prosedur</p>
                     </div>
                 </div>
 
                 <!-- Queue Table -->
                 <div class="queue-card">
                     <div class="queue-header">
-                        <h4>Pasien AntriCepat</h4>
+                        <h4>Antrian Pasien</h4>
                         <span class="queue-update">Last Update {{ $queueLastUpdate ?? '-' }}</span>
                     </div>
                     <div class="queue-actions">
@@ -1290,7 +1323,7 @@
                 labels: {!! json_encode($donutLabels ?? ['Lunas','Cicilan','Belum Bayar','Batal']) !!},
                 datasets: [{
                     data: {!! json_encode($donutData ?? [0,0,0,0]) !!},
-                    backgroundColor: ['#B08D70', '#93c5fd', '#22c55e', '#d1d5db'],
+                    backgroundColor: ['#22c55e', '#93c5fd', '#ef4444', '#d1d5db'],
                     borderWidth: 0
                 }]
             },

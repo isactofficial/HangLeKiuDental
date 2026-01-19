@@ -37,11 +37,11 @@
                 <i class="fas fa-clinic-medical"></i>
             </a>
             <!-- removed unused icon-only items: Waktu, Users, Medical, Pharmacy, Inventory -->
-            <a href="{{ route('cashier') }}" class="sidebar-item" title="Kasir">
-                <i class="fas fa-cash-register"></i>
-            </a>
             <a href="{{ route('emr') }}" class="sidebar-item" title="EMR">
                 <i class="fas fa-plus-square"></i>
+            </a>
+            <a href="{{ route('cashier') }}" class="sidebar-item" title="Kasir">
+                <i class="fas fa-cash-register"></i>
             </a>
             <a href="{{ route('procedures.index') }}" class="sidebar-item" title="Katalog Harga Prosedur">
                 <i class="fas fa-tags"></i>

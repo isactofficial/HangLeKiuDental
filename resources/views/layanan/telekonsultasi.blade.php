@@ -144,7 +144,7 @@
         <div class="content">
             <div class="layout">
                 <aside class="left-nav card">
-                    <a href="{{ url('/layanan-tambahan') }}" class="nav-item">AntriCepat<br><span class="meta">Online Appointment</span></a>
+                    <a href="{{ url('/layanan-tambahan') }}" class="nav-item">Janji Temu Online<br><span class="meta">Online Appointment</span></a>
                     <a href="{{ url('/layanan/telekonsultasi') }}" class="nav-item active">Telekonsultasi</a>
                     <a href="{{ url('/layanan/add-ons') }}" class="nav-item">Add Ons</a>
                 </aside>
@@ -181,7 +181,7 @@
                                         <p style="margin-top:8px"><strong>Bagi Klinik :</strong></p>
                                         <ul>
                                             <li><strong>Manajemen Jadwal Efektif:</strong> Atur jadwal dokter dan pasien dengan lebih rapi, hindari penumpukan pasien dan tingkatkan efisiensi pelayanan.</li>
-                                            <li><strong>Reputasi Meningkat:</strong> Ciptakan citra profesional dan modern dengan layanan AntriCepat yang mudah diakses pasien.</li>
+                                            <li><strong>Reputasi Meningkat:</strong> Ciptakan citra profesional dan modern dengan layanan telekonsultasi yang mudah diakses pasien.</li>
                                             <li><strong>Pasien Puas, Fasilitas Bahagia:</strong> Tingkatkan kepuasan pasien dengan pelayanan yang lebih cepat dan terarah, berujung pada reputasi dan profit yang lebih baik.</li>
                                             <li><strong>Kurangi Antrean Panjang:</strong> Hindari penumpukan pasien di ruang tunggu, ciptakan lingkungan yang lebih nyaman dan aman bagi pasien dan staf.</li>
                                         </ul>
